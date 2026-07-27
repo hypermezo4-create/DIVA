@@ -7,6 +7,7 @@ const sql = postgres(databaseUrl, {max: 1, prepare: false});
 const testUserId = `smoke-${Date.now()}`;
 const testOrderNumber = `DIVA-SMOKE-${Date.now()}`;
 const testConfirmationToken = `smoke${Date.now()}confirmationtoken`;
+const testPaymentKey = `smoke-payment-${Date.now()}`;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -36,11 +37,19 @@ try {
       and pv.compare_at_minor is not null
       and pv.compare_at_minor > pv.price_minor
   `;
+  const [{count: shippingMethods}] = await sql`
+    select count(*)::int as count from shipping_methods where active = true
+  `;
+  const [{count: shippingTranslations}] = await sql`
+    select count(*)::int as count from shipping_method_translations where method_code = 'standard'
+  `;
 
   assert(activeProducts >= 6, `Expected at least 6 active products, found ${activeProducts}`);
   assert(translations >= activeProducts * 4, 'Every active seeded product must have four locale translations.');
   assert(sellableVariants > 0, 'Expected at least one sellable in-stock variant.');
   assert(offerVariants > 0, 'Expected seeded offer variants with a valid compare-at price.');
+  assert(shippingMethods > 0, 'Expected at least one active shipping method.');
+  assert(shippingTranslations >= 4, 'Expected shipping copy for all four locales.');
 
   const [product] = await sql`select id from products where status = 'active' order by slug limit 1`;
   const [variant] = await sql`
@@ -74,16 +83,34 @@ try {
       ${order.id}, ${variant.id}, ${variant.sku}, 'Smoke Product', '42', 'Smoke', ${variant.price_minor}, 1, ${variant.price_minor}
     )
   `;
+  const [payment] = await sql`
+    insert into payment_attempts (order_id, provider, idempotency_key, amount_minor, currency)
+    values (${order.id}, 'smoke', ${testPaymentKey}, ${variant.price_minor}, ${variant.currency})
+    returning id
+  `;
+  await sql`update payment_attempts set status = 'cancelled' where id = ${payment.id}`;
+  await sql`update orders set status = 'cancelled', payment_status = 'cancelled' where id = ${order.id}`;
 
   const [{count: cartCount}] = await sql`select count(*)::int as count from cart_items where cart_id = ${cart.id}`;
   const [{count: wishlistCount}] = await sql`select count(*)::int as count from wishlists where user_id = ${testUserId}`;
-  const [{count: orderCount}] = await sql`select count(*)::int as count from orders where number = ${testOrderNumber} and confirmation_token = ${testConfirmationToken}`;
+  const [{count: orderCount}] = await sql`
+    select count(*)::int as count from orders
+    where number = ${testOrderNumber}
+      and confirmation_token = ${testConfirmationToken}
+      and status = 'cancelled'
+      and payment_status = 'cancelled'
+  `;
   const [{count: orderItemCount}] = await sql`select count(*)::int as count from order_items where order_id = ${order.id}`;
+  const [{count: paymentCount}] = await sql`
+    select count(*)::int as count from payment_attempts
+    where order_id = ${order.id} and idempotency_key = ${testPaymentKey} and status = 'cancelled'
+  `;
   assert(cartCount === 1, 'Cart persistence smoke check failed.');
   assert(wishlistCount === 1, 'Wishlist persistence smoke check failed.');
   assert(orderCount === 1 && orderItemCount === 1, 'Order persistence smoke check failed.');
+  assert(paymentCount === 1, 'Payment attempt persistence smoke check failed.');
 
-  console.log(`Commerce smoke passed: ${activeProducts} products, ${sellableVariants} sellable variants, ${offerVariants} offer variants.`);
+  console.log(`Commerce smoke passed: ${activeProducts} products, ${sellableVariants} sellable variants, ${offerVariants} offer variants, ${shippingMethods} shipping methods.`);
 } finally {
   await sql`delete from orders where number = ${testOrderNumber}`.catch(() => undefined);
   await sql`delete from "user" where id = ${testUserId}`.catch(() => undefined);
