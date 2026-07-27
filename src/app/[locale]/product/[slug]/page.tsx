@@ -3,43 +3,31 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
+import {ProductPurchasePanel} from '@/components/catalog/product-purchase-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
-import {catalogProducts, findCatalogProduct, localizeProduct} from '@/features/catalog/catalog';
-import {isAppLocale, locales} from '@/i18n/routing';
+import {findActiveProduct} from '@/features/catalog/server/catalog-repository';
+import {isAppLocale} from '@/i18n/routing';
 
 type ProductPageProps = {params: Promise<{locale: string; slug: string}>};
-
-export function generateStaticParams() {
-  return catalogProducts.flatMap((product) => locales.map((locale) => ({locale, slug: product.slug})));
-}
 
 export async function generateMetadata({params}: ProductPageProps): Promise<Metadata> {
   const {locale, slug} = await params;
   if (!isAppLocale(locale)) return {};
-
-  const product = findCatalogProduct(slug);
+  const product = await findActiveProduct(locale, slug);
   if (!product) return {};
-
-  const copy = localizeProduct(product, locale);
-  return {title: `${copy.name} · DIVA`, description: copy.description};
+  return {title: `${product.name} · DIVA`, description: product.description};
 }
 
 export default async function ProductPage({params}: ProductPageProps) {
   const {locale, slug} = await params;
+  if (!isAppLocale(locale)) notFound();
 
-  if (!isAppLocale(locale)) {
-    notFound();
-  }
-
-  const product = findCatalogProduct(slug);
-  if (!product) {
-    notFound();
-  }
+  const product = await findActiveProduct(locale, slug);
+  if (!product) notFound();
 
   setRequestLocale(locale);
   const t = await getTranslations({locale, namespace: 'Product'});
-  const copy = localizeProduct(product, locale);
 
   return (
     <>
@@ -50,16 +38,16 @@ export default async function ProductPage({params}: ProductPageProps) {
           <span>/</span>
           <Link href={`/${locale}/shop`}>{t('shop')}</Link>
           <span>/</span>
-          <span>{copy.name}</span>
+          <span>{product.name}</span>
         </div>
 
         <section className="product-detail">
           <div className="product-gallery">
-            {product.gallery.map((image, index) => (
-              <div className="product-gallery__frame" key={image}>
+            {product.images.map((image, index) => (
+              <div className="product-gallery__frame" key={`${image.url}-${index}`}>
                 <Image
-                  src={image}
-                  alt={index === 0 ? copy.name : `${copy.name} ${index + 1}`}
+                  src={image.url}
+                  alt={image.altText ?? (index === 0 ? product.name : `${product.name} ${index + 1}`)}
                   fill
                   sizes="(max-width: 900px) 100vw, 55vw"
                   className="cover-image"
@@ -71,39 +59,39 @@ export default async function ProductPage({params}: ProductPageProps) {
 
           <div className="product-detail__copy">
             <div>
-              <p className="eyebrow">{copy.subtitle}</p>
-              <h1>{copy.name}</h1>
-              <p className="product-description">{copy.description}</p>
-            </div>
-
-            <div className="product-spec">
-              <span>{t('sizes')}</span>
-              <div className="product-sizes" aria-label={t('sizes')}>
-                {product.sizes.map((size) => <span key={size}>{size}</span>)}
-              </div>
-            </div>
-
-            <div className="product-spec">
-              <span>{t('colors')}</span>
-              <div className="product-colors">
-                {product.colors.map((color) => (
-                  <span className="product-color" key={color.hex}>
-                    <i style={{backgroundColor: color.hex}} aria-hidden="true" />
-                    {color.label[locale]}
-                  </span>
-                ))}
-              </div>
+              <p className="eyebrow">{product.subtitle}</p>
+              <h1>{product.name}</h1>
+              <p className="product-description">{product.description}</p>
             </div>
 
             {product.collection && (
               <div className="product-collection">
                 <span>{t('collection')}</span>
-                <strong>{t(`collections.${product.collection}`)}</strong>
+                <strong>{product.collection}</strong>
               </div>
             )}
 
+            <ProductPurchasePanel
+              locale={locale}
+              productId={product.id}
+              variants={product.variants}
+              copy={{
+                size: t('sizes'),
+                color: t('colors'),
+                priceFrom: t('priceFrom'),
+                addToCart: t('addToCart'),
+                adding: t('adding'),
+                addToWishlist: t('addToWishlist'),
+                removeFromWishlist: t('removeFromWishlist'),
+                outOfStock: t('outOfStock'),
+                chooseOptions: t('chooseOptions'),
+                unavailable: t('unavailable'),
+                added: t('added')
+              }}
+            />
+
             <div className="product-detail__actions">
-              <Link href={`/${locale}/shop?category=${product.audience}`} className="button button--primary">
+              <Link href={`/${locale}/shop?category=${product.audience}`} className="button button--ghost">
                 {t('moreFromCategory')}
               </Link>
               <Link href={`/${locale}/shop`} className="button button--ghost">
