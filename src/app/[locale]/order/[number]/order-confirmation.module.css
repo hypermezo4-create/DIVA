@@ -104,6 +104,27 @@
   padding: 16px 0 4px;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: start;
+}
+
+.actions > div {
+  display: grid;
+  gap: 8px;
+}
+
+.actions p {
+  margin: 0;
+  max-width: 360px;
+  color: #a13b32;
+  font-family: Arial, sans-serif;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
 .card :global(.button) {
   justify-self: start;
 }
