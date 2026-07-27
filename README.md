@@ -20,15 +20,16 @@ DIVA is a multilingual luxury-footwear storefront being built from scratch aroun
 - Primary store pillars: Women, Men, Kids and Offers
 - PostgreSQL-backed `/[locale]/shop` catalog with live prices, compare-at offers and stock availability
 - Localized `/[locale]/product/[slug]` detail pages with real variants, offer pricing, size/color selection and inventory-aware purchasing controls
-- PostgreSQL schema for products, translations, images, variants, sizes, colors, inventory, carts, wishlists, orders and order items
-- Email/password authentication API at `/api/auth/[...all]`
-- Localized `/[locale]/account` sign-in, registration, session and sign-out experience
-- Guest cart and wishlist state with live server-side quoting against current catalog data
-- Database-backed customer carts and wishlists with guest-state merge after sign-in
-- Localized `/[locale]/cart` and `/[locale]/wishlist` pages plus global header counters
-- Localized `/[locale]/checkout` with customer/contact address capture and standard-shipping selection
-- Final checkout price/stock validation and atomic inventory reservation inside the order transaction
-- Pending-payment order creation with immutable line snapshots and token-protected confirmation pages
+- Email/password authentication plus signed-in customer account experience
+- Guest and account cart/wishlist flows with server-authoritative prices and stock
+- Localized checkout with contact/address capture and database-backed shipping-method selection
+- Final server validation of product price, shipping price and inventory before order creation
+- Atomic stock reservation for pending-payment orders
+- Payment-attempt persistence and a provider adapter boundary ready for the selected production gateway
+- Order lifecycle services for payment confirmation and safe pending-order cancellation/release
+- Token-protected guest order confirmation pages
+- Signed-in `/[locale]/account/orders` history and owned order-detail pages
+- Customer cancellation of eligible pending-payment orders with inventory release
 
 ## Local development
 
@@ -54,7 +55,7 @@ npm run db:seed
 npm run db:studio
 ```
 
-Tracked SQL migrations live in `drizzle/`. `npm run db:migrate` applies them through the repository migration ledger and rejects edited migrations that were already applied. `npm run db:seed` repeatably loads the current DIVA merchandising demo catalog with variants, USD demo prices, compare-at offers and inventory.
+Tracked SQL migrations live in `drizzle/`. `npm run db:migrate` applies them through the repository migration ledger and rejects edited migrations that were already applied. `npm run db:seed` loads the merchandising demo catalog plus current shipping configuration.
 
 ## Quality checks
 
@@ -65,14 +66,14 @@ npm run typecheck
 npm run build
 ```
 
-GitHub Actions provisions PostgreSQL, applies migrations, seeds the catalog, verifies catalog/offers/cart/wishlist/order persistence with the commerce smoke test, then runs lint, typecheck and production build on `main` pushes and pull requests.
+The commerce smoke test now covers catalog/offers, shipping configuration, cart/wishlist persistence, orders, payment attempts and cancelled payment/order states.
 
 ## Delivery roadmap
 
 1. Foundation and design system — complete
 2. Catalog and product experience — complete
-3. Commerce backend — implemented; production still requires real database/auth environment provisioning and runtime validation
-4. Customer commerce — in progress: accounts, live catalog, Women/Men/Kids/Offers, cart, wishlist, checkout and pending-payment orders are implemented; payment provider, production shipping rules and order lifecycle automation remain
+3. Commerce backend — implemented; production still requires real environment provisioning and runtime validation
+4. Customer commerce — checkout, configurable shipping, order history, payment-attempt boundary and cancellation lifecycle implemented; the remaining provider-specific work is payment gateway handoff/webhook verification plus final production shipping rates/rules
 5. Admin operations — products, stock, offers, orders, customers, content and translations
 6. Production hardening — tests, accessibility, security, SEO, performance and deployment
 
