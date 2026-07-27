@@ -10,6 +10,7 @@
     "men": "Herren",
     "kids": "Kinder",
     "collections": "Kollektionen",
+    "offers": "Angebote",
     "shop": "Shop",
     "account": "Konto",
     "wishlist": "Wunschliste",
@@ -47,17 +48,17 @@
   "Shop": {
     "metaTitle": "The DIVA Edit · Luxuriöse Schuhe",
     "title": "The DIVA Edit.",
-    "description": "Entdecke den live angebundenen DIVA Katalog für Damen, Herren und Kinder sowie Neuheiten und Signatur-Kollektionen.",
+    "description": "Entdecke DIVA Schuhe für Damen, Herren und Kinder sowie aktuelle Angebote.",
     "newBadge": "Neu",
+    "offerBadge": "Angebot",
     "soldOut": "Ausverkauft",
     "resultCount": "{count, plural, one {# Silhouette} other {# Silhouetten}}",
     "filters": {
       "all": "Alle Schuhe",
-      "new": "Neuheiten",
       "women": "Damen",
       "men": "Herren",
       "kids": "Kinder",
-      "collections": "Kollektionen"
+      "offers": "Angebote"
     }
   },
   "Product": {
@@ -89,8 +90,54 @@
     "subtotal": "Zwischensumme",
     "stock": "{count} verfügbar",
     "checkout": "Weiter zum Checkout",
-    "checkoutSoon": "Der Checkout folgt in der nächsten Commerce-Phase.",
+    "checkoutSoon": "Preis und Bestand werden beim Erstellen der Bestellung erneut geprüft.",
     "refreshing": "Verfügbarkeit wird aktualisiert…"
+  },
+  "Checkout": {
+    "metaTitle": "Checkout",
+    "title": "DIVA Bestellung abschließen.",
+    "intro": "Gib Kontakt- und Lieferdaten ein. Preis und Bestand werden serverseitig erneut geprüft, bevor die Bestellung erstellt wird.",
+    "empty": "Dein Warenkorb ist leer.",
+    "backToCart": "Zurück zum Warenkorb",
+    "contact": "Kontaktdaten",
+    "delivery": "Lieferadresse",
+    "name": "Vollständiger Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address1": "Adresszeile 1",
+    "address2": "Adresszeile 2",
+    "city": "Stadt",
+    "region": "Bundesland / Region",
+    "postalCode": "Postleitzahl",
+    "countryCode": "Ländercode",
+    "shipping": "Versandart",
+    "standardShipping": "Standardversand",
+    "subtotal": "Zwischensumme",
+    "shippingCost": "Versand",
+    "total": "Gesamt",
+    "placeOrder": "Bestellung erstellen",
+    "placingOrder": "Bestellung wird erstellt…",
+    "refresh": "Warenkorb wird aktualisiert…",
+    "error": "Die Bestellung konnte nicht erstellt werden. Prüfe Daten und aktuellen Bestand und versuche es erneut."
+  },
+  "Order": {
+    "metaTitle": "Bestellbestätigung",
+    "title": "Deine Bestellung ist reserviert.",
+    "intro": "DIVA hat deine Bestellung erstellt und den ausgewählten Bestand bis zum Abschluss der Zahlungsphase reserviert.",
+    "status": "Bestellstatus",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "total": "Gesamt",
+    "paymentNote": "Die Anbindung des Zahlungsanbieters ist der nächste Commerce-Schritt. Bis dahin bleibt die Bestellung als ausstehende Zahlung markiert.",
+    "continueShopping": "Weiter einkaufen",
+    "statuses": {
+      "pending_payment": "Zahlung ausstehend",
+      "confirmed": "Bestätigt",
+      "processing": "In Bearbeitung",
+      "shipped": "Versendet",
+      "delivered": "Zugestellt",
+      "cancelled": "Storniert"
+    }
   },
   "Wishlist": {
     "metaTitle": "Wunschliste",
