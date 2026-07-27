@@ -101,6 +101,14 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
     .orderBy(asc(productTranslations.name));
 }
 
+export async function listActiveProductSitemapEntries() {
+  return getDatabase()
+    .select({slug: products.slug, updatedAt: products.updatedAt})
+    .from(products)
+    .where(eq(products.status, 'active'))
+    .orderBy(asc(products.slug));
+}
+
 async function readActiveProduct(locale: AppLocale, slug: string) {
   const [product] = await getDatabase()
     .select({
