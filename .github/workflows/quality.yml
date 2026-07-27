@@ -11,7 +11,9 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/diva
       BETTER_AUTH_SECRET: ci-only-diva-secret-at-least-thirty-two-characters
       BETTER_AUTH_URL: http://localhost:3000
@@ -37,14 +39,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Migrate database
         run: npm run db:migrate
 
-      - name: Seed catalog
+      - name: Seed commerce data
         run: npm run db:seed
 
       - name: Commerce smoke test
@@ -58,3 +61,30 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Production runtime smoke test
+        shell: bash
+        run: |
+          npm start > /tmp/diva-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          READY=0
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health > /dev/null; then
+              READY=1
+              break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              cat /tmp/diva-next.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/diva-next.log
+            exit 1
+          fi
+
+          npm run test:runtime
