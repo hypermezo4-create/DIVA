@@ -1,0 +1,55 @@
+{
+  "Metadata": {
+    "title": "Luxury Footwear",
+    "description": "Discover DIVA Premium Mirror — a modern luxury footwear experience for women, men and kids."
+  },
+  "Navigation": {
+    "label": "Primary navigation",
+    "new": "New arrivals",
+    "women": "Women",
+    "men": "Men",
+    "kids": "Kids",
+    "collections": "Collections",
+    "shop": "Shop",
+    "home": "Home",
+    "language": "Language",
+    "theme": "Toggle color theme"
+  },
+  "Home": {
+    "hero": {
+      "kicker": "DIVA · Premium Mirror",
+      "title": "Luxury, reflected in every step.",
+      "description": "Curated footwear with sculpted silhouettes, considered comfort and a polished point of view for every wardrobe.",
+      "primary": "Discover the collection",
+      "secondary": "Explore signatures",
+      "edition": "The Mirror Edition · 2026"
+    },
+    "categories": {
+      "women": {"title": "Sculpted essentials", "label": "Women"},
+      "men": {"title": "Modern foundations", "label": "Men"},
+      "kids": {"title": "Small steps, big character", "label": "Kids"}
+    },
+    "values": {
+      "craft": {"title": "Curated quality", "text": "A focused edit of elevated materials, refined finishes and lasting silhouettes."},
+      "comfort": {"title": "Made for movement", "text": "Balanced shapes and thoughtful construction designed for the rhythm of real days."},
+      "service": {"title": "Personal service", "text": "Sizing guidance and styling support that make every DIVA choice feel considered."}
+    },
+    "signatureTitle": "Signature silhouettes",
+    "valuesLabel": "DIVA service promises"
+  },
+  "Footer": {
+    "title": "Every step, a statement.",
+    "note": "The new DIVA digital flagship is being built as a multilingual luxury commerce experience."
+  },
+  "Shop": {
+    "title": "The DIVA edit.",
+    "description": "A first look at the silhouettes shaping the DIVA house — polished essentials, statement forms and modern everyday icons.",
+    "preview": "Signature preview",
+    "back": "Back to home",
+    "categories": {
+      "sneaker": "Signature sneaker",
+      "heel": "Sculpted heel",
+      "loafer": "Leather loafer"
+    }
+  }
+}
