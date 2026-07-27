@@ -9,6 +9,8 @@ import {SiteHeader} from '@/components/layout/site-header';
 import {findActiveProduct} from '@/features/catalog/server/catalog-repository';
 import {isAppLocale} from '@/i18n/routing';
 
+export const dynamic = 'force-dynamic';
+
 type ProductPageProps = {params: Promise<{locale: string; slug: string}>};
 
 export async function generateMetadata({params}: ProductPageProps): Promise<Metadata> {
