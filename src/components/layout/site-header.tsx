@@ -3,9 +3,17 @@ import {getTranslations} from 'next-intl/server';
 import {BrandMark} from '@/components/brand/brand-mark';
 import {CommerceHeaderActions} from '@/components/layout/commerce-header-actions';
 import {LocaleSwitcher} from '@/components/ui/locale-switcher';
+import {SkipToContent} from '@/components/ui/skip-to-content';
 import {ThemeToggle} from '@/components/ui/theme-toggle';
 import type {AppLocale} from '@/i18n/routing';
 import styles from './site-header.module.css';
+
+const skipLabels: Record<AppLocale, string> = {
+  en: 'Skip to content',
+  ar: 'تخطي إلى المحتوى',
+  de: 'Zum Inhalt springen',
+  ru: 'Перейти к содержимому'
+};
 
 function AccountIcon() {
   return (
@@ -27,6 +35,7 @@ export async function SiteHeader({locale}: {locale: AppLocale}) {
 
   return (
     <header className={`site-header ${styles.header}`}>
+      <SkipToContent label={skipLabels[locale]} />
       <div className="site-header__inner">
         <Link href={`/${locale}`} className="brand-link" aria-label={`DIVA · ${t('home')}`}>
           <BrandMark />
