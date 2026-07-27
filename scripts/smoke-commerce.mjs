@@ -6,6 +6,7 @@ if (!databaseUrl) throw new Error('DATABASE_URL is required');
 const sql = postgres(databaseUrl, {max: 1, prepare: false});
 const testUserId = `smoke-${Date.now()}`;
 const testOrderNumber = `DIVA-SMOKE-${Date.now()}`;
+const testConfirmationToken = `smoke${Date.now()}confirmationtoken`;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -59,10 +60,10 @@ try {
 
   const [order] = await sql`
     insert into orders (
-      number, user_id, customer_name, email, phone, address_line_1, city, country_code,
+      number, confirmation_token, user_id, customer_name, email, phone, address_line_1, city, country_code,
       shipping_method, currency, subtotal_minor, shipping_minor, total_minor
     ) values (
-      ${testOrderNumber}, ${testUserId}, 'Smoke Customer', ${`${testUserId}@example.invalid`}, '+10000000000',
+      ${testOrderNumber}, ${testConfirmationToken}, ${testUserId}, 'Smoke Customer', ${`${testUserId}@example.invalid`}, '+10000000000',
       'Smoke Street 1', 'Smoke City', 'US', 'standard', ${variant.currency}, ${variant.price_minor}, 0, ${variant.price_minor}
     ) returning id
   `;
@@ -76,7 +77,7 @@ try {
 
   const [{count: cartCount}] = await sql`select count(*)::int as count from cart_items where cart_id = ${cart.id}`;
   const [{count: wishlistCount}] = await sql`select count(*)::int as count from wishlists where user_id = ${testUserId}`;
-  const [{count: orderCount}] = await sql`select count(*)::int as count from orders where number = ${testOrderNumber}`;
+  const [{count: orderCount}] = await sql`select count(*)::int as count from orders where number = ${testOrderNumber} and confirmation_token = ${testConfirmationToken}`;
   const [{count: orderItemCount}] = await sql`select count(*)::int as count from order_items where order_id = ${order.id}`;
   assert(cartCount === 1, 'Cart persistence smoke check failed.');
   assert(wishlistCount === 1, 'Wishlist persistence smoke check failed.');
