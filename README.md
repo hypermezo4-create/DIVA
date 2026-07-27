@@ -36,6 +36,8 @@ DIVA is a multilingual luxury-footwear storefront being built from scratch aroun
 - SKU stock, active price and compare-at offer controls with reserved-stock protection
 - Paid-order fulfilment progression plus safe pending-order cancellation
 - Customer directory with account role and order-count visibility
+- Database-backed multilingual home/footer content overrides with file-message fallback
+- Admin editorial desk for Arabic, English, German and Russian storefront copy
 
 ## Local development
 
@@ -83,7 +85,7 @@ npm run typecheck
 npm run build
 ```
 
-The commerce smoke test covers catalog/offers, shipping configuration, cart/wishlist persistence, orders, payment attempts and cancelled payment/order states.
+The commerce smoke test covers catalog/offers, shipping configuration, cart/wishlist persistence, orders, payment attempts, cancelled payment/order states, admin-role persistence and editable storefront-content persistence.
 
 ## Delivery roadmap
 
@@ -91,7 +93,7 @@ The commerce smoke test covers catalog/offers, shipping configuration, cart/wish
 2. Catalog and product experience — complete
 3. Commerce backend — implemented; production still requires real environment provisioning and runtime validation
 4. Customer commerce — checkout, configurable shipping, order history, payment-attempt boundary and cancellation lifecycle implemented; provider-specific payment handoff/webhooks and final production shipping rules remain
-5. Admin operations — in progress: dashboard, products, stock, offers, orders and customers are operational; content management and editable storefront translations remain
-6. Production hardening — tests, accessibility, security, SEO, performance and deployment
+5. Admin operations — core operational surface implemented: dashboard, products, stock, offers, orders, customers, content and multilingual storefront copy
+6. Production hardening — next major phase: test depth, accessibility, security, SEO, performance and deployment, alongside the selected production payment/shipping integrations
 
 See [`docs/architecture.md`](docs/architecture.md) for the current boundaries.
