@@ -4,12 +4,12 @@ import {betterAuth} from 'better-auth';
 import {drizzleAdapter} from 'better-auth/adapters/drizzle';
 import {getDatabase} from '@/db/client';
 import {account, session, user, verification} from '@/db/schema';
-import {getServerEnv} from '@/lib/server-env';
+import {getAuthEnv} from '@/lib/server-env';
 
 const authSchema = {user, session, account, verification};
 
 function createAuth() {
-  const env = getServerEnv();
+  const env = getAuthEnv();
   const database = drizzleAdapter(getDatabase(), {provider: 'pg', schema: authSchema});
 
   return betterAuth({
