@@ -16,17 +16,12 @@ import type {AppLocale} from '@/i18n/routing';
 
 export async function getAdminDashboard() {
   const db = getDatabase();
-  const [productsCount, customersCount, pendingOrders, paidOrders, inventorySummary, offerVariants] = await Promise.all([
+  const [productsCount, customersCount, pendingOrders, paidOrders, inventorySummary, offerVariants, paidRevenueByCurrency] = await Promise.all([
     db.select({value: sql<number>`count(*)::int`}).from(products).where(eq(products.status, 'active')),
     db.select({value: sql<number>`count(*)::int`}).from(user).where(eq(user.role, 'customer')),
     db.select({value: sql<number>`count(*)::int`}).from(orders).where(eq(orders.status, 'pending_payment')),
-    db.select({
-      count: sql<number>`count(*)::int`,
-      revenueMinor: sql<number>`coalesce(sum(${orders.totalMinor}), 0)::bigint`
-    }).from(orders).where(eq(orders.paymentStatus, 'paid')),
-    db.select({
-      units: sql<number>`coalesce(sum(${inventory.onHand} - ${inventory.reserved}), 0)::bigint`
-    }).from(inventory),
+    db.select({count: sql<number>`count(*)::int`}).from(orders).where(eq(orders.paymentStatus, 'paid')),
+    db.select({units: sql<number>`coalesce(sum(${inventory.onHand} - ${inventory.reserved}), 0)::bigint`}).from(inventory),
     db.select({value: sql<number>`count(*)::int`})
       .from(productVariants)
       .where(and(
@@ -34,7 +29,15 @@ export async function getAdminDashboard() {
         sql`${productVariants.priceMinor} is not null`,
         sql`${productVariants.compareAtMinor} is not null`,
         sql`${productVariants.compareAtMinor} > ${productVariants.priceMinor}`
-      ))
+      )),
+    db.select({
+      currency: orders.currency,
+      revenueMinor: sql<number>`coalesce(sum(${orders.totalMinor}), 0)::bigint`
+    })
+      .from(orders)
+      .where(eq(orders.paymentStatus, 'paid'))
+      .groupBy(orders.currency)
+      .orderBy(asc(orders.currency))
   ]);
 
   const recentOrders = await db
@@ -57,9 +60,12 @@ export async function getAdminDashboard() {
     customers: customersCount[0]?.value ?? 0,
     pendingOrders: pendingOrders[0]?.value ?? 0,
     paidOrders: paidOrders[0]?.count ?? 0,
-    paidRevenueMinor: Number(paidOrders[0]?.revenueMinor ?? 0),
     availableUnits: Number(inventorySummary[0]?.units ?? 0),
     offerVariants: offerVariants[0]?.value ?? 0,
+    paidRevenueByCurrency: paidRevenueByCurrency.map((row) => ({
+      currency: row.currency,
+      revenueMinor: Number(row.revenueMinor)
+    })),
     recentOrders
   };
 }
@@ -75,7 +81,7 @@ export async function listAdminProducts(locale: AppLocale) {
       newArrival: products.newArrival,
       name: productTranslations.name,
       lowestPriceMinor: sql<number | null>`min(${productVariants.priceMinor})`,
-      currency: sql<string | null>`min(${productVariants.currency})`,
+      currency: sql<string | null>`case when count(distinct ${productVariants.currency}) = 1 then min(${productVariants.currency}) else null end`,
       availableUnits: sql<number>`coalesce(sum(${inventory.onHand} - ${inventory.reserved}), 0)::bigint`,
       offerVariants: sql<number>`coalesce(sum(case when ${productVariants.compareAtMinor} > ${productVariants.priceMinor} then 1 else 0 end), 0)::int`
     })
@@ -155,8 +161,7 @@ export async function listAdminCustomers() {
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
-      ordersCount: sql<number>`count(${orders.id})::int`,
-      paidSpendMinor: sql<number>`coalesce(sum(case when ${orders.paymentStatus} = 'paid' then ${orders.totalMinor} else 0 end), 0)::bigint`
+      ordersCount: sql<number>`count(${orders.id})::int`
     })
     .from(user)
     .leftJoin(orders, eq(orders.userId, user.id))
