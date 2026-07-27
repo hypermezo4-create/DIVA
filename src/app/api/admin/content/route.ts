@@ -2,9 +2,12 @@ import {revalidatePath} from 'next/cache';
 import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 import {getAdminSession} from '@/features/admin/access';
-import {isStorefrontContentKey} from '@/features/content/definitions';
+import {
+  isStorefrontContentKey,
+  type StorefrontContentKey
+} from '@/features/content/definitions';
 import {deleteStorefrontContent, setStorefrontContent} from '@/features/content/repository';
-import {isAppLocale} from '@/i18n/routing';
+import {isAppLocale, type AppLocale} from '@/i18n/routing';
 import {isTrustedMutationRequest} from '@/lib/request-security';
 
 const identitySchema = z.object({
@@ -16,7 +19,12 @@ const updateSchema = identitySchema.extend({
   value: z.string().trim().min(1).max(2000)
 });
 
-function isValidIdentity(value: {locale: string; key: string}) {
+type ValidContentIdentity = {
+  locale: AppLocale;
+  key: StorefrontContentKey;
+};
+
+function isValidIdentity(value: {locale: string; key: string}): value is ValidContentIdentity {
   return isAppLocale(value.locale) && isStorefrontContentKey(value.key);
 }
 
