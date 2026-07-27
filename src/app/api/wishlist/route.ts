@@ -7,6 +7,7 @@ import {
   removeWishlistItem
 } from '@/features/customer-commerce/repository';
 import {isAppLocale} from '@/i18n/routing';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 import {getSessionFromHeaders} from '@/lib/session';
 
 const itemSchema = z.object({productId: z.string().uuid()});
@@ -14,6 +15,12 @@ const itemSchema = z.object({productId: z.string().uuid()});
 async function authenticatedUser(request: NextRequest) {
   const session = await getSessionFromHeaders(request.headers);
   return session?.user ?? null;
+}
+
+function rejectCrossSite(request: NextRequest) {
+  return isTrustedMutationRequest(request)
+    ? null
+    : NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
 }
 
 export async function GET(request: NextRequest) {
@@ -25,9 +32,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
   const user = await authenticatedUser(request);
   if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
-  const parsed = itemSchema.safeParse(await request.json());
+  const parsed = itemSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({error: 'INVALID_ITEM'}, {status: 400});
 
   try {
@@ -42,9 +51,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
   const user = await authenticatedUser(request);
   if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
-  const parsed = itemSchema.safeParse(await request.json());
+  const parsed = itemSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({error: 'INVALID_ITEM'}, {status: 400});
   await removeWishlistItem(user.id, parsed.data.productId);
   return NextResponse.json({ok: true});
