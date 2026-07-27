@@ -8,7 +8,12 @@ import {findOrderConfirmation} from '@/features/orders/repository';
 import {isAppLocale} from '@/i18n/routing';
 import styles from './order-confirmation.module.css';
 
-type PageProps = {params: Promise<{locale: string; number: string}>};
+export const dynamic = 'force-dynamic';
+
+type PageProps = {
+  params: Promise<{locale: string; number: string}>;
+  searchParams: Promise<{token?: string}>;
+};
 
 function money(locale: string, minor: number, currency: string) {
   return new Intl.NumberFormat(locale, {style: 'currency', currency}).format(minor / 100);
@@ -18,13 +23,14 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {locale} = await params;
   if (!isAppLocale(locale)) return {};
   const t = await getTranslations({locale, namespace: 'Order'});
-  return {title: t('metaTitle'), description: t('intro')};
+  return {title: t('metaTitle'), description: t('intro'), robots: {index: false, follow: false}};
 }
 
-export default async function OrderPage({params}: PageProps) {
-  const {locale, number} = await params;
-  if (!isAppLocale(locale)) notFound();
-  const order = await findOrderConfirmation(number);
+export default async function OrderPage({params, searchParams}: PageProps) {
+  const [{locale, number}, {token}] = await Promise.all([params, searchParams]);
+  if (!isAppLocale(locale) || !token) notFound();
+
+  const order = await findOrderConfirmation(number, token);
   if (!order) notFound();
 
   setRequestLocale(locale);
