@@ -5,9 +5,8 @@ import {CatalogFilterNav} from '@/components/catalog/catalog-filter-nav';
 import {ProductCard} from '@/components/catalog/product-card';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
-import {isCatalogFilter} from '@/features/catalog/catalog';
 import {listActiveProducts} from '@/features/catalog/server/catalog-repository';
-import {catalogFilters, type CatalogFilter} from '@/features/catalog/types';
+import {catalogFilters, isCatalogFilter, type CatalogFilter} from '@/features/catalog/types';
 import {isAppLocale} from '@/i18n/routing';
 
 export const dynamic = 'force-dynamic';
