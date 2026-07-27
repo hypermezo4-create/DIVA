@@ -19,6 +19,7 @@ type AccountCopy = {
   switchToLogin: string;
   signedInAs: string;
   myOrders: string;
+  admin: string;
   signOut: string;
   working: string;
   genericError: string;
@@ -54,12 +55,14 @@ function AccountSession({
   locale,
   name,
   email,
+  isAdmin,
   onSignOut
 }: {
   copy: AccountCopy;
   locale: AppLocale;
   name: string;
   email: string;
+  isAdmin: boolean;
   onSignOut: () => void;
 }) {
   return (
@@ -67,7 +70,8 @@ function AccountSession({
       <p>{copy.signedInAs}</p>
       <strong>{name}</strong>
       <span>{email}</span>
-      <Link className="button button--primary" href={`/${locale}/account/orders`}>{copy.myOrders}</Link>
+      {isAdmin && <Link className="button button--primary" href={`/${locale}/admin`}>{copy.admin}</Link>}
+      <Link className={isAdmin ? 'button button--ghost' : 'button button--primary'} href={`/${locale}/account/orders`}>{copy.myOrders}</Link>
       <button className="button button--ghost" type="button" onClick={onSignOut}>{copy.signOut}</button>
     </div>
   );
@@ -106,6 +110,7 @@ export function AccountPanel({copy, locale}: {copy: AccountCopy; locale: AppLoca
         locale={locale}
         name={session.user.name}
         email={session.user.email}
+        isAdmin={session.user.role === 'admin'}
         onSignOut={() => void signOut()}
       />
     );
