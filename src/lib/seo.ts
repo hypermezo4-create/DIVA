@@ -6,5 +6,8 @@ export function localizedPath(locale: AppLocale, pathname = '') {
 }
 
 export function languageAlternates(pathname = '') {
-  return Object.fromEntries(locales.map((locale) => [locale, localizedPath(locale, pathname)]));
+  return Object.fromEntries([
+    ...locales.map((locale) => [locale, localizedPath(locale, pathname)] as const),
+    ['x-default', localizedPath('en', pathname)] as const
+  ]);
 }
