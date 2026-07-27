@@ -27,7 +27,7 @@ export async function SiteHeader({locale}: {locale: AppLocale}) {
   ] as const;
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${styles.header}`}>
       <div className="site-header__inner">
         <Link href={`/${locale}`} className="brand-link" aria-label={`DIVA · ${t('home')}`}>
           <BrandMark />
