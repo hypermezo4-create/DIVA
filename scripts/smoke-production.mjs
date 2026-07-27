@@ -51,11 +51,18 @@ assert(homeHtml.includes('hreflang="ar"'), 'Home page is missing Arabic language
 assert(homeHtml.includes('hreflang="x-default"'), 'Home page is missing x-default language alternate metadata.');
 assert(homeHtml.includes('<main'), 'Home page is missing its main landmark.');
 assert(homeHtml.includes('<h1'), 'Home page is missing its primary heading.');
+assert(homeHtml.includes('Skip to content'), 'English storefront is missing its keyboard skip control.');
 
 const arabic = await request('/ar');
 const arabicHtml = await arabic.text();
 assert(arabicHtml.includes('lang="ar"'), 'Arabic storefront must declare the Arabic document language.');
 assert(arabicHtml.includes('dir="rtl"'), 'Arabic storefront must declare RTL document direction.');
+assert(arabicHtml.includes('تخطي إلى المحتوى'), 'Arabic storefront is missing its localized keyboard skip control.');
+
+const notFound = await fetch(new URL('/ar/route-that-does-not-exist', baseUrl), {redirect: 'manual'});
+assert(notFound.status === 404, `Unknown localized route should return 404, got ${notFound.status}.`);
+const notFoundHtml = await notFound.text();
+assert(notFoundHtml.includes('هذه الصفحة لم تعد هنا.'), 'Arabic 404 recovery page did not render localized copy.');
 
 const shop = await request('/en/shop');
 const shopHtml = await shop.text();
@@ -89,4 +96,4 @@ assert(checkoutAttack.status === 403, `Cross-site checkout should return 403, go
 const adminAttack = await crossSiteMutation('/api/admin/products/00000000-0000-0000-0000-000000000000', 'PATCH');
 assert(adminAttack.status === 403, `Cross-site admin mutation should return 403, got ${adminAttack.status}.`);
 
-console.log('Production runtime smoke passed: health, headers, public SEO, product indexing, accessibility landmarks, crawl policy and cross-site mutation guards.');
+console.log('Production runtime smoke passed: health, headers, SEO, product indexing, localized recovery, accessibility landmarks and cross-site mutation guards.');
