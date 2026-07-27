@@ -57,6 +57,7 @@ export default async function ShopPage({params, searchParams}: ShopPageProps) {
               locale={locale}
               product={product}
               newLabel={t('newBadge')}
+              offerLabel={t('offerBadge')}
               soldOutLabel={t('soldOut')}
             />
           ))}
