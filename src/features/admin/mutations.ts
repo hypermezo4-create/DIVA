@@ -1,6 +1,6 @@
 import 'server-only';
 
-import {and, eq, gte} from 'drizzle-orm';
+import {and, eq, lte} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {inventory, orders, products, productVariants} from '@/db/schema';
 import {cancelPendingOrder} from '@/features/orders/lifecycle';
@@ -85,7 +85,7 @@ export async function updateAdminInventory({variantId, onHand}: {variantId: stri
   const [updated] = await getDatabase()
     .update(inventory)
     .set({onHand, updatedAt: new Date()})
-    .where(and(eq(inventory.variantId, variantId), gte(onHand, inventory.reserved)))
+    .where(and(eq(inventory.variantId, variantId), lte(inventory.reserved, onHand)))
     .returning({variantId: inventory.variantId, onHand: inventory.onHand, reserved: inventory.reserved});
 
   if (!updated) {
