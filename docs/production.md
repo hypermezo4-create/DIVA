@@ -28,7 +28,7 @@ Migrations are tracked by name and checksum. Never edit a SQL migration that has
 Run before promoting a build:
 
 ```bash
-npm ci --no-audit --no-fund
+npm install --no-audit --no-fund
 npm run db:migrate
 npm run db:seed
 npm run test:smoke
@@ -37,6 +37,8 @@ npm run typecheck
 npm run build
 ```
 
+The repository does not currently contain a package lockfile, so CI and release verification use `npm install`. Once a lockfile is generated and committed, switch both flows to the matching clean-install command in the same change.
+
 After starting the production build against the release database:
 
 ```bash
@@ -44,7 +46,7 @@ npm start
 npm run test:runtime
 ```
 
-The runtime smoke check verifies database readiness, security headers, canonical metadata, robots/sitemap output and cross-site mutation rejection.
+The runtime smoke check verifies database readiness, production security headers, canonical and language metadata, home/product structured data, private-route indexing policy, robots/sitemap output and cross-site mutation rejection.
 
 ## Security expectations
 
