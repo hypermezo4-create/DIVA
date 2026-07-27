@@ -24,9 +24,23 @@
   text-transform: uppercase;
 }
 
-.price strong {
+.priceValues {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.priceValues strong {
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.65rem;
   font-weight: 500;
+}
+
+.priceValues del {
+  color: var(--espresso-soft);
+  font-size: .82rem;
+  opacity: .72;
 }
 
 .fieldset {
