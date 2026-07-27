@@ -77,7 +77,7 @@ function AccountSession({
   );
 }
 
-export function AccountPanel({copy, locale}: {copy: AccountCopy; locale: AppLocale}) {
+export function AccountPanel({copy, locale, isAdmin}: {copy: AccountCopy; locale: AppLocale; isAdmin: boolean}) {
   const router = useRouter();
   const {data: session, isPending} = authClient.useSession();
   const [mode, setMode] = useState<AccountMode>('sign-in');
@@ -110,7 +110,7 @@ export function AccountPanel({copy, locale}: {copy: AccountCopy; locale: AppLoca
         locale={locale}
         name={session.user.name}
         email={session.user.email}
-        isAdmin={session.user.role === 'admin'}
+        isAdmin={isAdmin}
         onSignOut={() => void signOut()}
       />
     );
