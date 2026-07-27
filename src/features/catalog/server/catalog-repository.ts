@@ -16,7 +16,16 @@ import {
   sizes
 } from '@/db/schema';
 import type {AppLocale} from '@/i18n/routing';
+import {
+  findFallbackProduct,
+  listFallbackProducts,
+  listFallbackSitemapEntries
+} from './catalog-fallback';
 import type {CatalogFilter} from '../types';
+
+function hasDatabaseConfiguration() {
+  return Boolean(process.env.DATABASE_URL);
+}
 
 function filterCondition(filter: CatalogFilter): SQL | undefined {
   if (filter === 'all') return undefined;
@@ -41,6 +50,8 @@ function localizedCollectionJoin(locale: AppLocale) {
 }
 
 export async function listActiveProducts(locale: AppLocale, filter: CatalogFilter = 'all') {
+  if (!hasDatabaseConfiguration()) return listFallbackProducts(locale, filter);
+
   return getDatabase()
     .select({
       id: products.id,
@@ -102,6 +113,8 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
 }
 
 export async function listActiveProductSitemapEntries() {
+  if (!hasDatabaseConfiguration()) return listFallbackSitemapEntries();
+
   return getDatabase()
     .select({slug: products.slug, updatedAt: products.updatedAt})
     .from(products)
@@ -110,6 +123,8 @@ export async function listActiveProductSitemapEntries() {
 }
 
 async function readActiveProduct(locale: AppLocale, slug: string) {
+  if (!hasDatabaseConfiguration()) return findFallbackProduct(locale, slug);
+
   const [product] = await getDatabase()
     .select({
       id: products.id,
@@ -138,7 +153,7 @@ async function readActiveProduct(locale: AppLocale, slug: string) {
     listProductImages(product.id),
     listProductVariants(product.id, locale)
   ]);
-  return {...product, images, variants};
+  return {...product, images, variants, commerceEnabled: true};
 }
 
 export const findActiveProduct = cache(readActiveProduct);
