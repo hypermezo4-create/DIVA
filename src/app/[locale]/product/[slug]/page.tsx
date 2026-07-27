@@ -6,8 +6,11 @@ import {notFound} from 'next/navigation';
 import {ProductPurchasePanel} from '@/components/catalog/product-purchase-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
+import {JsonLd} from '@/components/seo/json-ld';
 import {findActiveProduct} from '@/features/catalog/server/catalog-repository';
 import {isAppLocale} from '@/i18n/routing';
+import {languageAlternates, localizedPath} from '@/lib/seo';
+import {getSiteUrl} from '@/lib/site-url';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +21,28 @@ export async function generateMetadata({params}: ProductPageProps): Promise<Meta
   if (!isAppLocale(locale)) return {};
   const product = await findActiveProduct(locale, slug);
   if (!product) return {};
-  return {title: `${product.name} · DIVA`, description: product.description};
+
+  const canonical = localizedPath(locale, `/product/${slug}`);
+  const image = product.images[0]?.url;
+  return {
+    title: product.name,
+    description: product.description,
+    alternates: {canonical, languages: languageAlternates(`/product/${slug}`)},
+    openGraph: {
+      type: 'website',
+      title: product.name,
+      description: product.description,
+      url: canonical,
+      locale,
+      images: image ? [{url: image, alt: product.name}] : undefined
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: product.description,
+      images: image ? [image] : undefined
+    }
+  };
 }
 
 export default async function ProductPage({params}: ProductPageProps) {
@@ -30,9 +54,37 @@ export default async function ProductPage({params}: ProductPageProps) {
 
   setRequestLocale(locale);
   const t = await getTranslations({locale, namespace: 'Product'});
+  const siteUrl = getSiteUrl();
+  const productUrl = new URL(localizedPath(locale, `/product/${slug}`), siteUrl).toString();
+  const pricedVariants = product.variants.filter((variant) => variant.priceMinor !== null && variant.currency);
+  const currencies = [...new Set(pricedVariants.map((variant) => variant.currency))];
+  const currency = currencies.length === 1 ? currencies[0] : null;
+  const prices = pricedVariants.map((variant) => variant.priceMinor).filter((price): price is number => price !== null);
+  const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
+  const highestPrice = prices.length > 0 ? Math.max(...prices) : null;
 
   return (
     <>
+      <JsonLd
+        value={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          description: product.description,
+          sku: product.variants[0]?.sku,
+          image: product.images.map((image) => image.url),
+          brand: {'@type': 'Brand', name: 'DIVA'},
+          url: productUrl,
+          offers: currency && lowestPrice !== null && highestPrice !== null ? {
+            '@type': 'AggregateOffer',
+            priceCurrency: currency,
+            lowPrice: (lowestPrice / 100).toFixed(2),
+            highPrice: (highestPrice / 100).toFixed(2),
+            offerCount: pricedVariants.length,
+            url: productUrl
+          } : undefined
+        }}
+      />
       <SiteHeader locale={locale} />
       <main className="product-page">
         <div className="product-breadcrumbs">
