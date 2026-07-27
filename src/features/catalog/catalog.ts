@@ -129,8 +129,7 @@ export function isCatalogFilter(value: string | undefined): value is CatalogFilt
 
 export function listCatalogProducts(filter: CatalogFilter = 'all') {
   if (filter === 'all') return catalogProducts;
-  if (filter === 'new') return catalogProducts.filter((product) => product.newArrival);
-  if (filter === 'collections') return catalogProducts.filter((product) => product.collection !== null);
+  if (filter === 'offers') return [];
   return catalogProducts.filter((product) => product.audience === filter);
 }
 
