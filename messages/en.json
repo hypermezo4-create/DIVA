@@ -184,8 +184,136 @@
     "switchToLogin": "Already have an account? Sign in",
     "signedInAs": "Signed in as",
     "myOrders": "My orders",
+    "admin": "Admin operations",
     "signOut": "Sign out",
     "working": "Please wait…",
     "genericError": "We could not complete that request. Please try again."
+  },
+  "Admin": {
+    "shellTitle": "DIVA Operations",
+    "shellSubtitle": "Private control room for merchandising, stock, orders and client operations.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "inventory": "Inventory & offers",
+      "orders": "Orders",
+      "customers": "Customers"
+    },
+    "common": {
+      "currency": "Currency",
+      "order": "Order",
+      "customer": "Customer",
+      "status": "Status",
+      "payment": "Payment",
+      "total": "Total",
+      "date": "Date",
+      "product": "Product",
+      "actions": "Actions",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "error": "Update failed"
+    },
+    "dashboard": {
+      "metaTitle": "Operations Dashboard",
+      "title": "Commerce at a glance.",
+      "intro": "Live operational signals across merchandising, available inventory, customer activity and order flow.",
+      "metricsLabel": "DIVA commerce metrics",
+      "activeProducts": "Active products",
+      "availableUnits": "Available units",
+      "offerVariants": "Offer variants",
+      "customers": "Customers",
+      "pendingOrders": "Pending orders",
+      "paidOrders": "Paid orders",
+      "revenue": "Paid revenue",
+      "revenueNote": "Revenue stays separated by currency so totals are never mixed.",
+      "noRevenue": "No paid revenue has been recorded yet.",
+      "operations": "Operations pulse",
+      "operationsNote": "A compact view of the current workload.",
+      "operationsSummary": "{products} active products, {orders} orders awaiting payment and {units} sellable units are currently in the system.",
+      "recentOrders": "Recent orders",
+      "recentOrdersNote": "Newest orders across guest and signed-in checkout.",
+      "noOrders": "No orders have been created yet."
+    },
+    "paymentStatuses": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "productStatuses": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "audiences": {
+      "women": "Women",
+      "men": "Men",
+      "kids": "Kids"
+    },
+    "products": {
+      "metaTitle": "Product Operations",
+      "title": "Merchandising control.",
+      "intro": "Publish, archive and mark new-arrival products without touching storefront code.",
+      "catalog": "Catalog operations",
+      "catalogNote": "{count} products in the operational catalog.",
+      "empty": "No products are available.",
+      "audience": "Audience",
+      "price": "From price",
+      "available": "Available units",
+      "offers": "Offer SKUs",
+      "newArrival": "New arrival"
+    },
+    "inventory": {
+      "metaTitle": "Inventory & Offers",
+      "title": "Stock, pricing and offers.",
+      "intro": "Operate SKU availability, active selling price and compare-at offer pricing while respecting reserved stock.",
+      "variants": "Variant desk",
+      "variantsNote": "{count} SKU variants available for operations.",
+      "empty": "No variants are available.",
+      "variant": "Variant",
+      "stock": "Available stock",
+      "price": "Current price",
+      "offer": "Compare-at price",
+      "stockBreakdown": "On hand {onHand} · Reserved {reserved}",
+      "active": "Active",
+      "inactive": "Inactive",
+      "stockInput": "On hand",
+      "priceMinor": "Price · minor units",
+      "compareAtMinor": "Compare-at · minor units",
+      "saveStock": "Save stock",
+      "savePricing": "Save pricing"
+    },
+    "orders": {
+      "metaTitle": "Order Operations",
+      "title": "Order fulfilment.",
+      "intro": "Move paid orders forward through fulfilment and safely cancel eligible pending-payment orders.",
+      "queue": "Order queue",
+      "queueNote": "{count} orders across all lifecycle states.",
+      "empty": "No orders are available.",
+      "shipping": "Shipping",
+      "actions": {
+        "cancelled": "Cancel & release stock",
+        "processing": "Start processing",
+        "shipped": "Mark shipped",
+        "delivered": "Mark delivered"
+      }
+    },
+    "customers": {
+      "metaTitle": "Customer Operations",
+      "title": "Private-client directory.",
+      "intro": "Review registered customers and their order activity without exposing credentials or payment data.",
+      "directory": "Customer directory",
+      "directoryNote": "{count} registered accounts.",
+      "empty": "No customer accounts are available.",
+      "role": "Role",
+      "orders": "Orders",
+      "joined": "Joined"
+    },
+    "roles": {
+      "admin": "Admin",
+      "customer": "Customer"
+    }
   }
 }
