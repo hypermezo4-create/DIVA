@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:smoke": "node scripts/smoke-commerce.mjs",
+    "test:runtime": "node scripts/smoke-production.mjs",
     "check": "npm run lint && npm run typecheck && npm run build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
