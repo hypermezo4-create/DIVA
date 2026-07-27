@@ -1,6 +1,6 @@
 .accountLink {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
@@ -20,8 +20,8 @@
 }
 
 .accountLink svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
