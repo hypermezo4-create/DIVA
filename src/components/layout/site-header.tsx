@@ -19,11 +19,10 @@ function AccountIcon() {
 export async function SiteHeader({locale}: {locale: AppLocale}) {
   const t = await getTranslations({locale, namespace: 'Navigation'});
   const links = [
-    ['new', t('new')],
     ['women', t('women')],
     ['men', t('men')],
     ['kids', t('kids')],
-    ['collections', t('collections')]
+    ['offers', t('offers')]
   ] as const;
 
   return (
