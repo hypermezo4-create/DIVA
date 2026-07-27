@@ -1,5 +1,6 @@
 import 'server-only';
 
+import {cache} from 'react';
 import {and, asc, eq, sql, type SQL} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
@@ -100,7 +101,7 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
     .orderBy(asc(productTranslations.name));
 }
 
-export async function findActiveProduct(locale: AppLocale, slug: string) {
+async function readActiveProduct(locale: AppLocale, slug: string) {
   const [product] = await getDatabase()
     .select({
       id: products.id,
@@ -131,6 +132,8 @@ export async function findActiveProduct(locale: AppLocale, slug: string) {
   ]);
   return {...product, images, variants};
 }
+
+export const findActiveProduct = cache(readActiveProduct);
 
 async function listProductImages(productId: string) {
   return getDatabase()
