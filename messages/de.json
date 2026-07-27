@@ -184,8 +184,136 @@
     "switchToLogin": "Schon registriert? Anmelden",
     "signedInAs": "Angemeldet als",
     "myOrders": "Meine Bestellungen",
+    "admin": "Admin-Bereich",
     "signOut": "Abmelden",
     "working": "Bitte warten…",
     "genericError": "Die Anfrage konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+  },
+  "Admin": {
+    "shellTitle": "DIVA Operations",
+    "shellSubtitle": "Privater Arbeitsbereich für Sortiment, Bestand, Bestellungen und Kundenservice.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Produkte",
+      "inventory": "Bestand & Angebote",
+      "orders": "Bestellungen",
+      "customers": "Kunden"
+    },
+    "common": {
+      "currency": "Währung",
+      "order": "Bestellung",
+      "customer": "Kunde",
+      "status": "Status",
+      "payment": "Zahlung",
+      "total": "Gesamt",
+      "date": "Datum",
+      "product": "Produkt",
+      "actions": "Aktionen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "saved": "Gespeichert",
+      "error": "Aktualisierung fehlgeschlagen"
+    },
+    "dashboard": {
+      "metaTitle": "Operations Dashboard",
+      "title": "Commerce auf einen Blick.",
+      "intro": "Aktuelle Signale zu Sortiment, verfügbarem Bestand, Kunden und Bestellfluss.",
+      "metricsLabel": "DIVA Commerce-Kennzahlen",
+      "activeProducts": "Aktive Produkte",
+      "availableUnits": "Verfügbare Einheiten",
+      "offerVariants": "Angebotsvarianten",
+      "customers": "Kunden",
+      "pendingOrders": "Offene Bestellungen",
+      "paidOrders": "Bezahlte Bestellungen",
+      "revenue": "Bezahlter Umsatz",
+      "revenueNote": "Umsatz bleibt nach Währung getrennt, damit Summen nicht vermischt werden.",
+      "noRevenue": "Noch kein bezahlter Umsatz erfasst.",
+      "operations": "Operations-Puls",
+      "operationsNote": "Kompakte Sicht auf die aktuelle Arbeitslast.",
+      "operationsSummary": "Aktuell sind {products} Produkte aktiv, {orders} Bestellungen warten auf Zahlung und {units} Einheiten sind verkaufbar.",
+      "recentOrders": "Neueste Bestellungen",
+      "recentOrdersNote": "Aktuelle Bestellungen von Gästen und angemeldeten Kunden.",
+      "noOrders": "Noch keine Bestellungen vorhanden."
+    },
+    "paymentStatuses": {
+      "pending": "Ausstehend",
+      "paid": "Bezahlt",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Storniert",
+      "refunded": "Erstattet"
+    },
+    "productStatuses": {
+      "draft": "Entwurf",
+      "active": "Aktiv",
+      "archived": "Archiviert"
+    },
+    "audiences": {
+      "women": "Damen",
+      "men": "Herren",
+      "kids": "Kinder"
+    },
+    "products": {
+      "metaTitle": "Produktverwaltung",
+      "title": "Sortiment steuern.",
+      "intro": "Produkte veröffentlichen, archivieren und als Neuheit markieren, ohne Storefront-Code zu ändern.",
+      "catalog": "Katalogverwaltung",
+      "catalogNote": "{count} Produkte im operativen Katalog.",
+      "empty": "Keine Produkte verfügbar.",
+      "audience": "Zielgruppe",
+      "price": "Preis ab",
+      "available": "Verfügbare Einheiten",
+      "offers": "Angebots-SKUs",
+      "newArrival": "Neuheit"
+    },
+    "inventory": {
+      "metaTitle": "Bestand & Angebote",
+      "title": "Bestand, Preise und Angebote.",
+      "intro": "SKU-Verfügbarkeit, Verkaufspreis und Vergleichspreis verwalten, ohne reservierten Bestand zu verletzen.",
+      "variants": "Variantenverwaltung",
+      "variantsNote": "{count} SKU-Varianten stehen zur Verwaltung bereit.",
+      "empty": "Keine Varianten verfügbar.",
+      "variant": "Variante",
+      "stock": "Verfügbarer Bestand",
+      "price": "Aktueller Preis",
+      "offer": "Vergleichspreis",
+      "stockBreakdown": "Bestand {onHand} · Reserviert {reserved}",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "stockInput": "Gesamtbestand",
+      "priceMinor": "Preis · kleinste Währungseinheit",
+      "compareAtMinor": "Vergleich · kleinste Währungseinheit",
+      "saveStock": "Bestand speichern",
+      "savePricing": "Preis speichern"
+    },
+    "orders": {
+      "metaTitle": "Bestellverwaltung",
+      "title": "Fulfilment steuern.",
+      "intro": "Bezahlte Bestellungen durch die Fulfilment-Stufen bewegen und berechtigte offene Bestellungen sicher stornieren.",
+      "queue": "Bestellübersicht",
+      "queueNote": "{count} Bestellungen über alle Statusstufen.",
+      "empty": "Keine Bestellungen verfügbar.",
+      "shipping": "Versand",
+      "actions": {
+        "cancelled": "Stornieren & Bestand freigeben",
+        "processing": "Bearbeitung starten",
+        "shipped": "Als versendet markieren",
+        "delivered": "Als zugestellt markieren"
+      }
+    },
+    "customers": {
+      "metaTitle": "Kundenverwaltung",
+      "title": "Private-Client-Verzeichnis.",
+      "intro": "Registrierte Kunden und Bestellaktivität prüfen, ohne Zugangsdaten oder Zahlungsdaten offenzulegen.",
+      "directory": "Kundenverzeichnis",
+      "directoryNote": "{count} registrierte Konten.",
+      "empty": "Keine Kundenkonten verfügbar.",
+      "role": "Rolle",
+      "orders": "Bestellungen",
+      "joined": "Registriert"
+    },
+    "roles": {
+      "admin": "Admin",
+      "customer": "Kunde"
+    }
   }
 }
