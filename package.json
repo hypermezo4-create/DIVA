@@ -1,6 +1,6 @@
 {
   "name": "diva-luxury-store",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "engines": {
     "node": ">=22.0.0"
@@ -15,7 +15,7 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:seed": "node scripts/seed-catalog.mjs",
+    "db:seed": "node scripts/seed-catalog.mjs && node scripts/seed-commerce.mjs",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
