@@ -56,15 +56,17 @@ export default async function AdminContentPage({params}: PageProps) {
   const overrideMap = new Map(overrides.map((row) => [`${row.key}:${row.locale}`, row.value]));
   const entries = storefrontContentDefinitions.map((definition) => {
     const values = {} as Record<AppLocale, string>;
+    const defaults = {} as Record<AppLocale, string>;
     const overridden = {} as Record<AppLocale, boolean>;
     for (const contentLocale of locales) {
       const overrideKey = `${definition.key}:${contentLocale}`;
       const override = overrideMap.get(overrideKey);
       const fallback = readMessage(baseMessages[contentLocale], definition.namespace, definition.messageKey);
+      defaults[contentLocale] = fallback;
       values[contentLocale] = override ?? fallback;
       overridden[contentLocale] = override !== undefined;
     }
-    return {key: definition.key, values, overridden};
+    return {key: definition.key, values, defaults, overridden};
   });
 
   return (
@@ -91,6 +93,7 @@ export default async function AdminContentPage({params}: PageProps) {
         localeLabels={localeLabels}
         labels={{
           save: t('common.save'),
+          reset: t('content.reset'),
           saving: t('common.saving'),
           saved: t('common.saved'),
           error: t('common.error'),
