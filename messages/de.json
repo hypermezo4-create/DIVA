@@ -1,0 +1,55 @@
+{
+  "Metadata": {
+    "title": "Luxuriöse Schuhe",
+    "description": "Entdecke DIVA Premium Mirror — ein modernes Luxus-Schuhkonzept für Damen, Herren und Kinder."
+  },
+  "Navigation": {
+    "label": "Hauptnavigation",
+    "new": "Neuheiten",
+    "women": "Damen",
+    "men": "Herren",
+    "kids": "Kinder",
+    "collections": "Kollektionen",
+    "shop": "Shop",
+    "home": "Startseite",
+    "language": "Sprache",
+    "theme": "Farbschema wechseln"
+  },
+  "Home": {
+    "hero": {
+      "kicker": "DIVA · Premium Mirror",
+      "title": "Luxus, der sich in jedem Schritt spiegelt.",
+      "description": "Kuratierte Schuhe mit skulpturalen Silhouetten, durchdachtem Komfort und einer eleganten Haltung für jede Garderobe.",
+      "primary": "Kollektion entdecken",
+      "secondary": "Signaturen entdecken",
+      "edition": "The Mirror Edition · 2026"
+    },
+    "categories": {
+      "women": {"title": "Skulpturale Essentials", "label": "Damen"},
+      "men": {"title": "Moderne Grundlagen", "label": "Herren"},
+      "kids": {"title": "Kleine Schritte, großer Charakter", "label": "Kinder"}
+    },
+    "values": {
+      "craft": {"title": "Kuratierte Qualität", "text": "Eine fokussierte Auswahl hochwertiger Materialien, feiner Finishes und zeitloser Formen."},
+      "comfort": {"title": "Für Bewegung gemacht", "text": "Ausgewogene Formen und durchdachte Konstruktionen für den Rhythmus echter Tage."},
+      "service": {"title": "Persönlicher Service", "text": "Größenberatung und Styling-Support für eine sichere und bewusste Auswahl."}
+    },
+    "signatureTitle": "Signatur-Silhouetten",
+    "valuesLabel": "DIVA Serviceversprechen"
+  },
+  "Footer": {
+    "title": "Jeder Schritt ein Statement.",
+    "note": "Der neue digitale DIVA Flagship Store entsteht als mehrsprachiges Luxury-Commerce-Erlebnis."
+  },
+  "Shop": {
+    "title": "The DIVA Edit.",
+    "description": "Ein erster Blick auf die Silhouetten des Hauses DIVA — elegante Essentials, markante Formen und moderne Ikonen für jeden Tag.",
+    "preview": "Signatur-Vorschau",
+    "back": "Zur Startseite",
+    "categories": {
+      "sneaker": "Signature Sneaker",
+      "heel": "Skulpturaler Absatz",
+      "loafer": "Leder-Loafer"
+    }
+  }
+}
