@@ -10,6 +10,7 @@ type ProductCardItem = {
   image: string | null;
   newArrival: boolean;
   priceMinor: number | null;
+  compareAtMinor: number | null;
   currency: string | null;
   available: number;
 };
@@ -22,13 +23,19 @@ export function ProductCard({
   locale,
   product,
   newLabel,
+  offerLabel,
   soldOutLabel
 }: {
   locale: AppLocale;
   product: ProductCardItem;
   newLabel: string;
+  offerLabel: string;
   soldOutLabel: string;
 }) {
+  const onOffer = product.priceMinor !== null
+    && product.compareAtMinor !== null
+    && product.compareAtMinor > product.priceMinor;
+
   return (
     <Link href={`/${locale}/product/${product.slug}`} className="product-card">
       <div className="product-card__image">
@@ -41,7 +48,9 @@ export function ProductCard({
             className="cover-image"
           />
         ) : <div className="product-card__placeholder" aria-hidden="true" />}
-        {product.newArrival && <span className="product-card__badge">{newLabel}</span>}
+        {onOffer
+          ? <span className="product-card__badge">{offerLabel}</span>
+          : product.newArrival && <span className="product-card__badge">{newLabel}</span>}
       </div>
       <div className="product-card__copy">
         <p>{product.subtitle}</p>
@@ -50,7 +59,12 @@ export function ProductCard({
           {product.available <= 0
             ? soldOutLabel
             : product.priceMinor !== null && product.currency
-              ? formatPrice(locale, product.priceMinor, product.currency)
+              ? (
+                <span className="product-card__price-stack">
+                  <strong>{formatPrice(locale, product.priceMinor, product.currency)}</strong>
+                  {onOffer && <del>{formatPrice(locale, product.compareAtMinor!, product.currency)}</del>}
+                </span>
+              )
               : '—'}
         </span>
       </div>
