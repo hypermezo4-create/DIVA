@@ -8,6 +8,7 @@ import {getSiteUrl} from '@/lib/site-url';
 import '../globals.css';
 import '../catalog.css';
 import '../accessibility.css';
+import '../storefront-redesign.css';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
