@@ -47,6 +47,7 @@ export default async function AccountPage({params}: AccountPageProps) {
             switchToLogin: t('switchToLogin'),
             signedInAs: t('signedInAs'),
             myOrders: t('myOrders'),
+            admin: t('admin'),
             signOut: t('signOut'),
             working: t('working'),
             genericError: t('genericError')
