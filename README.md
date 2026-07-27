@@ -57,12 +57,13 @@ Tracked SQL migrations live in `drizzle/`. `npm run db:migrate` applies them thr
 ## Quality checks
 
 ```bash
+npm run test:smoke
 npm run lint
 npm run typecheck
 npm run build
 ```
 
-GitHub Actions also provisions PostgreSQL, applies migrations, seeds the catalog, then runs lint, typecheck and production build on `main` pushes and pull requests.
+GitHub Actions provisions PostgreSQL, applies migrations, seeds the catalog, verifies cart/wishlist persistence with the commerce smoke test, then runs lint, typecheck and production build on `main` pushes and pull requests.
 
 ## Delivery roadmap
 
