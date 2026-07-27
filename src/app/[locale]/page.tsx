@@ -4,6 +4,7 @@ import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {ProductCard} from '@/components/catalog/product-card';
 import {Hero} from '@/components/home/hero';
+import {OfferSpotlight} from '@/components/home/offer-spotlight';
 import {SignatureGrid} from '@/components/home/signature-grid';
 import {ValueStrip} from '@/components/home/value-strip';
 import {SiteFooter} from '@/components/layout/site-footer';
@@ -60,6 +61,7 @@ export default async function HomePage({params}: PageProps) {
     .slice(0, 4)
     .map((product) => ({
       id: product.id,
+      slug: product.slug,
       image: product.image,
       name: product.name,
       subtitle: product.subtitle,
@@ -117,6 +119,15 @@ export default async function HomePage({params}: PageProps) {
           items={signatureItems}
         />
 
+        {offerProduct && (
+          <OfferSpotlight
+            locale={locale}
+            product={offerProduct}
+            eyebrow={navigationT('offers')}
+            action={navigationT('shop')}
+          />
+        )}
+
         <section className="home-featured-section">
           <div className="home-featured-heading">
             <div>
@@ -138,19 +149,6 @@ export default async function HomePage({params}: PageProps) {
             ))}
           </div>
         </section>
-
-        {offerProduct && (
-          <section className="home-offer-band">
-            <div className="home-offer-band__copy">
-              <p className="eyebrow">{navigationT('offers')}</p>
-              <h2>{offerProduct.name}</h2>
-              <p>{offerProduct.subtitle}</p>
-            </div>
-            <Link href={`/${locale}/product/${offerProduct.slug}`} className="button button--inverse">
-              {navigationT('offers')}
-            </Link>
-          </section>
-        )}
       </main>
       <SiteFooter locale={locale} />
     </>
