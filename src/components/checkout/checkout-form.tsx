@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, type FormEvent} from 'react';
+import {useEffect, useState, type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import {useCommerce} from '@/components/providers/commerce-provider';
 import type {AppLocale} from '@/i18n/routing';
@@ -21,7 +21,7 @@ type Copy = {
   postalCode: string;
   countryCode: string;
   shipping: string;
-  standardShipping: string;
+  shippingUnavailable: string;
   subtotal: string;
   shippingCost: string;
   total: string;
@@ -29,6 +29,14 @@ type Copy = {
   placingOrder: string;
   refresh: string;
   error: string;
+};
+
+type ShippingMethod = {
+  code: string;
+  priceMinor: number;
+  currency: string;
+  name: string;
+  description: string | null;
 };
 
 function money(locale: AppLocale, minor: number, currency: string) {
@@ -40,6 +48,39 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
   const {cart, ready, clearCart} = useCommerce();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shippingMethods, setShippingMethods] = useState<ShippingMethod[]>([]);
+  const [shippingCode, setShippingCode] = useState('');
+  const [shippingLoading, setShippingLoading] = useState(false);
+
+  const currencies = [...new Set(cart.map((item) => item.currency))];
+  const currency = currencies.length === 1 ? currencies[0] : null;
+  const subtotal = currency ? cart.reduce((sum, item) => sum + item.priceMinor * item.quantity, 0) : null;
+
+  useEffect(() => {
+    if (!ready || !currency || cart.length === 0) return;
+    let cancelled = false;
+    setShippingLoading(true);
+    fetch(`/api/shipping?locale=${locale}&currency=${encodeURIComponent(currency)}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('SHIPPING_FETCH_FAILED');
+        return response.json() as Promise<{methods: ShippingMethod[]}>;
+      })
+      .then(({methods}) => {
+        if (cancelled) return;
+        setShippingMethods(methods);
+        setShippingCode((current) => methods.some((method) => method.code === current) ? current : (methods[0]?.code ?? ''));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setShippingMethods([]);
+          setShippingCode('');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setShippingLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [cart.length, currency, locale, ready]);
 
   if (!ready) return <div className={styles.status}>{copy.refresh}</div>;
   if (cart.length === 0) {
@@ -53,20 +94,20 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
     );
   }
 
-  const currencies = [...new Set(cart.map((item) => item.currency))];
-  const currency = currencies.length === 1 ? currencies[0] : null;
-  const subtotal = currency ? cart.reduce((sum, item) => sum + item.priceMinor * item.quantity, 0) : null;
+  const selectedShipping = shippingMethods.find((method) => method.code === shippingCode) ?? null;
+  const shippingMinor = selectedShipping?.priceMinor ?? null;
+  const totalMinor = subtotal !== null && shippingMinor !== null ? subtotal + shippingMinor : null;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!currency || subtotal === null) return setError(copy.error);
+    if (!currency || subtotal === null || !selectedShipping) return setError(copy.error);
 
     setSubmitting(true);
     setError(null);
     const data = new FormData(event.currentTarget);
     const payload = {
       locale,
-      shippingMethod: 'standard',
+      shippingMethod: selectedShipping.code,
       items: cart.map((item) => ({variantId: item.variantId, quantity: item.quantity})),
       address: {
         customerName: String(data.get('customerName') ?? ''),
@@ -124,11 +165,26 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
         </section>
         <section className={styles.section}>
           <h2>{copy.shipping}</h2>
-          <label className={styles.shippingOption}>
-            <input type="radio" name="shippingMethod" value="standard" defaultChecked />
-            <span>{copy.standardShipping}</span>
-            <strong>{currency ? money(locale, 0, currency) : '—'}</strong>
-          </label>
+          {shippingLoading ? <p className={styles.shippingStatus}>{copy.refresh}</p> : null}
+          {!shippingLoading && shippingMethods.length === 0 ? <p className={styles.shippingStatus}>{copy.shippingUnavailable}</p> : null}
+          <div className={styles.shippingList}>
+            {shippingMethods.map((method) => (
+              <label className={styles.shippingOption} key={method.code}>
+                <input
+                  type="radio"
+                  name="shippingMethod"
+                  value={method.code}
+                  checked={shippingCode === method.code}
+                  onChange={() => setShippingCode(method.code)}
+                />
+                <span>
+                  <strong>{method.name}</strong>
+                  {method.description && <small>{method.description}</small>}
+                </span>
+                <strong>{money(locale, method.priceMinor, method.currency)}</strong>
+              </label>
+            ))}
+          </div>
         </section>
       </div>
 
@@ -142,10 +198,10 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
           ))}
         </div>
         <div className={styles.totalRow}><span>{copy.subtotal}</span><strong>{currency && subtotal !== null ? money(locale, subtotal, currency) : '—'}</strong></div>
-        <div className={styles.totalRow}><span>{copy.shippingCost}</span><strong>{currency ? money(locale, 0, currency) : '—'}</strong></div>
-        <div className={`${styles.totalRow} ${styles.grandTotal}`}><span>{copy.total}</span><strong>{currency && subtotal !== null ? money(locale, subtotal, currency) : '—'}</strong></div>
+        <div className={styles.totalRow}><span>{copy.shippingCost}</span><strong>{currency && shippingMinor !== null ? money(locale, shippingMinor, currency) : '—'}</strong></div>
+        <div className={`${styles.totalRow} ${styles.grandTotal}`}><span>{copy.total}</span><strong>{currency && totalMinor !== null ? money(locale, totalMinor, currency) : '—'}</strong></div>
         {error && <p className={styles.error} role="alert">{error}</p>}
-        <button className="button button--primary" type="submit" disabled={submitting || !currency}>
+        <button className="button button--primary" type="submit" disabled={submitting || !currency || !selectedShipping}>
           {submitting ? copy.placingOrder : copy.placeOrder}
         </button>
       </aside>
