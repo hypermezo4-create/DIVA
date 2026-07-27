@@ -8,7 +8,8 @@
       "storefront": "Storefront translations",
       "storefrontNote": "{count} editable content fields, each with Arabic, English, German and Russian values.",
       "inherited": "Using file default",
-      "override": "Database override"
+      "override": "Database override",
+      "reset": "Reset to default"
     }
   }
 }
