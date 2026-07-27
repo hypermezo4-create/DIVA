@@ -1,12 +1,15 @@
 import type {Metadata} from 'next';
+import Link from 'next/link';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
+import {ProductCard} from '@/components/catalog/product-card';
 import {Hero} from '@/components/home/hero';
 import {SignatureGrid} from '@/components/home/signature-grid';
 import {ValueStrip} from '@/components/home/value-strip';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {JsonLd} from '@/components/seo/json-ld';
+import {listActiveProducts} from '@/features/catalog/server/catalog-repository';
 import type {StorefrontContentKey} from '@/features/content/definitions';
 import {getStorefrontContent} from '@/features/content/repository';
 import {isAppLocale} from '@/i18n/routing';
@@ -31,30 +34,40 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 
 export default async function HomePage({params}: PageProps) {
   const {locale} = await params;
-
-  if (!isAppLocale(locale)) {
-    notFound();
-  }
+  if (!isAppLocale(locale)) notFound();
 
   setRequestLocale(locale);
-  const [t, navigationT, overrides] = await Promise.all([
+  const [t, navigationT, shopT, overrides, products] = await Promise.all([
     getTranslations({locale, namespace: 'Home'}),
     getTranslations({locale, namespace: 'Navigation'}),
-    getStorefrontContent(locale)
+    getTranslations({locale, namespace: 'Shop'}),
+    getStorefrontContent(locale),
+    listActiveProducts(locale, 'all')
   ]);
+
   const content = (key: StorefrontContentKey, fallback: string) => overrides.get(key) ?? fallback;
   const siteUrl = getSiteUrl();
   const localizedUrl = new URL(localizedPath(locale), siteUrl).toString();
+  const categoryImage = (category: 'women' | 'men' | 'kids') => products.find((product) => product.audience === category)?.image ?? null;
+  const offerProduct = products.find((product) => product.priceMinor !== null
+    && product.compareAtMinor !== null
+    && product.compareAtMinor > product.priceMinor) ?? null;
+  const heroProduct = products.find((product) => product.newArrival && product.image) ?? products.find((product) => product.image) ?? null;
+  const secondHeroProduct = products.find((product) => product.image && product.id !== heroProduct?.id) ?? null;
+  const featured = products.filter((product) => product.newArrival).slice(0, 4);
+  const featuredProducts = featured.length >= 3 ? featured : products.slice(0, 4);
 
   const signatureItems = ['women', 'men', 'kids'].map((key) => ({
     slug: key,
     title: content(`home.categories.${key}.title` as StorefrontContentKey, t(`categories.${key}.title`)),
-    label: t(`categories.${key}.label`)
+    label: t(`categories.${key}.label`),
+    image: categoryImage(key as 'women' | 'men' | 'kids')
   }));
   signatureItems.push({
     slug: 'offers',
-    title: navigationT('offers'),
-    label: navigationT('offers')
+    title: offerProduct?.name ?? navigationT('offers'),
+    label: navigationT('offers'),
+    image: offerProduct?.image ?? null
   });
 
   const values = ['craft', 'comfort', 'service'].map((key) => ({
@@ -66,19 +79,8 @@ export default async function HomePage({params}: PageProps) {
     <>
       <JsonLd
         value={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: 'DIVA',
-            url: siteUrl.origin
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            name: 'DIVA',
-            url: localizedUrl,
-            inLanguage: locale
-          }
+          {'@context': 'https://schema.org', '@type': 'Organization', name: 'DIVA', url: siteUrl.origin},
+          {'@context': 'https://schema.org', '@type': 'WebSite', name: 'DIVA', url: localizedUrl, inLanguage: locale}
         ]}
       />
       <SiteHeader locale={locale} />
@@ -93,13 +95,55 @@ export default async function HomePage({params}: PageProps) {
             secondary: content('home.hero.secondary', t('hero.secondary')),
             edition: content('home.hero.edition', t('hero.edition'))
           }}
+          visual={{
+            primaryImage: heroProduct?.image ?? null,
+            secondaryImage: secondHeroProduct?.image ?? null,
+            productName: heroProduct?.name ?? 'DIVA footwear'
+          }}
         />
+
         <ValueStrip label={t('valuesLabel')} items={values} />
+
         <SignatureGrid
           locale={locale}
           title={content('home.signatureTitle', t('signatureTitle'))}
           items={signatureItems}
         />
+
+        <section className="home-featured-section">
+          <div className="home-featured-heading">
+            <div>
+              <p className="eyebrow">{navigationT('new')}</p>
+              <h2>{shopT('title')}</h2>
+            </div>
+            <Link href={`/${locale}/shop`} className="text-link">{navigationT('shop')} ↗</Link>
+          </div>
+          <div className="home-featured-grid">
+            {featuredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                locale={locale}
+                product={product}
+                newLabel={shopT('newBadge')}
+                offerLabel={shopT('offerBadge')}
+                soldOutLabel={shopT('soldOut')}
+              />
+            ))}
+          </div>
+        </section>
+
+        {offerProduct && (
+          <section className="home-offer-band">
+            <div className="home-offer-band__copy">
+              <p className="eyebrow">{navigationT('offers')}</p>
+              <h2>{offerProduct.name}</h2>
+              <p>{offerProduct.subtitle}</p>
+            </div>
+            <Link href={`/${locale}/product/${offerProduct.slug}`} className="button button--inverse">
+              {navigationT('offers')}
+            </Link>
+          </section>
+        )}
       </main>
       <SiteFooter locale={locale} />
     </>
