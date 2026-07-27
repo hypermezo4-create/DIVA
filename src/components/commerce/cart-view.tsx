@@ -13,7 +13,7 @@ type Copy = {
   quantity: string;
   remove: string;
   subtotal: string;
-  stock: (count: number) => string;
+  stockTemplate: string;
   checkout: string;
   checkoutSoon: string;
   refreshing: string;
@@ -21,6 +21,10 @@ type Copy = {
 
 function money(locale: AppLocale, minor: number, currency: string) {
   return new Intl.NumberFormat(locale, {style: 'currency', currency}).format(minor / 100);
+}
+
+function stockLabel(template: string, count: number) {
+  return template.replace('{count}', String(count));
 }
 
 export function CartView({locale, copy}: {locale: AppLocale; copy: Copy}) {
@@ -76,7 +80,7 @@ export function CartView({locale, copy}: {locale: AppLocale; copy: Copy}) {
             <div className={styles.copy}>
               <Link href={`/${locale}/product/${item.slug}`}><h2>{item.name}</h2></Link>
               <p className={styles.meta}>{item.colorLabel} · {item.size}</p>
-              <p className={styles.stock}>{copy.stock(item.available)}</p>
+              <p className={styles.stock}>{stockLabel(copy.stockTemplate, item.available)}</p>
             </div>
             <div className={styles.lineActions}>
               <strong className={styles.price}>{money(locale, item.priceMinor * item.quantity, item.currency)}</strong>
