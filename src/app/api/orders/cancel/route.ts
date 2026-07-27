@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 import {cancelPendingOrder, OrderLifecycleError} from '@/features/orders/lifecycle';
 import {findOrderAccess} from '@/features/orders/repository';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 import {getSessionFromHeaders} from '@/lib/session';
 
 const schema = z.object({
@@ -10,6 +11,10 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (!isTrustedMutationRequest(request)) {
+    return NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
+  }
+
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({error: 'INVALID_ORDER'}, {status: 400});
 
