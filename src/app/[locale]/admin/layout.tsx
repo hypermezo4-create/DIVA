@@ -26,7 +26,8 @@ export default async function AdminLayout({
     ['products', `/${locale}/admin/products`],
     ['inventory', `/${locale}/admin/inventory`],
     ['orders', `/${locale}/admin/orders`],
-    ['customers', `/${locale}/admin/customers`]
+    ['customers', `/${locale}/admin/customers`],
+    ['content', `/${locale}/admin/content`]
   ].map(([key, href]) => ({label: t(`nav.${key}`), href}));
 
   return (
