@@ -1,6 +1,6 @@
 import 'server-only';
 
-import {and, asc, eq, isNotNull, type SQL} from 'drizzle-orm';
+import {and, asc, eq, isNotNull, sql, type SQL} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
   collections,
@@ -24,9 +24,7 @@ function filterCondition(filter: CatalogFilter): SQL | undefined {
 }
 
 export async function listActiveProducts(locale: AppLocale, filter: CatalogFilter = 'all') {
-  const db = getDatabase();
-
-  return db
+  return getDatabase()
     .select({
       id: products.id,
       slug: products.slug,
@@ -35,7 +33,34 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
       newArrival: products.newArrival,
       collection: collections.slug,
       name: productTranslations.name,
-      subtitle: productTranslations.subtitle
+      subtitle: productTranslations.subtitle,
+      image: sql<string | null>`(
+        select pi.url from product_images pi
+        where pi.product_id = ${products.id}
+        order by pi.sort_order asc
+        limit 1
+      )`,
+      priceMinor: sql<number | null>`(
+        select min(pv.price_minor) from product_variants pv
+        where pv.product_id = ${products.id}
+          and pv.active = true
+          and pv.price_minor is not null
+      )`,
+      currency: sql<string | null>`(
+        select pv.currency from product_variants pv
+        where pv.product_id = ${products.id}
+          and pv.active = true
+          and pv.price_minor is not null
+          and pv.currency is not null
+        order by pv.price_minor asc
+        limit 1
+      )`,
+      available: sql<number>`(
+        select coalesce(sum(greatest(0, i.on_hand - i.reserved)), 0)
+        from product_variants pv
+        join inventory i on i.variant_id = pv.id
+        where pv.product_id = ${products.id} and pv.active = true
+      )`
     })
     .from(products)
     .innerJoin(
@@ -48,8 +73,7 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
 }
 
 export async function findActiveProduct(locale: AppLocale, slug: string) {
-  const db = getDatabase();
-  const [product] = await db
+  const [product] = await getDatabase()
     .select({
       id: products.id,
       slug: products.slug,
@@ -71,12 +95,10 @@ export async function findActiveProduct(locale: AppLocale, slug: string) {
     .limit(1);
 
   if (!product) return null;
-
   const [images, variants] = await Promise.all([
     listProductImages(product.id),
     listProductVariants(product.id, locale)
   ]);
-
   return {...product, images, variants};
 }
 
@@ -110,12 +132,12 @@ async function listProductVariants(productId: string, locale: AppLocale) {
       colorTranslations,
       and(eq(colorTranslations.colorId, colors.id), eq(colorTranslations.locale, locale))
     )
-    .leftJoin(inventory, eq(inventory.variantId, productVariants.id))
+    .innerJoin(inventory, eq(inventory.variantId, productVariants.id))
     .where(and(eq(productVariants.productId, productId), eq(productVariants.active, true)))
-    .orderBy(asc(sizes.sortOrder));
+    .orderBy(asc(colors.code), asc(sizes.sortOrder));
 
-  return rows.map((row) => ({
-    ...row,
-    available: Math.max(0, (row.onHand ?? 0) - (row.reserved ?? 0))
-  }));
+  return rows.map((row) => ({...row, available: Math.max(0, row.onHand - row.reserved)}));
 }
+
+export type ActiveCatalogProduct = Awaited<ReturnType<typeof findActiveProduct>>;
+export type ActiveCatalogListItem = Awaited<ReturnType<typeof listActiveProducts>>[number];
