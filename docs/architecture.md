@@ -103,15 +103,17 @@ Admin order operations deliberately do not reverse paid fulfilment states or per
 
 ## Production hardening boundary
 
-Global response headers now disable framing, MIME sniffing, unnecessary browser capabilities and cross-origin resource sharing by default. Production responses add HSTS and a restrictive Content Security Policy that keeps application scripts, forms and connections same-origin while allowing the current catalog image source.
+Global response headers disable framing, MIME sniffing, unnecessary browser capabilities and cross-origin resource sharing by default. Production responses add HSTS and a restrictive Content Security Policy that keeps application scripts, forms and connections same-origin while allowing the current catalog image source. API responses are also marked `no-store` and `noindex`.
 
 State-changing checkout, order-cancellation, account cart/wishlist and admin APIs reject browser requests whose Fetch Metadata or `Origin` signals indicate a cross-site mutation. Authentication and authorization remain separate checks; the origin guard reduces CSRF exposure but does not replace session ownership or admin-role validation.
 
-Private route trees for account, cart, wishlist, checkout, order confirmation and admin declare `noindex`. Public home, shop and product pages expose canonical and language-alternate metadata; home and product surfaces publish JSON-LD, while `robots.txt` and `sitemap.xml` define the crawl boundary.
+Private route trees for account, cart, wishlist, checkout, order confirmation and admin declare `noindex`. Public home, shop and product pages expose canonical, `x-default` and language-alternate metadata; home and product surfaces publish JSON-LD. `robots.txt` defines the private crawl boundary and the sitemap includes localized home, shop and active product URLs.
 
-`/api/health` performs a live database readiness check and disables caching. CI uses the tracked lockfile, migrates/seeds PostgreSQL, runs commerce smoke tests, lint, typecheck and production build, then boots the built server and verifies health, security headers, canonical metadata, crawl policy and cross-site mutation rejection.
+`/api/health` performs a live database readiness check and disables caching. CI provisions PostgreSQL, installs the declared dependencies, migrates/seeds the database, runs commerce smoke tests, lint, typecheck and production build, then boots the built server and verifies health, security headers, public/private SEO behavior, RTL output, product indexing and cross-site mutation rejection.
 
-Keyboard focus indicators and high-contrast affordances are global, while the existing reduced-motion rules remain the motion accessibility baseline.
+Keyboard focus indicators, high-contrast affordances and a localized skip-to-content control are global, while the existing reduced-motion rules remain the motion accessibility baseline. Localized 404 and route-error pages provide recovery actions without exposing server error details.
+
+Repeated storefront-content reads and product-detail reads within one server render are deduplicated with React request caching so metadata and page composition do not repeat the same database work.
 
 ## Catalog and customer-commerce boundaries
 
@@ -127,4 +129,4 @@ The visual system is derived from the supplied DIVA mark: warm ivory, espresso, 
 
 ## Next implementation boundary
 
-The first production-hardening pass is in place. The remaining launch-critical commerce work is the selected payment gateway handoff/webhook/refund integration plus destination-aware production shipping rules. The remaining hardening work is deeper browser E2E coverage, accessibility auditing, performance budgets/measurement, observability and verified deployment/runtime environment configuration.
+The first production-hardening pass is in place. The remaining launch-critical commerce work is the selected payment gateway handoff/webhook/refund integration plus destination-aware production shipping rules. The remaining hardening work is deeper browser E2E coverage, measured accessibility/performance, observability and verified deployment/runtime environment configuration.
