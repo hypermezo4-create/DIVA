@@ -24,7 +24,7 @@ features/
 ├── payments/             payment attempts + provider adapter boundary
 ├── orders/               confirmation, history, ownership and lifecycle operations
 ├── customers/            Better Auth backend + localized account UI
-└── admin/                next major product phase
+└── admin/                role-gated reporting and operational mutations
 ```
 
 The dependency direction remains:
@@ -77,6 +77,24 @@ Checkout supports guests and authenticated customers. Guest confirmation pages r
 
 Pending-payment cancellation accepts either authenticated ownership or the confirmation token, then delegates to the order lifecycle transaction so inventory release and state changes remain server-controlled.
 
+## Admin operations boundary
+
+Admin access is a server-owned role. Public sign-up cannot submit or elevate the role field. An existing account can be promoted or demoted only from a trusted environment with database access through `npm run admin:role -- <email> <admin|customer>`.
+
+The localized `/[locale]/admin` route tree checks the current session before rendering and returns no admin workspace to non-admin accounts. Mutation APIs under `/api/admin/*` repeat the same authorization check; the browser UI is not treated as an authorization boundary.
+
+The admin reporting repository exposes currency-safe dashboard metrics, product publication state, SKU stock/pricing, order queues and customer activity. Revenue is grouped by currency rather than summing unlike currencies.
+
+Operational mutations currently cover:
+
+- product `draft` / `active` / `archived` state and new-arrival flags;
+- variant active state, selling price and compare-at offer price;
+- `onHand` inventory updates only when the new stock level remains at or above existing reservations;
+- pending-payment cancellation through the same inventory-release lifecycle used by customer cancellation;
+- forward-only paid-order fulfilment transitions: `confirmed → processing → shipped → delivered`.
+
+Admin order operations deliberately do not reverse paid fulfilment states or perform refunds. Those actions require the production payment/refund boundary so stock and money cannot drift apart.
+
 ## Catalog and customer-commerce boundaries
 
 `/[locale]/shop` and `/[locale]/product/[slug]` read active products from PostgreSQL. The primary customer-facing taxonomy is Women, Men, Kids and Offers. Catalog queries expose localized copy, imagery, active/compare-at prices and inventory availability while keeping route components independent from Drizzle.
@@ -87,8 +105,8 @@ Pending-payment cancellation accepts either authenticated ownership or the confi
 
 Locale URLs are explicit: `/ar`, `/en`, `/de` and `/ru`. Arabic switches the root document to RTL. Interface copy lives in locale messages. Persistent product, color, collection and shipping copy is stored by locale.
 
-The visual system is derived from the supplied DIVA mark: warm ivory, espresso, champagne gold and bronze. Dark mode uses deep espresso surfaces rather than neutral black. Women, Men, Kids and Offers remain the four primary storefront pillars.
+The visual system is derived from the supplied DIVA mark: warm ivory, espresso, champagne gold and bronze. Dark mode uses deep espresso surfaces rather than neutral black. Women, Men, Kids and Offers remain the four primary storefront pillars. The admin workspace uses the same design tokens rather than a separate generic dashboard theme.
 
 ## Next implementation boundary
 
-The remaining provider-specific commerce work is the production payment handoff/webhook integration and final destination-aware shipping rules/rates. After that, the next major phase is the admin operations surface for products, variants, stock, offers, orders, customers, content and translations.
+Admin content management and editable storefront translations are the remaining admin slice. Provider-specific payment handoff/webhook verification and final destination-aware shipping rules also remain before production hardening. Production hardening then focuses on test depth, accessibility, security review, SEO, performance and deployment operations.
