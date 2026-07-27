@@ -10,6 +10,8 @@ import {listActiveProducts} from '@/features/catalog/server/catalog-repository';
 import {catalogFilters, type CatalogFilter} from '@/features/catalog/types';
 import {isAppLocale} from '@/i18n/routing';
 
+export const dynamic = 'force-dynamic';
+
 type ShopPageProps = {
   params: Promise<{locale: string}>;
   searchParams: Promise<{category?: string}>;
