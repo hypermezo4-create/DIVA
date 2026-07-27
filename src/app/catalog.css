@@ -90,6 +90,9 @@
 
 .product-card__copy h2 { margin: 0; font-size: 1.6rem; font-weight: 500; }
 .product-card__copy > span { color: var(--espresso-soft); font-size: 1rem; }
+.product-card__price-stack { display: inline-flex; align-items: baseline; gap: 8px; font-family: Arial, sans-serif; }
+.product-card__price-stack strong { color: var(--espresso); font-size: .92rem; font-weight: 700; }
+.product-card__price-stack del { color: var(--espresso-soft); font-size: .76rem; opacity: .72; }
 
 .product-page {
   width: min(1440px, calc(100% - 48px));
