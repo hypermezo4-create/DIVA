@@ -17,6 +17,7 @@ type HeroCopy = {
 
 type HeroItem = {
   id: string;
+  slug: string;
   image: string | null;
   name: string;
   subtitle: string;
@@ -41,10 +42,13 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
 
       <motion.div
         className="hero-copy"
-        initial={reduceMotion ? undefined : {opacity: 0, y: 16}}
+        initial={reduceMotion ? undefined : {opacity: 0, y: 14}}
         animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
-        transition={{duration: 0.5, ease: [0.22, 1, 0.36, 1]}}
+        transition={{duration: 0.46, ease: [0.22, 1, 0.36, 1]}}
       >
+        <div className="hero-brand-seal" aria-hidden="true">
+          <Image src="/brand/diva-logo-original-mark.svg" alt="" width={92} height={96} priority />
+        </div>
         <p className="eyebrow">{copy.kicker}</p>
         <h1>{copy.title}</h1>
         <p className="hero-description">{copy.description}</p>
@@ -65,9 +69,9 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
 
       <motion.div
         className="hero-showcase"
-        initial={reduceMotion ? undefined : {opacity: 0, x: 16}}
+        initial={reduceMotion ? undefined : {opacity: 0, x: 14}}
         animate={reduceMotion ? undefined : {opacity: 1, x: 0}}
-        transition={{duration: 0.58, delay: 0.04, ease: [0.22, 1, 0.36, 1]}}
+        transition={{duration: 0.54, delay: 0.04, ease: [0.22, 1, 0.36, 1]}}
       >
         {selected ? (
           <>
@@ -76,42 +80,44 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                 <motion.div
                   className="hero-showcase__content"
                   key={selected.id}
-                  initial={reduceMotion ? undefined : {opacity: 0, y: 8}}
+                  initial={reduceMotion ? undefined : {opacity: 0, y: 7}}
                   animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
-                  exit={reduceMotion ? undefined : {opacity: 0, y: -6}}
-                  transition={{duration: 0.28, ease: [0.22, 1, 0.36, 1]}}
+                  exit={reduceMotion ? undefined : {opacity: 0, y: -5}}
+                  transition={{duration: 0.26, ease: [0.22, 1, 0.36, 1]}}
                 >
-                  <div className="hero-showcase__image">
-                    <Image
-                      src={selected.image!}
-                      alt={selected.name}
-                      fill
-                      sizes="(max-width: 900px) 92vw, 44vw"
-                      className="cover-image"
-                      priority
-                    />
-                  </div>
-                  <div className="hero-showcase__meta">
-                    <div>
-                      <p>DIVA · {copy.edition}</p>
-                      <h2>{selected.name}</h2>
-                      <span>{selected.subtitle}</span>
+                  <Link className="hero-showcase__product-link" href={`/${locale}/product/${selected.slug}`}>
+                    <div className="hero-showcase__image">
+                      <Image
+                        src={selected.image!}
+                        alt={selected.name}
+                        fill
+                        sizes="(max-width: 900px) 92vw, 44vw"
+                        className="cover-image"
+                        priority
+                      />
                     </div>
-                    {selected.priceMinor !== null && selected.currency && (
-                      <div className="hero-showcase__price">
-                        <strong>{money(locale, selected.priceMinor, selected.currency)}</strong>
-                        {selected.compareAtMinor !== null && selected.compareAtMinor > selected.priceMinor && (
-                          <del>{money(locale, selected.compareAtMinor, selected.currency)}</del>
-                        )}
+                    <div className="hero-showcase__meta">
+                      <div>
+                        <p>DIVA · {copy.edition}</p>
+                        <h2>{selected.name}</h2>
+                        <span>{selected.subtitle}</span>
                       </div>
-                    )}
-                  </div>
+                      {selected.priceMinor !== null && selected.currency && (
+                        <div className="hero-showcase__price">
+                          <strong>{money(locale, selected.priceMinor, selected.currency)}</strong>
+                          {selected.compareAtMinor !== null && selected.compareAtMinor > selected.priceMinor && (
+                            <del>{money(locale, selected.compareAtMinor, selected.currency)}</del>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
                 </motion.div>
               </AnimatePresence>
             </div>
 
             <div className="hero-showcase__rail" aria-label={copy.edition}>
-              {visualItems.map((item) => {
+              {visualItems.map((item, index) => {
                 const active = item.id === selected.id;
                 return (
                   <button
@@ -123,6 +129,7 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                     aria-label={item.name}
                   >
                     <Image src={item.image!} alt="" fill sizes="150px" className="cover-image" />
+                    <span aria-hidden="true">0{index + 1}</span>
                   </button>
                 );
               })}
