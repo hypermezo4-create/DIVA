@@ -4,6 +4,7 @@ import {and, asc, eq, isNotNull, sql, type SQL} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
   collections,
+  collectionTranslations,
   colors,
   colorTranslations,
   inventory,
@@ -23,6 +24,13 @@ function filterCondition(filter: CatalogFilter): SQL | undefined {
   return eq(products.audience, filter);
 }
 
+function localizedCollectionJoin(locale: AppLocale) {
+  return and(
+    eq(collectionTranslations.collectionId, collections.id),
+    eq(collectionTranslations.locale, locale)
+  );
+}
+
 export async function listActiveProducts(locale: AppLocale, filter: CatalogFilter = 'all') {
   return getDatabase()
     .select({
@@ -32,6 +40,7 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
       family: products.family,
       newArrival: products.newArrival,
       collection: collections.slug,
+      collectionName: collectionTranslations.name,
       name: productTranslations.name,
       subtitle: productTranslations.subtitle,
       image: sql<string | null>`(
@@ -68,6 +77,7 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
       and(eq(productTranslations.productId, products.id), eq(productTranslations.locale, locale))
     )
     .leftJoin(collections, eq(collections.id, products.collectionId))
+    .leftJoin(collectionTranslations, localizedCollectionJoin(locale))
     .where(and(eq(products.status, 'active'), filterCondition(filter)))
     .orderBy(asc(productTranslations.name));
 }
@@ -81,6 +91,7 @@ export async function findActiveProduct(locale: AppLocale, slug: string) {
       family: products.family,
       newArrival: products.newArrival,
       collection: collections.slug,
+      collectionName: collectionTranslations.name,
       name: productTranslations.name,
       subtitle: productTranslations.subtitle,
       description: productTranslations.description
@@ -91,6 +102,7 @@ export async function findActiveProduct(locale: AppLocale, slug: string) {
       and(eq(productTranslations.productId, products.id), eq(productTranslations.locale, locale))
     )
     .leftJoin(collections, eq(collections.id, products.collectionId))
+    .leftJoin(collectionTranslations, localizedCollectionJoin(locale))
     .where(and(eq(products.slug, slug), eq(products.status, 'active')))
     .limit(1);
 
