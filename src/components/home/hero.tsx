@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {AnimatePresence, motion, useReducedMotion} from 'motion/react';
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo, useState} from 'react';
 import type {AppLocale} from '@/i18n/routing';
 
 type HeroCopy = {
@@ -33,22 +33,7 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
   const reduceMotion = useReducedMotion();
   const visualItems = useMemo(() => items.filter((item) => item.image).slice(0, 4), [items]);
   const [selectedId, setSelectedId] = useState(visualItems[0]?.id ?? '');
-  const [paused, setPaused] = useState(false);
   const selected = visualItems.find((item) => item.id === selectedId) ?? visualItems[0];
-
-  useEffect(() => {
-    if (reduceMotion || paused || visualItems.length < 2) return;
-
-    const timer = window.setInterval(() => {
-      setSelectedId((currentId) => {
-        const currentIndex = visualItems.findIndex((item) => item.id === currentId);
-        const nextIndex = (currentIndex + 1) % visualItems.length;
-        return visualItems[nextIndex]?.id ?? currentId;
-      });
-    }, 5200);
-
-    return () => window.clearInterval(timer);
-  }, [paused, reduceMotion, visualItems]);
 
   return (
     <section className="hero-shell hero-shell--classic">
@@ -56,9 +41,9 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
 
       <motion.div
         className="hero-copy"
-        initial={reduceMotion ? undefined : {opacity: 0, y: 22}}
+        initial={reduceMotion ? undefined : {opacity: 0, y: 16}}
         animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
-        transition={{duration: 0.7, ease: [0.22, 1, 0.36, 1]}}
+        transition={{duration: 0.5, ease: [0.22, 1, 0.36, 1]}}
       >
         <p className="eyebrow">{copy.kicker}</p>
         <h1>{copy.title}</h1>
@@ -80,11 +65,9 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
 
       <motion.div
         className="hero-showcase"
-        initial={reduceMotion ? undefined : {opacity: 0, x: 24}}
+        initial={reduceMotion ? undefined : {opacity: 0, x: 16}}
         animate={reduceMotion ? undefined : {opacity: 1, x: 0}}
-        transition={{duration: 0.82, delay: 0.06, ease: [0.22, 1, 0.36, 1]}}
-        onPointerEnter={() => setPaused(true)}
-        onPointerLeave={() => setPaused(false)}
+        transition={{duration: 0.58, delay: 0.04, ease: [0.22, 1, 0.36, 1]}}
       >
         {selected ? (
           <>
@@ -93,10 +76,10 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                 <motion.div
                   className="hero-showcase__content"
                   key={selected.id}
-                  initial={reduceMotion ? undefined : {opacity: 0, y: 14, scale: 0.982}}
-                  animate={reduceMotion ? undefined : {opacity: 1, y: 0, scale: 1}}
-                  exit={reduceMotion ? undefined : {opacity: 0, y: -10, scale: 0.99}}
-                  transition={{duration: 0.48, ease: [0.22, 1, 0.36, 1]}}
+                  initial={reduceMotion ? undefined : {opacity: 0, y: 8}}
+                  animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
+                  exit={reduceMotion ? undefined : {opacity: 0, y: -6}}
+                  transition={{duration: 0.28, ease: [0.22, 1, 0.36, 1]}}
                 >
                   <div className="hero-showcase__image">
                     <Image
@@ -128,25 +111,19 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
             </div>
 
             <div className="hero-showcase__rail" aria-label={copy.edition}>
-              {visualItems.map((item, index) => {
+              {visualItems.map((item) => {
                 const active = item.id === selected.id;
                 return (
-                  <motion.button
+                  <button
                     key={item.id}
                     type="button"
                     className={active ? 'hero-thumb is-active' : 'hero-thumb'}
                     onClick={() => setSelectedId(item.id)}
-                    onFocus={() => setPaused(true)}
-                    onBlur={() => setPaused(false)}
                     aria-pressed={active}
                     aria-label={item.name}
-                    initial={reduceMotion ? undefined : {opacity: 0, y: 10}}
-                    animate={reduceMotion ? undefined : {opacity: active ? 1 : 0.78, y: 0}}
-                    whileHover={reduceMotion ? undefined : {scale: 1.025}}
-                    transition={{duration: 0.32, delay: reduceMotion ? 0 : 0.12 + index * 0.06}}
                   >
                     <Image src={item.image!} alt="" fill sizes="150px" className="cover-image" />
-                  </motion.button>
+                  </button>
                 );
               })}
             </div>
