@@ -8,6 +8,7 @@ import {SiteHeader} from '@/components/layout/site-header';
 import {listActiveProducts} from '@/features/catalog/server/catalog-repository';
 import {catalogFilters, isCatalogFilter, type CatalogFilter} from '@/features/catalog/types';
 import {isAppLocale} from '@/i18n/routing';
+import {languageAlternates, localizedPath} from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,13 @@ export async function generateMetadata({params}: ShopPageProps): Promise<Metadat
   const {locale} = await params;
   if (!isAppLocale(locale)) return {};
   const t = await getTranslations({locale, namespace: 'Shop'});
-  return {title: t('metaTitle'), description: t('description')};
+  const canonical = localizedPath(locale, '/shop');
+  return {
+    title: t('metaTitle'),
+    description: t('description'),
+    alternates: {canonical, languages: languageAlternates('/shop')},
+    openGraph: {title: t('metaTitle'), description: t('description'), url: canonical, locale}
+  };
 }
 
 export default async function ShopPage({params, searchParams}: ShopPageProps) {
