@@ -4,6 +4,10 @@ export const catalogFilters = ['all', 'new', 'women', 'men', 'kids', 'collection
 export type CatalogFilter = (typeof catalogFilters)[number];
 export type CatalogAudience = 'women' | 'men' | 'kids';
 
+export function isCatalogFilter(value: string | undefined): value is CatalogFilter {
+  return value !== undefined && catalogFilters.includes(value as CatalogFilter);
+}
+
 export type LocalizedProductCopy = {
   name: string;
   subtitle: string;
