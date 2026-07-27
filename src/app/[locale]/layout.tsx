@@ -9,6 +9,7 @@ import '../globals.css';
 import '../catalog.css';
 import '../accessibility.css';
 import '../storefront-redesign.css';
+import '../storefront-polish.css';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
