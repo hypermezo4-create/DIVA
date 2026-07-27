@@ -54,6 +54,10 @@ function createOrderNumber() {
   return `DIVA-${stamp}-${suffix}`;
 }
 
+function createConfirmationToken() {
+  return randomUUID().replaceAll('-', '') + randomUUID().replaceAll('-', '');
+}
+
 export async function createCheckoutOrder({
   userId,
   locale,
@@ -149,10 +153,12 @@ export async function createCheckoutOrder({
 
     const shippingMinor = 0;
     const totalMinor = subtotalMinor + shippingMinor;
+    const confirmationToken = createConfirmationToken();
     const [order] = await tx
       .insert(orders)
       .values({
         number: createOrderNumber(),
+        confirmationToken,
         userId,
         customerName: address.customerName,
         email: address.email,
@@ -190,6 +196,14 @@ export async function createCheckoutOrder({
       if (cart) await tx.delete(cartItems).where(eq(cartItems.cartId, cart.id));
     }
 
-    return {orderId: order.id, orderNumber: order.number, currency, subtotalMinor, shippingMinor, totalMinor};
+    return {
+      orderId: order.id,
+      orderNumber: order.number,
+      confirmationToken,
+      currency,
+      subtotalMinor,
+      shippingMinor,
+      totalMinor
+    };
   });
 }
