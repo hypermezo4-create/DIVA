@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 import {getAdminSession} from '@/features/admin/access';
 import {AdminMutationError, updateAdminVariant} from '@/features/admin/mutations';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 
 const schema = z.object({
   priceMinor: z.number().int().min(0).nullable().optional(),
@@ -10,6 +11,9 @@ const schema = z.object({
 }).refine((value) => value.priceMinor !== undefined || value.compareAtMinor !== undefined || value.active !== undefined);
 
 export async function PATCH(request: NextRequest, {params}: {params: Promise<{id: string}>}) {
+  if (!isTrustedMutationRequest(request)) {
+    return NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
+  }
   if (!await getAdminSession(request.headers)) {
     return NextResponse.json({error: 'FORBIDDEN'}, {status: 403});
   }
