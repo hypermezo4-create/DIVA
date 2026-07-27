@@ -10,7 +10,7 @@ const checkoutSchema = z.object({
     variantId: z.string().uuid(),
     quantity: z.number().int().min(1).max(20)
   })).min(1).max(50),
-  shippingMethod: z.literal('standard'),
+  shippingMethod: z.string().trim().min(1).max(64).regex(/^[a-z0-9_-]+$/),
   address: z.object({
     customerName: z.string().trim().min(2).max(120),
     email: z.string().trim().email().max(160),
