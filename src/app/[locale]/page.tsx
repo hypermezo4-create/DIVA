@@ -28,7 +28,7 @@ export default async function HomePage({params}: PageProps) {
   setRequestLocale(locale);
   const t = await getTranslations({locale, namespace: 'Home'});
 
-  const signatureItems = ['women', 'men', 'kids'].map((key) => ({
+  const signatureItems = ['women', 'men', 'kids', 'offers'].map((key) => ({
     slug: key,
     title: t(`categories.${key}.title`),
     label: t(`categories.${key}.label`)
