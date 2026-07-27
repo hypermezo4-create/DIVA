@@ -11,6 +11,32 @@
   scroll-margin-top: 7rem;
 }
 
+.skip-to-content {
+  position: fixed;
+  inset-inline-start: 18px;
+  top: 14px;
+  z-index: 1000;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--gold-bright);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--espresso);
+  font-family: Arial, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-150%);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.skip-to-content:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
 @media (prefers-contrast: more) {
   :root {
     --line: color-mix(in srgb, var(--espresso) 42%, transparent);
