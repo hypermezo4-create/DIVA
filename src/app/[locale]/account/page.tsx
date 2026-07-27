@@ -34,6 +34,7 @@ export default async function AccountPage({params}: AccountPageProps) {
           <p>{t('intro')}</p>
         </header>
         <AccountPanel
+          locale={locale}
           copy={{
             signIn: t('signIn'),
             signUp: t('signUp'),
@@ -45,6 +46,7 @@ export default async function AccountPage({params}: AccountPageProps) {
             switchToRegister: t('switchToRegister'),
             switchToLogin: t('switchToLogin'),
             signedInAs: t('signedInAs'),
+            myOrders: t('myOrders'),
             signOut: t('signOut'),
             working: t('working'),
             genericError: t('genericError')
