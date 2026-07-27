@@ -2,10 +2,14 @@ import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 import {getAdminSession} from '@/features/admin/access';
 import {AdminMutationError, transitionAdminOrder} from '@/features/admin/mutations';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 
 const schema = z.object({target: z.enum(['cancelled', 'processing', 'shipped', 'delivered'])});
 
 export async function PATCH(request: NextRequest, {params}: {params: Promise<{id: string}>}) {
+  if (!isTrustedMutationRequest(request)) {
+    return NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
+  }
   if (!await getAdminSession(request.headers)) {
     return NextResponse.json({error: 'FORBIDDEN'}, {status: 403});
   }
