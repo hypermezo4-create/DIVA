@@ -12,17 +12,19 @@ src/
 └── features/     commerce domains and use-cases
 ```
 
-Current and planned commerce domains:
+Current commerce domains:
 
 ```text
 features/
 ├── catalog/              live storefront + Women/Men/Kids/Offers queries
-├── inventory/            atomic stock reservation/release
+├── inventory/            variant inventory and reservation rules
 ├── customer-commerce/    cart + wishlist contracts and persistence
-├── checkout/             server-authoritative validation + order transaction
-├── orders/               confirmation reads and future lifecycle operations
+├── checkout/             final price/stock/shipping validation + order transaction
+├── shipping/             active localized shipping-method queries
+├── payments/             payment attempts + provider adapter boundary
+├── orders/               confirmation, history, ownership and lifecycle operations
 ├── customers/            Better Auth backend + localized account UI
-└── admin/                planned
+└── admin/                next major product phase
 ```
 
 The dependency direction remains:
@@ -43,46 +45,50 @@ Drizzle owns the database model in `src/db/schema`. The catalog model contains l
 
 Customer commerce adds one account cart per user, cart items keyed by variant, and wishlist entries keyed by user and product. Checkout adds orders and immutable order-item snapshots containing the SKU, localized product name, option labels, quantity and price used when the order was created.
 
-Tracked SQL files in `drizzle/` are applied by `scripts/migrate.mjs`. The migration runner records migration names and checksums in PostgreSQL so an already-applied migration cannot be silently rewritten. `scripts/seed-catalog.mjs` provides repeatable demo merchandising data for development and CI, including offers across Women, Men and Kids.
+Fulfilment persistence adds localized shipping methods with server-owned prices plus payment attempts with provider identity, idempotency key, provider reference, amount, currency, checkout URL and state. The order and payment models distinguish pending, paid, failed/cancelled and refunded states instead of encoding provider details into the order table.
 
-## Inventory
+Tracked SQL files in `drizzle/` are applied by `scripts/migrate.mjs`. The migration runner records migration names and checksums in PostgreSQL so an already-applied migration cannot be silently rewritten. Catalog and commerce seed scripts provide repeatable demo merchandising and shipping configuration for development and CI.
+
+## Inventory and checkout
 
 Inventory stores `onHand` and `reserved` separately. Cart operations read current availability but do not reserve stock, avoiding abandoned carts locking inventory.
 
-Checkout treats cart content as purchase intent only. Inside one database transaction it reloads active variants, current localized option data and current prices, validates one currency, atomically increments `reserved` only when sufficient available stock remains, creates the order and item snapshots, and clears the signed-in cart. Any failure rolls the transaction back, including inventory reservations made earlier in the same attempt.
+Checkout treats cart content as purchase intent only. Inside one database transaction it reloads active variants, localized option data and current prices, validates one currency, validates the selected active shipping method and its current price, atomically increments `reserved` only when sufficient stock remains, creates the order/item snapshots and clears the signed-in cart. Any failure rolls the transaction back, including reservations made earlier in the same attempt.
 
-Pending-payment reservations will be completed or released by the payment/order-lifecycle integration. Production payment timeout and cancellation automation remain part of the next commerce boundary.
+When payment is confirmed, the order lifecycle converts reserved stock into sold stock by decrementing both `onHand` and `reserved`, then moves the order to `confirmed` and payment to `paid`. Cancelling an eligible pending-payment order releases reserved inventory and marks created/pending payment attempts and the order payment state as cancelled.
 
-## Authentication and order privacy
+## Payment boundary
 
-Better Auth is mounted at `/api/auth/[...all]` and uses the same PostgreSQL connection through the Drizzle adapter. The schema contains Better Auth's user, session, account and verification models. Email/password authentication is enabled. The application owns `role` and `locale` user fields rather than accepting them from untrusted sign-up input.
+`features/payments` persists payment attempts and exposes a provider adapter contract. Provider-specific SDK calls, credential handling and webhook signature verification do not leak into checkout or order code. The final production gateway can create a handoff from an existing payment attempt, then call the settlement service only after a verified provider event.
 
-The localized `/[locale]/account` surface uses the Better Auth browser client for registration, sign-in, session display and sign-out. Authenticated cart and wishlist API routes resolve the current user from session headers before accessing account-owned data.
+A concrete production provider is intentionally not hard-coded before the provider/market decision is made. The database and lifecycle boundary are already in place for the integration.
 
-Checkout supports both guests and authenticated customers. Order confirmation pages require both the public order number and a high-entropy confirmation token, and are marked `noindex`, so knowing or guessing an order number alone is insufficient to retrieve the order summary.
+## Shipping boundary
 
-## Catalog boundary
+Shipping methods are database-backed and localized. Checkout retrieves the active methods for the cart currency through `/api/shipping`, presents them to the customer and sends only the selected method code back. The server then revalidates that method and price during order creation; the browser total is never authoritative.
 
-`/[locale]/shop` and `/[locale]/product/[slug]` read active products from PostgreSQL. The primary customer-facing taxonomy is Women, Men, Kids and Offers. Catalog queries expose localized product and collection copy, current imagery, active/compare-at prices and inventory availability while keeping route components independent from Drizzle.
+The current seeded `standard` method preserves the existing zero-price development behavior. Production rates can be changed in data without rewriting checkout code, and richer destination/rate rules can be added behind the same boundary.
 
-Product details expose real variant identifiers to the client purchase control. Size/color selection therefore maps to one concrete SKU rather than a presentation-only option.
+## Authentication, privacy and customer orders
 
-## Cart and wishlist boundary
+Better Auth is mounted at `/api/auth/[...all]` and uses the same PostgreSQL connection through the Drizzle adapter. Email/password authentication is enabled and the application owns role/locale fields rather than accepting them from untrusted sign-up input.
 
-`CommerceProvider` owns browser interaction state. Signed-in customers use database-backed `/api/cart` and `/api/wishlist` endpoints. Guests keep only variant quantities and product IDs in local storage, then call public quote endpoints to hydrate that identity-only state with current server-authoritative product copy, price and availability.
+Checkout supports guests and authenticated customers. Guest confirmation pages require both the public order number and a high-entropy confirmation token and are marked `noindex`. Signed-in customers get owned order history/detail routes under `/[locale]/account/orders`, which query by both user ID and order number.
 
-When a guest signs in, guest cart and wishlist entries are copied into the account stores. Entries that cannot be accepted remain in guest storage instead of being silently discarded. All cart display prices and stock levels are refreshed from PostgreSQL; local storage is never authoritative for price or availability.
+Pending-payment cancellation accepts either authenticated ownership or the confirmation token, then delegates to the order lifecycle transaction so inventory release and state changes remain server-controlled.
 
-The cart supports quantity changes, removal, subtotal calculation and live availability. Wishlist supports save/remove and localized product hydration. Checkout then performs its own final validation instead of trusting cart totals.
+## Catalog and customer-commerce boundaries
 
-## Internationalization
+`/[locale]/shop` and `/[locale]/product/[slug]` read active products from PostgreSQL. The primary customer-facing taxonomy is Women, Men, Kids and Offers. Catalog queries expose localized copy, imagery, active/compare-at prices and inventory availability while keeping route components independent from Drizzle.
 
-Locale URLs are explicit: `/ar`, `/en`, `/de` and `/ru`. Arabic switches the root document to RTL. Interface copy lives in locale messages. Persistent product, color and collection copy is stored by locale so catalog records can be localized without duplicating product identity or inventory.
+`CommerceProvider` owns browser interaction state. Signed-in customers use database-backed cart/wishlist endpoints. Guests keep only variant quantities and product IDs in local storage, then call public quote endpoints to hydrate that identity-only state with current server-authoritative copy, price and availability. Checkout performs its own final validation instead of trusting cart totals.
 
-## Themes and responsive behavior
+## Internationalization and presentation
 
-The visual system is derived from the supplied DIVA mark: warm ivory, espresso, champagne gold and bronze. Dark mode uses deep espresso surfaces rather than neutral black so the brand remains visually consistent. The four store pillars—Women, Men, Kids and Offers—are available from the home edit and desktop navigation, while account, wishlist and cart controls remain available in the compact mobile header.
+Locale URLs are explicit: `/ar`, `/en`, `/de` and `/ru`. Arabic switches the root document to RTL. Interface copy lives in locale messages. Persistent product, color, collection and shipping copy is stored by locale.
+
+The visual system is derived from the supplied DIVA mark: warm ivory, espresso, champagne gold and bronze. Dark mode uses deep espresso surfaces rather than neutral black. Women, Men, Kids and Offers remain the four primary storefront pillars.
 
 ## Next implementation boundary
 
-Payment and shipping production rules come next: payment-provider handoff/webhooks, successful-payment capture, failure/cancellation release of reserved inventory, shipping methods/rates, order status transitions and customer order history. The admin phase will then operate products, variants, stock, offers and orders through the same domain boundaries.
+The remaining provider-specific commerce work is the production payment handoff/webhook integration and final destination-aware shipping rules/rates. After that, the next major phase is the admin operations surface for products, variants, stock, offers, orders, customers, content and translations.
