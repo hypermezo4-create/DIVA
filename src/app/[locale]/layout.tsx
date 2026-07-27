@@ -7,6 +7,7 @@ import {directionFor, isAppLocale, locales} from '@/i18n/routing';
 import {getSiteUrl} from '@/lib/site-url';
 import '../globals.css';
 import '../catalog.css';
+import '../accessibility.css';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
