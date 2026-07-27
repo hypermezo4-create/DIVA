@@ -1,6 +1,6 @@
 import 'server-only';
 
-import {and, asc, eq, isNotNull, sql, type SQL} from 'drizzle-orm';
+import {and, asc, eq, sql, type SQL} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
   collections,
@@ -19,8 +19,16 @@ import type {CatalogFilter} from '../types';
 
 function filterCondition(filter: CatalogFilter): SQL | undefined {
   if (filter === 'all') return undefined;
-  if (filter === 'new') return eq(products.newArrival, true);
-  if (filter === 'collections') return isNotNull(products.collectionId);
+  if (filter === 'offers') {
+    return sql`exists (
+      select 1 from product_variants pv_offer
+      where pv_offer.product_id = ${products.id}
+        and pv_offer.active = true
+        and pv_offer.price_minor is not null
+        and pv_offer.compare_at_minor is not null
+        and pv_offer.compare_at_minor > pv_offer.price_minor
+    )`;
+  }
   return eq(products.audience, filter);
 }
 
@@ -50,10 +58,20 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
         limit 1
       )`,
       priceMinor: sql<number | null>`(
-        select min(pv.price_minor) from product_variants pv
+        select pv.price_minor from product_variants pv
         where pv.product_id = ${products.id}
           and pv.active = true
           and pv.price_minor is not null
+        order by pv.price_minor asc
+        limit 1
+      )`,
+      compareAtMinor: sql<number | null>`(
+        select pv.compare_at_minor from product_variants pv
+        where pv.product_id = ${products.id}
+          and pv.active = true
+          and pv.price_minor is not null
+        order by pv.price_minor asc
+        limit 1
       )`,
       currency: sql<string | null>`(
         select pv.currency from product_variants pv
