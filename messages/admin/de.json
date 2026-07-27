@@ -1,0 +1,14 @@
+{
+  "Admin": {
+    "nav": {"content": "Inhalte & Übersetzungen"},
+    "content": {
+      "metaTitle": "Inhalte & Übersetzungen",
+      "title": "Redaktionelle Inhalte.",
+      "intro": "Bearbeite kundennahe Startseiten- und Footer-Texte in allen vier Store-Sprachen ohne Codeänderung.",
+      "storefront": "Storefront-Übersetzungen",
+      "storefrontNote": "{count} bearbeitbare Inhaltsfelder mit Arabisch, Englisch, Deutsch und Russisch.",
+      "inherited": "Verwendet Datei-Standard",
+      "override": "Datenbank-Überschreibung"
+    }
+  }
+}
