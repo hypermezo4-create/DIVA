@@ -47,6 +47,9 @@ jobs:
       - name: Seed catalog
         run: npm run db:seed
 
+      - name: Commerce smoke test
+        run: npm run test:smoke
+
       - name: Lint
         run: npm run lint
 
