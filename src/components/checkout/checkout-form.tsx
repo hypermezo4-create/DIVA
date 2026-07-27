@@ -87,10 +87,13 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
         headers: {'content-type': 'application/json'},
         body: JSON.stringify(payload)
       });
-      const result = await response.json() as {orderNumber?: string; error?: string};
-      if (!response.ok || !result.orderNumber) throw new Error(result.error ?? 'CHECKOUT_FAILED');
+      const result = await response.json() as {orderNumber?: string; confirmationToken?: string; error?: string};
+      if (!response.ok || !result.orderNumber || !result.confirmationToken) {
+        throw new Error(result.error ?? 'CHECKOUT_FAILED');
+      }
       await clearCart();
-      router.push(`/${locale}/order/${result.orderNumber}`);
+      const token = encodeURIComponent(result.confirmationToken);
+      router.push(`/${locale}/order/${result.orderNumber}?token=${token}`);
     } catch {
       setError(copy.error);
       setSubmitting(false);
