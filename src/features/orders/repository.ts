@@ -1,10 +1,10 @@
 import 'server-only';
 
-import {asc, eq} from 'drizzle-orm';
+import {and, asc, eq} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {orderItems, orders} from '@/db/schema';
 
-export async function findOrderConfirmation(number: string) {
+export async function findOrderConfirmation(number: string, confirmationToken: string) {
   const [order] = await getDatabase()
     .select({
       id: orders.id,
@@ -18,7 +18,7 @@ export async function findOrderConfirmation(number: string) {
       createdAt: orders.createdAt
     })
     .from(orders)
-    .where(eq(orders.number, number))
+    .where(and(eq(orders.number, number), eq(orders.confirmationToken, confirmationToken)))
     .limit(1);
 
   if (!order) return null;
