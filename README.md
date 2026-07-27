@@ -61,7 +61,7 @@ npm run build
 
 1. Foundation and design system — complete
 2. Catalog and product experience — complete
-3. Commerce backend — complete in code; deployment requires a PostgreSQL connection and auth secret
+3. Commerce backend — implementation added; database provisioning and runtime validation still require a PostgreSQL connection and auth secret
 4. Customer commerce — in progress: account UI is implemented; cart, wishlist, checkout, orders, payments and shipping remain
 5. Admin operations — products, stock, orders, customers, content and translations
 6. Production hardening — tests, accessibility, security, SEO, performance and deployment
