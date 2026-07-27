@@ -11,15 +11,23 @@ const demoCommerce = {
   'mini-mirror-04': {priceMinor: 14900, compareAtMinor: 17900, sku: 'MINI04'}
 } as const;
 
+type DemoSlug = keyof typeof demoCommerce;
+
 const collectionNames = {
   mirror: {en: 'The Mirror Edition', ar: 'مجموعة المرآة', de: 'The Mirror Edition', ru: 'The Mirror Edition'},
   city: {en: 'The City Edit', ar: 'اختيارات المدينة', de: 'The City Edit', ru: 'The City Edit'}
 } as const;
 
+function pricingFor(slug: string) {
+  const pricing = demoCommerce[slug as DemoSlug];
+  if (!pricing) throw new Error(`Missing fallback pricing for ${slug}`);
+  return pricing;
+}
+
 function matchesFilter(product: (typeof catalogProducts)[number], filter: CatalogFilter) {
   if (filter === 'all') return true;
   if (filter === 'offers') {
-    const pricing = demoCommerce[product.slug];
+    const pricing = pricingFor(product.slug);
     return pricing.compareAtMinor !== null && pricing.compareAtMinor > pricing.priceMinor;
   }
   return product.audience === filter;
@@ -30,7 +38,7 @@ export function listFallbackProducts(locale: AppLocale, filter: CatalogFilter) {
     .filter((product) => matchesFilter(product, filter))
     .map((product) => {
       const copy = product.copy[locale];
-      const pricing = demoCommerce[product.slug];
+      const pricing = pricingFor(product.slug);
       return {
         id: `fallback-${product.slug}`,
         slug: product.slug,
@@ -55,7 +63,7 @@ export function findFallbackProduct(locale: AppLocale, slug: string) {
   if (!product) return null;
 
   const copy = product.copy[locale];
-  const pricing = demoCommerce[product.slug];
+  const pricing = pricingFor(product.slug);
   const variants = product.colors.flatMap((color, colorIndex) => product.sizes.map((size) => ({
     id: `fallback-${product.slug}-${colorIndex}-${size}`,
     sku: `${pricing.sku}-PREVIEW-${colorIndex}-${size}`,
