@@ -108,7 +108,11 @@ export function CartView({locale, copy}: {locale: AppLocale; copy: Copy}) {
           <span>{copy.subtotal}</span>
           <strong>{subtotal !== null ? money(locale, subtotal, currencies[0]) : '—'}</strong>
         </div>
-        <button className="button button--primary" type="button" disabled>{copy.checkout}</button>
+        {subtotal !== null ? (
+          <Link href={`/${locale}/checkout`} className="button button--primary">{copy.checkout}</Link>
+        ) : (
+          <button className="button button--primary" type="button" disabled>{copy.checkout}</button>
+        )}
         <small>{copy.checkoutSoon}</small>
       </aside>
     </div>
