@@ -6,7 +6,7 @@ import {ProductCard} from '@/components/catalog/product-card';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {isCatalogFilter, listCatalogProducts} from '@/features/catalog/catalog';
-import type {CatalogFilter} from '@/features/catalog/types';
+import {catalogFilters, type CatalogFilter} from '@/features/catalog/types';
 import {isAppLocale} from '@/i18n/routing';
 
 type ShopPageProps = {
@@ -35,7 +35,7 @@ export default async function ShopPage({params, searchParams}: ShopPageProps) {
   const activeFilter: CatalogFilter = isCatalogFilter(category) ? category : 'all';
   const products = listCatalogProducts(activeFilter);
   const filterLabels = Object.fromEntries(
-    ['all', 'new', 'women', 'men', 'kids', 'collections'].map((key) => [key, t(`filters.${key}`)])
+    catalogFilters.map((filter) => [filter, t(`filters.${filter}`)])
   ) as Record<CatalogFilter, string>;
 
   return (
