@@ -38,7 +38,7 @@ export async function SiteHeader({locale}: {locale: AppLocale}) {
       <SkipToContent label={skipLabels[locale]} />
       <div className="site-header__inner">
         <Link href={`/${locale}`} className="brand-link" aria-label={`DIVA · ${t('home')}`}>
-          <BrandMark />
+          <BrandMark compact />
         </Link>
         <nav className="desktop-nav" aria-label={t('label')}>
           {links.map(([slug, label]) => (
