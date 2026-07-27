@@ -19,6 +19,7 @@ export const orders = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     number: varchar('number', {length: 32}).notNull(),
+    confirmationToken: varchar('confirmation_token', {length: 64}).notNull(),
     userId: text('user_id').references(() => user.id, {onDelete: 'set null'}),
     status: orderStatusEnum('status').notNull().default('pending_payment'),
     paymentStatus: paymentStatusEnum('payment_status').notNull().default('pending'),
@@ -41,6 +42,7 @@ export const orders = pgTable(
   },
   (table) => [
     uniqueIndex('orders_number_unique').on(table.number),
+    uniqueIndex('orders_confirmation_token_unique').on(table.confirmationToken),
     index('orders_user_id_idx').on(table.userId),
     index('orders_status_idx').on(table.status),
     index('orders_created_at_idx').on(table.createdAt),
