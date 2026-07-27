@@ -1,7 +1,7 @@
 import 'server-only';
 
 import {cache} from 'react';
-import {and, asc, eq, sql, type SQL} from 'drizzle-orm';
+import {and, asc, desc, eq, sql, type SQL} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
   collections,
@@ -9,6 +9,8 @@ import {
   colors,
   colorTranslations,
   inventory,
+  orderItems,
+  orders,
   productImages,
   productTranslations,
   products,
@@ -110,6 +112,23 @@ export async function listActiveProducts(locale: AppLocale, filter: CatalogFilte
     .leftJoin(collectionTranslations, localizedCollectionJoin(locale))
     .where(and(eq(products.status, 'active'), filterCondition(filter)))
     .orderBy(asc(productTranslations.name));
+}
+
+export async function listBestSellingProductIds(limit = 4) {
+  if (!hasDatabaseConfiguration()) return [];
+
+  const rows = await getDatabase()
+    .select({productId: productVariants.productId})
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .innerJoin(productVariants, eq(orderItems.variantId, productVariants.id))
+    .innerJoin(products, eq(productVariants.productId, products.id))
+    .where(and(eq(orders.paymentStatus, 'paid'), eq(products.status, 'active')))
+    .groupBy(productVariants.productId)
+    .orderBy(desc(sql`sum(${orderItems.quantity})`))
+    .limit(Math.max(1, Math.min(limit, 12)));
+
+  return rows.map((row) => row.productId);
 }
 
 export async function listActiveProductSitemapEntries() {
