@@ -1,22 +1,23 @@
 import type {NextRequest} from 'next/server';
 
+function parseOrigin(rawUrl: string) {
+  try {
+    return new URL(rawUrl).origin;
+  } catch (error) {
+    if (error instanceof TypeError) return null;
+    throw error;
+  }
+}
+
 function configuredOrigins() {
-  const values = [
+  const configuredUrls = [
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.BETTER_AUTH_URL,
     process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined,
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
-  ].filter((value): value is string => Boolean(value));
+  ].filter((rawUrl): rawUrl is string => Boolean(rawUrl));
 
-  const origins = new Set<string>();
-  for (const value of values) {
-    try {
-      origins.add(new URL(value).origin);
-    } catch {
-      // Invalid optional deployment metadata should not widen the allow-list.
-    }
-  }
-  return origins;
+  return new Set(configuredUrls.map(parseOrigin).filter((origin): origin is string => origin !== null));
 }
 
 export function isTrustedMutationRequest(request: NextRequest) {
@@ -26,7 +27,7 @@ export function isTrustedMutationRequest(request: NextRequest) {
   const origin = request.headers.get('origin');
   if (!origin) return fetchSite === 'same-origin' || fetchSite === 'none';
 
-  const allowed = configuredOrigins();
-  allowed.add(request.nextUrl.origin);
-  return allowed.has(origin);
+  const allowedOrigins = configuredOrigins();
+  allowedOrigins.add(request.nextUrl.origin);
+  return allowedOrigins.has(origin);
 }
