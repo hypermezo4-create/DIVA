@@ -39,7 +39,7 @@ export default async function CartPage({params}: PageProps) {
             quantity: t('quantity'),
             remove: t('remove'),
             subtotal: t('subtotal'),
-            stock: (count) => t('stock', {count}),
+            stockTemplate: String(t.raw('stock')),
             checkout: t('checkout'),
             checkoutSoon: t('checkoutSoon'),
             refreshing: t('refreshing')
