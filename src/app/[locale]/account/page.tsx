@@ -1,10 +1,12 @@
 import type {Metadata} from 'next';
+import {headers} from 'next/headers';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {AccountPanel} from '@/components/account/account-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {isAppLocale} from '@/i18n/routing';
+import {getSessionFromHeaders} from '@/lib/session';
 import styles from './account.module.css';
 
 type AccountPageProps = {params: Promise<{locale: string}>};
@@ -22,7 +24,10 @@ export default async function AccountPage({params}: AccountPageProps) {
   if (!isAppLocale(locale)) notFound();
 
   setRequestLocale(locale);
-  const t = await getTranslations({locale, namespace: 'Account'});
+  const [t, session] = await Promise.all([
+    getTranslations({locale, namespace: 'Account'}),
+    getSessionFromHeaders(await headers())
+  ]);
 
   return (
     <>
@@ -35,6 +40,7 @@ export default async function AccountPage({params}: AccountPageProps) {
         </header>
         <AccountPanel
           locale={locale}
+          isAdmin={session?.user.role === 'admin'}
           copy={{
             signIn: t('signIn'),
             signUp: t('signUp'),
