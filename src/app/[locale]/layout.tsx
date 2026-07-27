@@ -11,6 +11,9 @@ import '../accessibility.css';
 import '../storefront-redesign.css';
 import '../storefront-polish.css';
 
+const brandMark = '/brand/diva-logo-original-mark.svg';
+const brandLockup = '/brand/diva-logo-original-full.svg';
+
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   applicationName: 'DIVA',
@@ -20,16 +23,23 @@ export const metadata: Metadata = {
   },
   description: 'DIVA luxury footwear — a premium multilingual storefront for signature footwear.',
   formatDetection: {telephone: false, address: false, email: false},
+  icons: {
+    icon: brandMark,
+    shortcut: brandMark,
+    apple: brandMark
+  },
   openGraph: {
     type: 'website',
     siteName: 'DIVA',
     title: 'DIVA · Premium Mirror',
-    description: 'Luxury footwear for women, men and kids.'
+    description: 'Luxury footwear for women, men and kids.',
+    images: [{url: brandLockup, alt: 'DIVA Premium Mirror luxury footwear'}]
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DIVA · Premium Mirror',
-    description: 'Luxury footwear for women, men and kids.'
+    description: 'Luxury footwear for women, men and kids.',
+    images: [brandLockup]
   }
 };
 
@@ -38,8 +48,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: 'light dark',
   themeColor: [
-    {media: '(prefers-color-scheme: light)', color: '#f5eee4'},
-    {media: '(prefers-color-scheme: dark)', color: '#1f1712'}
+    {media: '(prefers-color-scheme: light)', color: '#f7ecdd'},
+    {media: '(prefers-color-scheme: dark)', color: '#120c08'}
   ]
 };
 
