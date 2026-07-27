@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import {useState, type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
+import type {AppLocale} from '@/i18n/routing';
 import {authClient} from '@/lib/auth-client';
 import styles from './account-panel.module.css';
 
@@ -16,6 +18,7 @@ type AccountCopy = {
   switchToRegister: string;
   switchToLogin: string;
   signedInAs: string;
+  myOrders: string;
   signOut: string;
   working: string;
   genericError: string;
@@ -46,18 +49,31 @@ function AccountTabs({mode, copy, onChange}: {mode: AccountMode; copy: AccountCo
   );
 }
 
-function AccountSession({copy, name, email, onSignOut}: {copy: AccountCopy; name: string; email: string; onSignOut: () => void}) {
+function AccountSession({
+  copy,
+  locale,
+  name,
+  email,
+  onSignOut
+}: {
+  copy: AccountCopy;
+  locale: AppLocale;
+  name: string;
+  email: string;
+  onSignOut: () => void;
+}) {
   return (
     <div className={styles.session}>
       <p>{copy.signedInAs}</p>
       <strong>{name}</strong>
       <span>{email}</span>
+      <Link className="button button--primary" href={`/${locale}/account/orders`}>{copy.myOrders}</Link>
       <button className="button button--ghost" type="button" onClick={onSignOut}>{copy.signOut}</button>
     </div>
   );
 }
 
-export function AccountPanel({copy}: {copy: AccountCopy}) {
+export function AccountPanel({copy, locale}: {copy: AccountCopy; locale: AppLocale}) {
   const router = useRouter();
   const {data: session, isPending} = authClient.useSession();
   const [mode, setMode] = useState<AccountMode>('sign-in');
@@ -84,7 +100,15 @@ export function AccountPanel({copy}: {copy: AccountCopy}) {
 
   if (isPending) return <div className={styles.status}>{copy.working}</div>;
   if (session) {
-    return <AccountSession copy={copy} name={session.user.name} email={session.user.email} onSignOut={() => void signOut()} />;
+    return (
+      <AccountSession
+        copy={copy}
+        locale={locale}
+        name={session.user.name}
+        email={session.user.email}
+        onSignOut={() => void signOut()}
+      />
+    );
   }
 
   return (
