@@ -18,10 +18,10 @@ Current and planned commerce domains:
 features/
 ├── catalog/      storefront contract + PostgreSQL repository
 ├── inventory/    atomic stock reservation/release
-├── cart/         next phase
-├── checkout/     next phase
-├── orders/       next phase
-├── customers/    auth backend implemented; customer UI next
+├── cart/         next customer-commerce slice
+├── checkout/     planned
+├── orders/       planned
+├── customers/    Better Auth backend + localized account UI
 └── admin/        planned
 ```
 
@@ -47,11 +47,11 @@ Inventory stores `onHand` and `reserved` separately. The inventory service updat
 
 Better Auth is mounted at `/api/auth/[...all]` and uses the same PostgreSQL connection through the Drizzle adapter. The schema contains Better Auth's user, session, account and verification models. Email/password authentication is enabled. The application owns `role` and `locale` user fields rather than accepting them from untrusted sign-up input.
 
-Server runtime configuration is validated when database or authentication code is first used, so production requests cannot silently run with missing credentials.
+The localized `/[locale]/account` surface uses the Better Auth browser client for registration, sign-in, session display and sign-out. Server runtime configuration is validated when database or authentication code is first used, so production requests cannot silently run with missing credentials.
 
 ## Catalog boundary
 
-The existing in-code catalog remains the presentation fixture while the backend is provisioned. The PostgreSQL repository now exposes active-product listing and localized product detail queries behind the same catalog domain. This keeps pages independent from Drizzle and allows the next customer-commerce phase to switch reads to persistence after real merchandising data is loaded.
+The existing in-code catalog remains the presentation fixture while the backend is provisioned. The PostgreSQL repository now exposes active-product listing and localized product detail queries behind the same catalog domain. This keeps pages independent from Drizzle and allows the customer-commerce phase to switch reads to persistence after real merchandising data is loaded.
 
 ## Internationalization
 
@@ -63,4 +63,4 @@ The visual system is derived from the supplied DIVA mark: warm ivory, espresso, 
 
 ## Next implementation boundary
 
-Customer commerce comes next: authenticated account surfaces, cart and wishlist state, checkout validation, order creation, payment-provider integration and shipping methods. Those features consume catalog variants and inventory through domain services rather than writing stock directly.
+The next customer-commerce slice is cart and wishlist state tied to real catalog variants. Checkout validation, order creation, payment-provider integration and shipping methods follow after merchandising data includes sellable prices and inventory. Those features consume catalog variants and inventory through domain services rather than writing stock directly.
