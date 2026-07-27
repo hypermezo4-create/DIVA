@@ -48,7 +48,7 @@ export default async function CheckoutPage({params}: PageProps) {
             postalCode: t('postalCode'),
             countryCode: t('countryCode'),
             shipping: t('shipping'),
-            standardShipping: t('standardShipping'),
+            shippingUnavailable: t('shippingUnavailable'),
             subtotal: t('subtotal'),
             shippingCost: t('shippingCost'),
             total: t('total'),
