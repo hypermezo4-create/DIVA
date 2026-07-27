@@ -12,6 +12,8 @@
     "collections": "Kollektionen",
     "shop": "Shop",
     "account": "Konto",
+    "wishlist": "Wunschliste",
+    "cart": "Warenkorb",
     "home": "Startseite",
     "language": "Sprache",
     "theme": "Farbschema wechseln"
@@ -45,8 +47,9 @@
   "Shop": {
     "metaTitle": "The DIVA Edit · Luxuriöse Schuhe",
     "title": "The DIVA Edit.",
-    "description": "Entdecke den ersten DIVA Katalog für Damen, Herren und Kinder sowie Neuheiten und Signatur-Kollektionen.",
+    "description": "Entdecke den live angebundenen DIVA Katalog für Damen, Herren und Kinder sowie Neuheiten und Signatur-Kollektionen.",
     "newBadge": "Neu",
+    "soldOut": "Ausverkauft",
     "resultCount": "{count, plural, one {# Silhouette} other {# Silhouetten}}",
     "filters": {
       "all": "Alle Schuhe",
@@ -60,15 +63,42 @@
   "Product": {
     "home": "Startseite",
     "shop": "Shop",
-    "sizes": "Verfügbare Größen",
-    "colors": "Farben",
+    "sizes": "Größe",
+    "colors": "Farbe",
     "collection": "Kollektion",
+    "priceFrom": "Preis",
+    "addToCart": "In den Warenkorb",
+    "adding": "Wird hinzugefügt…",
+    "addToWishlist": "Zur Wunschliste",
+    "removeFromWishlist": "Von Wunschliste entfernen",
+    "outOfStock": "Diese Variante ist derzeit ausverkauft.",
+    "chooseOptions": "Bitte zuerst Farbe und Größe wählen.",
+    "unavailable": "Diese Variante ist derzeit nicht verfügbar.",
+    "added": "Zum Warenkorb hinzugefügt.",
     "moreFromCategory": "Kategorie entdecken",
-    "backToShop": "Zurück zum Shop",
-    "collections": {
-      "mirror": "The Mirror Edition",
-      "city": "The City Edit"
-    }
+    "backToShop": "Zurück zum Shop"
+  },
+  "Cart": {
+    "metaTitle": "Warenkorb",
+    "title": "Deine DIVA Auswahl.",
+    "intro": "Prüfe Größe, Farbe und aktuelle Verfügbarkeit vor dem Checkout.",
+    "empty": "Dein Warenkorb wartet auf das erste Paar.",
+    "continueShopping": "Weiter einkaufen",
+    "quantity": "Menge",
+    "remove": "Entfernen",
+    "subtotal": "Zwischensumme",
+    "stock": "{count} verfügbar",
+    "checkout": "Weiter zum Checkout",
+    "checkoutSoon": "Der Checkout folgt in der nächsten Commerce-Phase.",
+    "refreshing": "Verfügbarkeit wird aktualisiert…"
+  },
+  "Wishlist": {
+    "metaTitle": "Wunschliste",
+    "title": "Deine DIVA Wunschliste.",
+    "intro": "Speichere Silhouetten, die du später erneut ansehen möchtest.",
+    "empty": "Noch keine Silhouetten gespeichert.",
+    "continueShopping": "Kollektion entdecken",
+    "remove": "Entfernen"
   },
   "Account": {
     "metaTitle": "DIVA Kundenkonto",
