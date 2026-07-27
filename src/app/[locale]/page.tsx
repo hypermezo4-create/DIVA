@@ -26,13 +26,21 @@ export default async function HomePage({params}: PageProps) {
   }
 
   setRequestLocale(locale);
-  const t = await getTranslations({locale, namespace: 'Home'});
+  const [t, navigationT] = await Promise.all([
+    getTranslations({locale, namespace: 'Home'}),
+    getTranslations({locale, namespace: 'Navigation'})
+  ]);
 
-  const signatureItems = ['women', 'men', 'kids', 'offers'].map((key) => ({
+  const signatureItems = ['women', 'men', 'kids'].map((key) => ({
     slug: key,
     title: t(`categories.${key}.title`),
     label: t(`categories.${key}.label`)
   }));
+  signatureItems.push({
+    slug: 'offers',
+    title: navigationT('offers'),
+    label: navigationT('offers')
+  });
 
   const values = ['craft', 'comfort', 'service'].map((key) => ({
     title: t(`values.${key}.title`),
