@@ -1,5 +1,6 @@
 import 'server-only';
 
+import {randomUUID} from 'node:crypto';
 import {and, eq, inArray, sql} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {
@@ -30,6 +31,17 @@ export type CheckoutAddress = {
   countryCode: string;
 };
 
+type OrderItemSnapshot = {
+  variantId: string;
+  sku: string;
+  productName: string;
+  sizeLabel: string;
+  colorLabel: string;
+  quantity: number;
+  unitPriceMinor: number;
+  lineTotalMinor: number;
+};
+
 export class CheckoutError extends Error {
   constructor(public readonly code: 'EMPTY_CART' | 'INVALID_ITEM' | 'INSUFFICIENT_STOCK' | 'MIXED_CURRENCY') {
     super(code);
@@ -38,7 +50,7 @@ export class CheckoutError extends Error {
 
 function createOrderNumber() {
   const stamp = Date.now().toString(36).toUpperCase();
-  const suffix = crypto.randomUUID().slice(0, 6).toUpperCase();
+  const suffix = randomUUID().slice(0, 6).toUpperCase();
   return `DIVA-${stamp}-${suffix}`;
 }
 
@@ -94,16 +106,20 @@ export async function createCheckoutOrder({
       ));
 
     if (rows.length !== variantIds.length) throw new CheckoutError('INVALID_ITEM');
-    if (rows.some((row) => row.priceMinor === null || row.currency === null)) throw new CheckoutError('INVALID_ITEM');
+    const sellableRows = rows.map((row) => {
+      if (row.priceMinor === null || row.currency === null) throw new CheckoutError('INVALID_ITEM');
+      return {...row, priceMinor: row.priceMinor, currency: row.currency};
+    });
 
-    const currencies = new Set(rows.map((row) => row.currency));
+    const currencies = new Set(sellableRows.map((row) => row.currency));
     if (currencies.size !== 1) throw new CheckoutError('MIXED_CURRENCY');
-    const currency = rows[0]!.currency!;
+    const currency = sellableRows[0]?.currency;
+    if (!currency) throw new CheckoutError('INVALID_ITEM');
 
     let subtotalMinor = 0;
-    const snapshots = [];
+    const snapshots: OrderItemSnapshot[] = [];
 
-    for (const row of rows) {
+    for (const row of sellableRows) {
       const quantity = quantityByVariant.get(row.variantId) ?? 0;
       if (!Number.isInteger(quantity) || quantity <= 0 || quantity > 20) throw new CheckoutError('INVALID_ITEM');
 
@@ -117,10 +133,18 @@ export async function createCheckoutOrder({
         .returning({variantId: inventory.variantId});
 
       if (!reserved) throw new CheckoutError('INSUFFICIENT_STOCK');
-      const unitPriceMinor = row.priceMinor!;
-      const lineTotalMinor = unitPriceMinor * quantity;
+      const lineTotalMinor = row.priceMinor * quantity;
       subtotalMinor += lineTotalMinor;
-      snapshots.push({...row, quantity, unitPriceMinor, lineTotalMinor});
+      snapshots.push({
+        variantId: row.variantId,
+        sku: row.sku,
+        productName: row.productName,
+        sizeLabel: row.sizeLabel,
+        colorLabel: row.colorLabel,
+        quantity,
+        unitPriceMinor: row.priceMinor,
+        lineTotalMinor
+      });
     }
 
     const shippingMinor = 0;
@@ -147,8 +171,10 @@ export async function createCheckoutOrder({
       })
       .returning({id: orders.id, number: orders.number});
 
+    if (!order) throw new Error('Order insert did not return a row.');
+
     await tx.insert(orderItems).values(snapshots.map((item) => ({
-      orderId: order!.id,
+      orderId: order.id,
       variantId: item.variantId,
       sku: item.sku,
       productName: item.productName,
@@ -164,6 +190,6 @@ export async function createCheckoutOrder({
       if (cart) await tx.delete(cartItems).where(eq(cartItems.cartId, cart.id));
     }
 
-    return {orderId: order!.id, orderNumber: order!.number, currency, subtotalMinor, shippingMinor, totalMinor};
+    return {orderId: order.id, orderNumber: order.number, currency, subtotalMinor, shippingMinor, totalMinor};
   });
 }
