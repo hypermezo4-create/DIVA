@@ -5,6 +5,7 @@ import {getAdminSession} from '@/features/admin/access';
 import {isStorefrontContentKey} from '@/features/content/definitions';
 import {deleteStorefrontContent, setStorefrontContent} from '@/features/content/repository';
 import {isAppLocale} from '@/i18n/routing';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 
 const identitySchema = z.object({
   locale: z.string(),
@@ -19,7 +20,16 @@ function isValidIdentity(value: {locale: string; key: string}) {
   return isAppLocale(value.locale) && isStorefrontContentKey(value.key);
 }
 
+function rejectCrossSite(request: NextRequest) {
+  return isTrustedMutationRequest(request)
+    ? null
+    : NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
+}
+
 export async function PATCH(request: NextRequest) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
+
   const session = await getAdminSession(request.headers);
   if (!session) return NextResponse.json({error: 'FORBIDDEN'}, {status: 403});
 
@@ -39,6 +49,9 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
+
   const session = await getAdminSession(request.headers);
   if (!session) return NextResponse.json({error: 'FORBIDDEN'}, {status: 403});
 
