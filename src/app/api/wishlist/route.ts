@@ -1,0 +1,38 @@
+import {NextRequest, NextResponse} from 'next/server';
+import {z} from 'zod';
+import {addWishlistItem, getWishlistEntries, removeWishlistItem} from '@/features/customer-commerce/repository';
+import {isAppLocale} from '@/i18n/routing';
+import {getSessionFromHeaders} from '@/lib/session';
+
+const itemSchema = z.object({productId: z.string().uuid()});
+
+async function authenticatedUser(request: NextRequest) {
+  const session = await getSessionFromHeaders(request.headers);
+  return session?.user ?? null;
+}
+
+export async function GET(request: NextRequest) {
+  const user = await authenticatedUser(request);
+  if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
+  const locale = request.nextUrl.searchParams.get('locale') ?? 'en';
+  if (!isAppLocale(locale)) return NextResponse.json({error: 'INVALID_LOCALE'}, {status: 400});
+  return NextResponse.json({items: await getWishlistEntries(user.id, locale)});
+}
+
+export async function POST(request: NextRequest) {
+  const user = await authenticatedUser(request);
+  if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
+  const parsed = itemSchema.safeParse(await request.json());
+  if (!parsed.success) return NextResponse.json({error: 'INVALID_ITEM'}, {status: 400});
+  await addWishlistItem(user.id, parsed.data.productId);
+  return NextResponse.json({ok: true}, {status: 201});
+}
+
+export async function DELETE(request: NextRequest) {
+  const user = await authenticatedUser(request);
+  if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
+  const parsed = itemSchema.safeParse(await request.json());
+  if (!parsed.success) return NextResponse.json({error: 'INVALID_ITEM'}, {status: 400});
+  await removeWishlistItem(user.id, parsed.data.productId);
+  return NextResponse.json({ok: true});
+}
