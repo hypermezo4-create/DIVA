@@ -6,9 +6,12 @@ import {SignatureGrid} from '@/components/home/signature-grid';
 import {ValueStrip} from '@/components/home/value-strip';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
+import {JsonLd} from '@/components/seo/json-ld';
 import type {StorefrontContentKey} from '@/features/content/definitions';
 import {getStorefrontContent} from '@/features/content/repository';
 import {isAppLocale} from '@/i18n/routing';
+import {languageAlternates, localizedPath} from '@/lib/seo';
+import {getSiteUrl} from '@/lib/site-url';
 
 type PageProps = {params: Promise<{locale: string}>};
 
@@ -17,7 +20,13 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   if (!isAppLocale(locale)) return {};
 
   const t = await getTranslations({locale, namespace: 'Metadata'});
-  return {title: t('title'), description: t('description')};
+  const canonical = localizedPath(locale);
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: {canonical, languages: languageAlternates()},
+    openGraph: {title: t('title'), description: t('description'), url: canonical, locale}
+  };
 }
 
 export default async function HomePage({params}: PageProps) {
@@ -34,6 +43,8 @@ export default async function HomePage({params}: PageProps) {
     getStorefrontContent(locale)
   ]);
   const content = (key: StorefrontContentKey, fallback: string) => overrides.get(key) ?? fallback;
+  const siteUrl = getSiteUrl();
+  const localizedUrl = new URL(localizedPath(locale), siteUrl).toString();
 
   const signatureItems = ['women', 'men', 'kids'].map((key) => ({
     slug: key,
@@ -53,6 +64,23 @@ export default async function HomePage({params}: PageProps) {
 
   return (
     <>
+      <JsonLd
+        value={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'DIVA',
+            url: siteUrl.origin
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'DIVA',
+            url: localizedUrl,
+            inLanguage: locale
+          }
+        ]}
+      />
       <SiteHeader locale={locale} />
       <main>
         <Hero
