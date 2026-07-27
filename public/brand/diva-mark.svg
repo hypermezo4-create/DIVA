@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">DIVA monogram</title>
+  <desc id="desc">A champagne-gold D monogram topped with a crown and a small mirror sparkle.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#7a5427"/>
+      <stop offset="0.28" stop-color="#d8b875"/>
+      <stop offset="0.56" stop-color="#9d6e32"/>
+      <stop offset="0.82" stop-color="#e3c98d"/>
+      <stop offset="1" stop-color="#6d4722"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="24" d="M154 180h82c95 0 153 53 153 132 0 83-62 135-157 135h-78V180Z"/>
+    <path stroke-width="17" d="M184 205v211c75-5 124-40 124-106 0-61-42-97-124-105Z"/>
+    <path stroke-width="10" d="M128 164c36-41 80-59 129-54 48 5 83 27 108 61"/>
+    <path stroke-width="9" d="M145 147 128 96l43 25 28-56 30 55 42-27-7 53 48-16-12 53"/>
+  </g>
+  <g fill="url(#gold)">
+    <circle cx="128" cy="96" r="9"/>
+    <circle cx="199" cy="65" r="9"/>
+    <circle cx="271" cy="93" r="9"/>
+    <circle cx="365" cy="130" r="9"/>
+    <path d="M377 255l10 24 24 10-24 10-10 24-10-24-24-10 24-10 10-24Z"/>
+  </g>
+</svg>
