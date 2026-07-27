@@ -1,6 +1,6 @@
 import 'server-only';
 
-import {asc, eq} from 'drizzle-orm';
+import {and, asc, eq} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {siteContent} from '@/db/schema';
 import type {AppLocale} from '@/i18n/routing';
@@ -60,4 +60,12 @@ export async function setStorefrontContent({
     })
     .returning({key: siteContent.key, locale: siteContent.locale, value: siteContent.value});
   return row;
+}
+
+export async function deleteStorefrontContent(key: StorefrontContentKey, locale: AppLocale) {
+  const [deleted] = await getDatabase()
+    .delete(siteContent)
+    .where(and(eq(siteContent.key, key), eq(siteContent.locale, locale)))
+    .returning({key: siteContent.key, locale: siteContent.locale});
+  return deleted ?? null;
 }
