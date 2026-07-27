@@ -27,6 +27,7 @@ type CommerceContextValue = {
   addToCart: (variantId: string, quantity?: number) => Promise<void>;
   setCartQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeFromCart: (variantId: string) => Promise<void>;
+  clearCart: () => Promise<void>;
   toggleWishlist: (productId: string) => Promise<void>;
   isWishlisted: (productId: string) => boolean;
   refresh: () => Promise<void>;
@@ -202,6 +203,16 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
     });
   }, [refresh, userId]);
 
+  const clearCart = useCallback(async () => {
+    if (userId) {
+      await refresh();
+      return;
+    }
+    setGuestCart([]);
+    setCart([]);
+    writeGuestCart([]);
+  }, [refresh, userId]);
+
   const toggleWishlist = useCallback(async (productId: string) => {
     const active = wishlist.some((item) => item.productId === productId);
     if (userId) {
@@ -229,12 +240,14 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
     addToCart,
     setCartQuantity,
     removeFromCart,
+    clearCart,
     toggleWishlist,
     isWishlisted: (productId: string) => wishlist.some((item) => item.productId === productId),
     refresh
   }), [
     addToCart,
     cart,
+    clearCart,
     hydrated,
     refresh,
     removeFromCart,
