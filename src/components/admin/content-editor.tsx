@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {useRouter} from 'next/navigation';
 import type {AppLocale} from '@/i18n/routing';
 import type {StorefrontContentKey} from '@/features/content/definitions';
-import styles from './admin-shell.module.css';
+import styles from './content-editor.module.css';
 
 type Entry = {
   key: StorefrontContentKey;
@@ -53,19 +53,19 @@ export function ContentEditor({
   }
 
   return (
-    <div className={styles.contentList}>
+    <div className={styles.list}>
       {entries.map((entry) => (
-        <article className={styles.contentCard} key={entry.key}>
-          <div className={styles.contentKey}>
+        <article className={styles.card} key={entry.key}>
+          <div className={styles.key}>
             <strong>{entry.key}</strong>
             <span>{labels.override}</span>
           </div>
-          <div className={styles.contentLocales}>
+          <div className={styles.locales}>
             {(Object.keys(entry.values) as AppLocale[]).map((locale) => {
               const stateKey: StateKey = `${entry.key}:${locale}`;
               const state = states[stateKey] ?? 'idle';
               return (
-                <label className={styles.contentField} key={locale}>
+                <label className={styles.field} key={locale}>
                   <span>
                     <strong>{localeLabels[locale]}</strong>
                     {!entry.overridden[locale] && <small>{labels.inherited}</small>}
@@ -78,7 +78,7 @@ export function ContentEditor({
                     }}
                   />
                   <div className={styles.controls}>
-                    <button className={styles.smallButton} type="button" disabled={state === 'saving'} onClick={() => void save(entry.key, locale)}>
+                    <button className={styles.button} type="button" disabled={state === 'saving'} onClick={() => void save(entry.key, locale)}>
                       {state === 'saving' ? labels.saving : labels.save}
                     </button>
                     {state === 'saved' && <span className={styles.success}>{labels.saved}</span>}
