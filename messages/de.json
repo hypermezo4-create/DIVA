@@ -11,6 +11,7 @@
     "kids": "Kinder",
     "collections": "Kollektionen",
     "shop": "Shop",
+    "account": "Konto",
     "home": "Startseite",
     "language": "Sprache",
     "theme": "Farbschema wechseln"
@@ -68,5 +69,23 @@
       "mirror": "The Mirror Edition",
       "city": "The City Edit"
     }
+  },
+  "Account": {
+    "metaTitle": "DIVA Kundenkonto",
+    "title": "Dein DIVA Konto.",
+    "intro": "Melde dich an, um zukünftige Bestellungen und deinen persönlichen DIVA Service zu verwalten, oder erstelle ein neues Konto.",
+    "signIn": "Anmelden",
+    "signUp": "Konto erstellen",
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginAction": "Zum Konto",
+    "registerAction": "Konto erstellen",
+    "switchToRegister": "Neu bei DIVA? Konto erstellen",
+    "switchToLogin": "Schon registriert? Anmelden",
+    "signedInAs": "Angemeldet als",
+    "signOut": "Abmelden",
+    "working": "Bitte warten…",
+    "genericError": "Die Anfrage konnte nicht abgeschlossen werden. Bitte versuche es erneut."
   }
 }
