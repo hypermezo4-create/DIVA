@@ -1,13 +1,31 @@
 import type {Metadata} from 'next';
-import {getMessages, getTranslations, setRequestLocale} from 'next-intl/server';
+import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {ContentEditor} from '@/components/admin/content-editor';
 import {storefrontContentDefinitions} from '@/features/content/definitions';
 import {listStorefrontContentOverrides} from '@/features/content/repository';
 import {isAppLocale, locales, type AppLocale} from '@/i18n/routing';
 import styles from '@/components/admin/admin-shell.module.css';
+import arMessages from '../../../../../messages/ar.json';
+import deMessages from '../../../../../messages/de.json';
+import enMessages from '../../../../../messages/en.json';
+import ruMessages from '../../../../../messages/ru.json';
 
 type PageProps = {params: Promise<{locale: string}>};
+
+const baseMessages: Record<AppLocale, unknown> = {
+  ar: arMessages,
+  en: enMessages,
+  de: deMessages,
+  ru: ruMessages
+};
+
+const localeLabels: Record<AppLocale, string> = {
+  ar: 'العربية',
+  en: 'English',
+  de: 'Deutsch',
+  ru: 'Русский'
+};
 
 function readMessage(messages: unknown, namespace: string, path: string) {
   let value: unknown = messages;
@@ -30,13 +48,11 @@ export default async function AdminContentPage({params}: PageProps) {
   if (!isAppLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const [t, overrides, localeMessagePairs] = await Promise.all([
+  const [t, overrides] = await Promise.all([
     getTranslations({locale, namespace: 'Admin'}),
-    listStorefrontContentOverrides(),
-    Promise.all(locales.map(async (contentLocale) => [contentLocale, await getMessages({locale: contentLocale})] as const))
+    listStorefrontContentOverrides()
   ]);
 
-  const messagesByLocale = new Map(localeMessagePairs);
   const overrideMap = new Map(overrides.map((row) => [`${row.key}:${row.locale}`, row.value]));
   const entries = storefrontContentDefinitions.map((definition) => {
     const values = {} as Record<AppLocale, string>;
@@ -44,19 +60,12 @@ export default async function AdminContentPage({params}: PageProps) {
     for (const contentLocale of locales) {
       const overrideKey = `${definition.key}:${contentLocale}`;
       const override = overrideMap.get(overrideKey);
-      const fallback = readMessage(messagesByLocale.get(contentLocale), definition.namespace, definition.messageKey);
+      const fallback = readMessage(baseMessages[contentLocale], definition.namespace, definition.messageKey);
       values[contentLocale] = override ?? fallback;
       overridden[contentLocale] = override !== undefined;
     }
     return {key: definition.key, values, overridden};
   });
-
-  const localeLabels: Record<AppLocale, string> = {
-    ar: t('content.locales.ar'),
-    en: t('content.locales.en'),
-    de: t('content.locales.de'),
-    ru: t('content.locales.ru')
-  };
 
   return (
     <>
