@@ -96,7 +96,7 @@
   "Checkout": {
     "metaTitle": "Checkout",
     "title": "Complete your DIVA order.",
-    "intro": "Enter your contact and delivery details. Price and inventory are revalidated on the server before the order is created.",
+    "intro": "Enter your contact and delivery details. Price, shipping and inventory are revalidated on the server before the order is created.",
     "empty": "Your bag is empty.",
     "backToCart": "Back to bag",
     "contact": "Contact details",
@@ -112,13 +112,14 @@
     "countryCode": "Country code",
     "shipping": "Shipping method",
     "standardShipping": "Standard delivery",
+    "shippingUnavailable": "No shipping method is available for this cart right now.",
     "subtotal": "Subtotal",
     "shippingCost": "Shipping",
     "total": "Total",
     "placeOrder": "Place order",
     "placingOrder": "Creating order…",
     "refresh": "Refreshing your bag…",
-    "error": "We could not create the order. Review the details and current stock, then try again."
+    "error": "We could not create the order. Review the details, shipping and current stock, then try again."
   },
   "Order": {
     "metaTitle": "Order confirmation",
@@ -128,8 +129,11 @@
     "subtotal": "Subtotal",
     "shipping": "Shipping",
     "total": "Total",
-    "paymentNote": "Payment-provider handoff is the next commerce slice. This order remains pending payment until that integration is completed.",
+    "paymentNote": "The order is pending payment. The provider-specific payment handoff is connected through the payment boundary once the production provider is selected.",
     "continueShopping": "Continue shopping",
+    "cancel": "Cancel order",
+    "cancelling": "Cancelling…",
+    "cancelError": "This order could not be cancelled. Refresh the page and check its current status.",
     "statuses": {
       "pending_payment": "Pending payment",
       "confirmed": "Confirmed",
@@ -138,6 +142,24 @@
       "delivered": "Delivered",
       "cancelled": "Cancelled"
     }
+  },
+  "Orders": {
+    "metaTitle": "My Orders",
+    "title": "Your DIVA orders.",
+    "intro": "Review your order history, totals and current fulfilment status.",
+    "empty": "You do not have any DIVA orders yet.",
+    "shop": "Discover footwear",
+    "detailMetaTitle": "Order details",
+    "detailIntro": "Review the items, delivery address and current status for this order.",
+    "status": "Status",
+    "deliveryAddress": "Delivery address",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "backToOrders": "Back to orders",
+    "cancel": "Cancel order",
+    "cancelling": "Cancelling…",
+    "cancelError": "This order could not be cancelled. Refresh and check its current status."
   },
   "Wishlist": {
     "metaTitle": "Wishlist",
@@ -150,7 +172,7 @@
   "Account": {
     "metaTitle": "Private Client Account",
     "title": "Your DIVA account.",
-    "intro": "Sign in to manage your future orders and private-client experience, or create a new DIVA account.",
+    "intro": "Sign in to manage your orders and private-client experience, or create a new DIVA account.",
     "signIn": "Sign in",
     "signUp": "Create account",
     "name": "Name",
@@ -161,6 +183,7 @@
     "switchToRegister": "New to DIVA? Create an account",
     "switchToLogin": "Already have an account? Sign in",
     "signedInAs": "Signed in as",
+    "myOrders": "My orders",
     "signOut": "Sign out",
     "working": "Please wait…",
     "genericError": "We could not complete that request. Please try again."
