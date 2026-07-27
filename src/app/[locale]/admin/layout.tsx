@@ -1,9 +1,12 @@
+import type {Metadata} from 'next';
 import {headers} from 'next/headers';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound, redirect} from 'next/navigation';
 import {AdminShell} from '@/components/admin/admin-shell';
 import {getSessionFromHeaders} from '@/lib/session';
 import {isAppLocale} from '@/i18n/routing';
+
+export const metadata: Metadata = {robots: {index: false, follow: false, noarchive: true, nosnippet: true}};
 
 export default async function AdminLayout({
   children,
