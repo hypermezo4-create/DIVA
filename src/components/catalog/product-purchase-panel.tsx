@@ -62,6 +62,11 @@ export function ProductPurchasePanel({
   const sellable = Boolean(selected && selected.available > 0 && selected.priceMinor !== null && selected.currency);
   const availablePrices = variants.filter((variant) => variant.priceMinor !== null && variant.currency);
   const lowest = availablePrices.sort((a, b) => (a.priceMinor ?? 0) - (b.priceMinor ?? 0))[0];
+  const displayed = selected?.priceMinor !== null && selected?.priceMinor !== undefined && selected.currency ? selected : lowest;
+  const displayedOffer = displayed?.priceMinor !== null
+    && displayed?.priceMinor !== undefined
+    && displayed.compareAtMinor !== null
+    && displayed.compareAtMinor > displayed.priceMinor;
   const wishlisted = isWishlisted(productId);
 
   async function add() {
@@ -85,11 +90,16 @@ export function ProductPurchasePanel({
     <div className={styles.panel}>
       <div className={styles.price}>
         <span>{copy.priceFrom}</span>
-        <strong>
-          {lowest?.priceMinor !== null && lowest?.priceMinor !== undefined && lowest.currency
-            ? money(locale, lowest.priceMinor, lowest.currency)
-            : '—'}
-        </strong>
+        <div className={styles.priceValues}>
+          <strong>
+            {displayed?.priceMinor !== null && displayed?.priceMinor !== undefined && displayed.currency
+              ? money(locale, displayed.priceMinor, displayed.currency)
+              : '—'}
+          </strong>
+          {displayedOffer && displayed?.currency && displayed.compareAtMinor !== null && (
+            <del>{money(locale, displayed.compareAtMinor, displayed.currency)}</del>
+          )}
+        </div>
       </div>
 
       <fieldset className={styles.fieldset}>
