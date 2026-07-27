@@ -1,0 +1,14 @@
+{
+  "Admin": {
+    "nav": {"content": "Content & translations"},
+    "content": {
+      "metaTitle": "Content & Translations",
+      "title": "Editorial content.",
+      "intro": "Edit the customer-facing home and footer copy across all four storefront languages without changing application code.",
+      "storefront": "Storefront translations",
+      "storefrontNote": "{count} editable content fields, each with Arabic, English, German and Russian values.",
+      "inherited": "Using file default",
+      "override": "Database override"
+    }
+  }
+}
