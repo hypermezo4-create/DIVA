@@ -3,13 +3,6 @@ import {getTranslations} from 'next-intl/server';
 import {getStorefrontContent} from '@/features/content/repository';
 import type {AppLocale} from '@/i18n/routing';
 
-const defaultNotes: Record<AppLocale, string> = {
-  en: 'Luxury footwear for women, men and kids, curated through the DIVA point of view.',
-  ar: 'أحذية فاخرة للحريمي والرجالي والأطفال، باختيارات تعكس أسلوب DIVA.',
-  de: 'Luxuriöse Schuhe für Damen, Herren und Kinder – kuratiert mit der Handschrift von DIVA.',
-  ru: 'Премиальная обувь для женщин, мужчин и детей в фирменной эстетике DIVA.'
-};
-
 export async function SiteFooter({locale}: {locale: AppLocale}) {
   const [footerT, navigationT, overrides] = await Promise.all([
     getTranslations({locale, namespace: 'Footer'}),
@@ -18,6 +11,7 @@ export async function SiteFooter({locale}: {locale: AppLocale}) {
   ]);
 
   const categories = ['women', 'men', 'kids', 'offers'] as const;
+  const customNote = overrides.get('footer.note');
 
   return (
     <footer className="site-footer">
@@ -25,7 +19,7 @@ export async function SiteFooter({locale}: {locale: AppLocale}) {
         <div className="site-footer__statement">
           <p className="eyebrow">DIVA · Premium Mirror</p>
           <h2>{overrides.get('footer.title') ?? footerT('title')}</h2>
-          <p>{overrides.get('footer.note') ?? defaultNotes[locale]}</p>
+          {customNote && <p>{customNote}</p>}
         </div>
 
         <nav className="site-footer__nav" aria-label={navigationT('label')}>
