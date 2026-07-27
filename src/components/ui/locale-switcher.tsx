@@ -1,6 +1,6 @@
 'use client';
 
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {type ChangeEvent, useTransition} from 'react';
 import {locales, type AppLocale} from '@/i18n/routing';
 
@@ -14,7 +14,6 @@ const labels: Record<AppLocale, string> = {
 export function LocaleSwitcher({locale, label}: {locale: AppLocale; label: string}) {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   function changeLocale(event: ChangeEvent<HTMLSelectElement>) {
@@ -22,10 +21,10 @@ export function LocaleSwitcher({locale, label}: {locale: AppLocale; label: strin
     const segments = pathname.split('/');
     segments[1] = nextLocale;
     const nextPathname = segments.join('/') || `/${nextLocale}`;
-    const query = searchParams.toString();
+    const query = window.location.search;
 
     startTransition(() => {
-      router.replace(query ? `${nextPathname}?${query}` : nextPathname);
+      router.replace(`${nextPathname}${query}`);
     });
   }
 
