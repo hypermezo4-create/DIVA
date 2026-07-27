@@ -5,6 +5,7 @@ import {AccountPanel} from '@/components/account/account-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {isAppLocale} from '@/i18n/routing';
+import styles from './account.module.css';
 
 type AccountPageProps = {params: Promise<{locale: string}>};
 
@@ -26,8 +27,8 @@ export default async function AccountPage({params}: AccountPageProps) {
   return (
     <>
       <SiteHeader locale={locale} />
-      <main className="account-page">
-        <header className="account-intro">
+      <main className={styles.page}>
+        <header className={styles.intro}>
           <p className="eyebrow">DIVA · PRIVATE CLIENT</p>
           <h1>{t('title')}</h1>
           <p>{t('intro')}</p>
