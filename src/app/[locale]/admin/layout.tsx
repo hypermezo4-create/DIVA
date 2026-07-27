@@ -6,7 +6,7 @@ import {AdminShell} from '@/components/admin/admin-shell';
 import {getSessionFromHeaders} from '@/lib/session';
 import {isAppLocale} from '@/i18n/routing';
 
-export const metadata: Metadata = {robots: {index: false, follow: false, noarchive: true, nosnippet: true}};
+export const metadata: Metadata = {robots: {index: false, follow: false}};
 
 export default async function AdminLayout({
   children,
