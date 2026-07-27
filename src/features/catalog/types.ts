@@ -1,6 +1,6 @@
 import type {AppLocale} from '@/i18n/routing';
 
-export const catalogFilters = ['all', 'new', 'women', 'men', 'kids', 'collections'] as const;
+export const catalogFilters = ['all', 'women', 'men', 'kids', 'offers'] as const;
 export type CatalogFilter = (typeof catalogFilters)[number];
 export type CatalogAudience = 'women' | 'men' | 'kids';
 
