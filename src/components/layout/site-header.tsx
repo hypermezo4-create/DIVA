@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {BrandMark} from '@/components/brand/brand-mark';
+import {CommerceHeaderActions} from '@/components/layout/commerce-header-actions';
 import {LocaleSwitcher} from '@/components/ui/locale-switcher';
 import {ThemeToggle} from '@/components/ui/theme-toggle';
 import type {AppLocale} from '@/i18n/routing';
@@ -43,6 +44,7 @@ export async function SiteHeader({locale}: {locale: AppLocale}) {
             <AccountIcon />
             <span>{t('account')}</span>
           </Link>
+          <CommerceHeaderActions locale={locale} wishlistLabel={t('wishlist')} cartLabel={t('cart')} />
           <Link href={`/${locale}/shop`} className="header-shop-link">{t('shop')}</Link>
         </div>
       </div>
