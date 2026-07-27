@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 import {setRequestLocale} from 'next-intl/server';
+import {CommerceProvider} from '@/components/providers/commerce-provider';
 import {ThemeProvider} from '@/components/providers/theme-provider';
 import {directionFor, isAppLocale, locales} from '@/i18n/routing';
 import '../globals.css';
@@ -36,7 +37,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={directionFor(locale)} suppressHydrationWarning>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <CommerceProvider locale={locale}>{children}</CommerceProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
