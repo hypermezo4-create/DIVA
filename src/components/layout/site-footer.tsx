@@ -1,22 +1,45 @@
+import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {getStorefrontContent} from '@/features/content/repository';
 import type {AppLocale} from '@/i18n/routing';
 
+const defaultNotes: Record<AppLocale, string> = {
+  en: 'Luxury footwear for women, men and kids, curated through the DIVA point of view.',
+  ar: 'أحذية فاخرة للحريمي والرجالي والأطفال، باختيارات تعكس أسلوب DIVA.',
+  de: 'Luxuriöse Schuhe für Damen, Herren und Kinder – kuratiert mit der Handschrift von DIVA.',
+  ru: 'Премиальная обувь для женщин, мужчин и детей в фирменной эстетике DIVA.'
+};
+
 export async function SiteFooter({locale}: {locale: AppLocale}) {
-  const [t, overrides] = await Promise.all([
+  const [footerT, navigationT, overrides] = await Promise.all([
     getTranslations({locale, namespace: 'Footer'}),
+    getTranslations({locale, namespace: 'Navigation'}),
     getStorefrontContent(locale)
   ]);
+
+  const categories = ['women', 'men', 'kids', 'offers'] as const;
 
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <div>
+        <div className="site-footer__statement">
           <p className="eyebrow">DIVA · Premium Mirror</p>
-          <h2>{overrides.get('footer.title') ?? t('title')}</h2>
+          <h2>{overrides.get('footer.title') ?? footerT('title')}</h2>
+          <p>{overrides.get('footer.note') ?? defaultNotes[locale]}</p>
         </div>
-        <p>{overrides.get('footer.note') ?? t('note')}</p>
-        <span>© {new Date().getFullYear()} DIVA</span>
+
+        <nav className="site-footer__nav" aria-label={navigationT('label')}>
+          {categories.map((category) => (
+            <Link href={`/${locale}/shop?category=${category}`} key={category}>
+              {navigationT(category)}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="site-footer__meta">
+          <span>© {new Date().getFullYear()} DIVA</span>
+          <Link href={`/${locale}/shop`}>{navigationT('shop')} ↗</Link>
+        </div>
       </div>
     </footer>
   );
