@@ -3,11 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
+import {ProductCard} from '@/components/catalog/product-card';
 import {ProductPurchasePanel} from '@/components/catalog/product-purchase-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {JsonLd} from '@/components/seo/json-ld';
-import {findActiveProduct} from '@/features/catalog/server/catalog-repository';
+import {findActiveProduct, listActiveProducts} from '@/features/catalog/server/catalog-repository';
 import {isAppLocale} from '@/i18n/routing';
 import {languageAlternates, localizedPath} from '@/lib/seo';
 import {getSiteUrl} from '@/lib/site-url';
@@ -53,7 +54,12 @@ export default async function ProductPage({params}: ProductPageProps) {
   if (!product) notFound();
 
   setRequestLocale(locale);
-  const t = await getTranslations({locale, namespace: 'Product'});
+  const [t, shopT, categoryProducts] = await Promise.all([
+    getTranslations({locale, namespace: 'Product'}),
+    getTranslations({locale, namespace: 'Shop'}),
+    listActiveProducts(locale, product.audience)
+  ]);
+  const relatedProducts = categoryProducts.filter((item) => item.slug !== product.slug).slice(0, 4);
   const siteUrl = getSiteUrl();
   const productUrl = new URL(localizedPath(locale, `/product/${slug}`), siteUrl).toString();
   const pricedVariants = product.variants.filter((variant) => variant.priceMinor !== null && variant.currency);
@@ -155,6 +161,30 @@ export default async function ProductPage({params}: ProductPageProps) {
             </div>
           </div>
         </section>
+
+        {relatedProducts.length > 0 && (
+          <section className="product-related">
+            <div className="home-featured-heading">
+              <div>
+                <p className="eyebrow">{shopT('title')}</p>
+                <h2>{t('moreFromCategory')}</h2>
+              </div>
+              <Link href={`/${locale}/shop?category=${product.audience}`} className="text-link">{t('backToShop')} ↗</Link>
+            </div>
+            <div className="product-related__grid">
+              {relatedProducts.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  locale={locale}
+                  product={item}
+                  newLabel={shopT('newBadge')}
+                  offerLabel={shopT('offerBadge')}
+                  soldOutLabel={shopT('soldOut')}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <SiteFooter locale={locale} />
     </>
