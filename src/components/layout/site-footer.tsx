@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
+import {BrandMark} from '@/components/brand/brand-mark';
 import {getStorefrontContent} from '@/features/content/repository';
 import type {AppLocale} from '@/i18n/routing';
 
@@ -17,6 +18,7 @@ export async function SiteFooter({locale}: {locale: AppLocale}) {
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__statement">
+          <BrandMark />
           <p className="eyebrow">DIVA · Premium Mirror</p>
           <h2>{overrides.get('footer.title') ?? footerT('title')}</h2>
           {customNote && <p>{customNote}</p>}
