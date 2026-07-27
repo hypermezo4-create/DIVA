@@ -11,6 +11,7 @@
     "kids": "Детям",
     "collections": "Коллекции",
     "shop": "Магазин",
+    "account": "Аккаунт",
     "home": "Главная",
     "language": "Язык",
     "theme": "Переключить тему"
@@ -68,5 +69,23 @@
       "mirror": "The Mirror Edition",
       "city": "The City Edit"
     }
+  },
+  "Account": {
+    "metaTitle": "Аккаунт клиента DIVA",
+    "title": "Ваш аккаунт DIVA.",
+    "intro": "Войдите, чтобы управлять будущими заказами и персональным сервисом DIVA, или создайте новый аккаунт.",
+    "signIn": "Войти",
+    "signUp": "Создать аккаунт",
+    "name": "Имя",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "loginAction": "Войти в аккаунт",
+    "registerAction": "Создать аккаунт",
+    "switchToRegister": "Впервые в DIVA? Создать аккаунт",
+    "switchToLogin": "Уже есть аккаунт? Войти",
+    "signedInAs": "Вы вошли как",
+    "signOut": "Выйти",
+    "working": "Пожалуйста, подождите…",
+    "genericError": "Не удалось выполнить запрос. Попробуйте ещё раз."
   }
 }
