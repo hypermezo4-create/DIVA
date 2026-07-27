@@ -52,10 +52,21 @@ export default async function HomePage({params}: PageProps) {
   const offerProduct = products.find((product) => product.priceMinor !== null
     && product.compareAtMinor !== null
     && product.compareAtMinor > product.priceMinor) ?? null;
-  const heroProduct = products.find((product) => product.newArrival && product.image) ?? products.find((product) => product.image) ?? null;
-  const secondHeroProduct = products.find((product) => product.image && product.id !== heroProduct?.id) ?? null;
   const featured = products.filter((product) => product.newArrival).slice(0, 4);
   const featuredProducts = featured.length >= 3 ? featured : products.slice(0, 4);
+  const heroItems = [...products]
+    .sort((a, b) => Number(b.newArrival) - Number(a.newArrival))
+    .filter((product) => product.image)
+    .slice(0, 4)
+    .map((product) => ({
+      id: product.id,
+      image: product.image,
+      name: product.name,
+      subtitle: product.subtitle,
+      priceMinor: product.priceMinor,
+      compareAtMinor: product.compareAtMinor,
+      currency: product.currency
+    }));
 
   const signatureItems = ['women', 'men', 'kids'].map((key) => ({
     slug: key,
@@ -95,11 +106,7 @@ export default async function HomePage({params}: PageProps) {
             secondary: content('home.hero.secondary', t('hero.secondary')),
             edition: content('home.hero.edition', t('hero.edition'))
           }}
-          visual={{
-            primaryImage: heroProduct?.image ?? null,
-            secondaryImage: secondHeroProduct?.image ?? null,
-            productName: heroProduct?.name ?? 'DIVA footwear'
-          }}
+          items={heroItems}
         />
 
         <ValueStrip label={t('valuesLabel')} items={values} />
