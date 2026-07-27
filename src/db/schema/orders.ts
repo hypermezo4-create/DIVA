@@ -12,7 +12,7 @@ export const orderStatusEnum = pgEnum('order_status', [
   'cancelled'
 ]);
 
-export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid', 'failed', 'refunded']);
+export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid', 'failed', 'cancelled', 'refunded']);
 
 export const orders = pgTable(
   'orders',
