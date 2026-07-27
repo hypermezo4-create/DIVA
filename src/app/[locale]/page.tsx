@@ -10,7 +10,7 @@ import {ValueStrip} from '@/components/home/value-strip';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {JsonLd} from '@/components/seo/json-ld';
-import {listActiveProducts} from '@/features/catalog/server/catalog-repository';
+import {listActiveProducts, listBestSellingProductIds} from '@/features/catalog/server/catalog-repository';
 import type {StorefrontContentKey} from '@/features/content/definitions';
 import {getStorefrontContent} from '@/features/content/repository';
 import {isAppLocale} from '@/i18n/routing';
@@ -38,12 +38,13 @@ export default async function HomePage({params}: PageProps) {
   if (!isAppLocale(locale)) notFound();
 
   setRequestLocale(locale);
-  const [t, navigationT, shopT, overrides, products] = await Promise.all([
+  const [t, navigationT, shopT, overrides, products, bestSellingIds] = await Promise.all([
     getTranslations({locale, namespace: 'Home'}),
     getTranslations({locale, namespace: 'Navigation'}),
     getTranslations({locale, namespace: 'Shop'}),
     getStorefrontContent(locale),
-    listActiveProducts(locale, 'all')
+    listActiveProducts(locale, 'all'),
+    listBestSellingProductIds(4)
   ]);
 
   const content = (key: StorefrontContentKey, fallback: string) => overrides.get(key) ?? fallback;
@@ -53,8 +54,15 @@ export default async function HomePage({params}: PageProps) {
   const offerProduct = products.find((product) => product.priceMinor !== null
     && product.compareAtMinor !== null
     && product.compareAtMinor > product.priceMinor) ?? null;
-  const featured = products.filter((product) => product.newArrival).slice(0, 4);
-  const featuredProducts = featured.length >= 3 ? featured : products.slice(0, 4);
+  const rankedProducts = bestSellingIds
+    .map((id) => products.find((product) => product.id === id))
+    .filter((product): product is (typeof products)[number] => Boolean(product));
+  const rankedIds = new Set(rankedProducts.map((product) => product.id));
+  const featuredProducts = [
+    ...rankedProducts,
+    ...products.filter((product) => product.newArrival && !rankedIds.has(product.id)),
+    ...products.filter((product) => !rankedIds.has(product.id))
+  ].filter((product, index, list) => list.findIndex((candidate) => candidate.id === product.id) === index).slice(0, 4);
   const heroItems = [...products]
     .sort((a, b) => Number(b.newArrival) - Number(a.newArrival))
     .filter((product) => product.image)
@@ -131,7 +139,7 @@ export default async function HomePage({params}: PageProps) {
         <section className="home-featured-section">
           <div className="home-featured-heading">
             <div>
-              <p className="eyebrow">{navigationT('new')}</p>
+              <p className="eyebrow">{navigationT('collections')}</p>
               <h2>{shopT('title')}</h2>
             </div>
             <Link href={`/${locale}/shop`} className="text-link">{navigationT('shop')} ↗</Link>
