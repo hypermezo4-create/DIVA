@@ -49,14 +49,14 @@ async function getSellableVariant(variantId: string) {
       available: sql<number>`greatest(0, ${inventory.onHand} - ${inventory.reserved})`
     })
     .from(productVariants)
+    .innerJoin(products, eq(products.id, productVariants.productId))
     .innerJoin(inventory, eq(inventory.variantId, productVariants.id))
-    .where(and(eq(productVariants.id, variantId), eq(productVariants.active, true)))
+    .where(and(eq(productVariants.id, variantId), eq(productVariants.active, true), eq(products.status, 'active')))
     .limit(1);
 
   if (!variant || variant.priceMinor === null || variant.currency === null) {
     throw new CustomerCommerceError('NOT_SELLABLE');
   }
-
   return variant;
 }
 
@@ -84,7 +84,6 @@ export async function setCartItemQuantity(userId: string, variantId: string, qua
   const variant = await getSellableVariant(variantId);
   if (quantity > variant.available) throw new CustomerCommerceError('INSUFFICIENT_STOCK');
   const cartId = await getOrCreateCart(userId);
-
   await getDatabase()
     .update(cartItems)
     .set({quantity, updatedAt: new Date()})
@@ -97,7 +96,7 @@ export async function removeCartItem(userId: string, variantId: string) {
   await getDatabase().delete(cartItems).where(and(eq(cartItems.cartId, cart.id), eq(cartItems.variantId, variantId)));
 }
 
-function cartLineSelection(locale: AppLocale) {
+function cartLineSelection() {
   return {
     variantId: productVariants.id,
     productId: products.id,
@@ -114,8 +113,7 @@ function cartLineSelection(locale: AppLocale) {
     colorHex: colors.hex,
     priceMinor: productVariants.priceMinor,
     currency: productVariants.currency,
-    available: sql<number>`greatest(0, ${inventory.onHand} - ${inventory.reserved})`,
-    locale: sql<AppLocale>`${locale}`
+    available: sql<number>`greatest(0, ${inventory.onHand} - ${inventory.reserved})`
   };
 }
 
@@ -123,7 +121,7 @@ async function hydrateCartItems(items: readonly StoredCartItem[], locale: AppLoc
   if (items.length === 0) return [];
   const ids = [...new Set(items.map((item) => item.variantId))];
   const rows = await getDatabase()
-    .select(cartLineSelection(locale))
+    .select(cartLineSelection())
     .from(productVariants)
     .innerJoin(products, eq(products.id, productVariants.productId))
     .innerJoin(productTranslations, and(eq(productTranslations.productId, products.id), eq(productTranslations.locale, locale)))
