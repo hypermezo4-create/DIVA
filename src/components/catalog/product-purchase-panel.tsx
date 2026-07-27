@@ -40,11 +40,13 @@ export function ProductPurchasePanel({
   locale,
   productId,
   variants,
+  commerceEnabled = true,
   copy
 }: {
   locale: AppLocale;
   productId: string;
   variants: Variant[];
+  commerceEnabled?: boolean;
   copy: Copy;
 }) {
   const {addToCart, toggleWishlist, isWishlisted} = useCommerce();
@@ -59,19 +61,19 @@ export function ProductPurchasePanel({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const selected = variants.find((variant) => variant.colorCode === color && variant.size === size);
-  const sellable = Boolean(selected && selected.available > 0 && selected.priceMinor !== null && selected.currency);
+  const sellable = Boolean(commerceEnabled && selected && selected.available > 0 && selected.priceMinor !== null && selected.currency);
   const availablePrices = variants.filter((variant) => variant.priceMinor !== null && variant.currency);
-  const lowest = availablePrices.sort((a, b) => (a.priceMinor ?? 0) - (b.priceMinor ?? 0))[0];
+  const lowest = [...availablePrices].sort((a, b) => (a.priceMinor ?? 0) - (b.priceMinor ?? 0))[0];
   const displayed = selected?.priceMinor !== null && selected?.priceMinor !== undefined && selected.currency ? selected : lowest;
   const displayedOffer = displayed?.priceMinor !== null
     && displayed?.priceMinor !== undefined
     && displayed.compareAtMinor !== null
     && displayed.compareAtMinor > displayed.priceMinor;
-  const wishlisted = isWishlisted(productId);
+  const wishlisted = commerceEnabled && isWishlisted(productId);
 
   async function add() {
-    if (!selected || !sellable) {
-      setMessage(size ? copy.unavailable : copy.chooseOptions);
+    if (!commerceEnabled || !selected || !sellable) {
+      setMessage(!commerceEnabled ? copy.unavailable : size ? copy.unavailable : copy.chooseOptions);
       return;
     }
     setBusy(true);
@@ -142,14 +144,20 @@ export function ProductPurchasePanel({
         </div>
       </fieldset>
 
-      {selected && selected.available <= 0 && <p className={styles.notice}>{copy.outOfStock}</p>}
+      {!commerceEnabled && <p className={styles.notice}>{copy.unavailable}</p>}
+      {commerceEnabled && selected && selected.available <= 0 && <p className={styles.notice}>{copy.outOfStock}</p>}
       {message && <p className={styles.notice} role="status">{message}</p>}
 
       <div className={styles.actions}>
         <button className="button button--primary" type="button" disabled={busy || !sellable} onClick={() => void add()}>
           {busy ? copy.adding : copy.addToCart}
         </button>
-        <button className="button button--ghost" type="button" onClick={() => void toggleWishlist(productId)}>
+        <button
+          className="button button--ghost"
+          type="button"
+          disabled={!commerceEnabled}
+          onClick={() => void toggleWishlist(productId)}
+        >
           {wishlisted ? copy.removeFromWishlist : copy.addToWishlist}
         </button>
       </div>
