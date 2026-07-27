@@ -69,7 +69,7 @@ export default async function ProductPage({params}: ProductPageProps) {
             {product.collection && (
               <div className="product-collection">
                 <span>{t('collection')}</span>
-                <strong>{product.collection}</strong>
+                <strong>{product.collectionName ?? product.collection}</strong>
               </div>
             )}
 
