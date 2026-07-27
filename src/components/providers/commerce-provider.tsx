@@ -10,9 +10,9 @@ import {
   useState,
   type ReactNode
 } from 'react';
-import {authClient} from '@/lib/auth-client';
-import type {AppLocale} from '@/i18n/routing';
 import type {CartLine, StoredCartItem, WishlistEntry} from '@/features/customer-commerce/types';
+import type {AppLocale} from '@/i18n/routing';
+import {authClient} from '@/lib/auth-client';
 
 const CART_KEY = 'diva:guest-cart:v1';
 const WISHLIST_KEY = 'diva:guest-wishlist:v1';
@@ -40,9 +40,9 @@ function readGuestCart(): StoredCartItem[] {
     if (!Array.isArray(parsed)) return [];
     return parsed.flatMap((item) => {
       if (!item || typeof item !== 'object') return [];
-      const variantId = Reflect.get(item, 'variantId');
-      const quantity = Reflect.get(item, 'quantity');
-      return typeof variantId === 'string' && Number.isInteger(quantity) && quantity > 0 && quantity <= 20
+      const variantId: unknown = Reflect.get(item, 'variantId');
+      const quantity: unknown = Reflect.get(item, 'quantity');
+      return typeof variantId === 'string' && typeof quantity === 'number' && Number.isInteger(quantity) && quantity > 0 && quantity <= 20
         ? [{variantId, quantity}]
         : [];
     });
@@ -68,11 +68,10 @@ function writeGuestWishlist(productIds: string[]) {
   localStorage.setItem(WISHLIST_KEY, JSON.stringify(productIds));
 }
 
-async function jsonRequest<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
-    ...init,
-    headers: {'content-type': 'application/json', ...(init?.headers ?? {})}
-  });
+async function jsonRequest<T = unknown>(url: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (!headers.has('content-type')) headers.set('content-type', 'application/json');
+  const response = await fetch(url, {...init, headers});
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as {error?: string} | null;
     throw new Error(payload?.error ?? `HTTP_${response.status}`);
@@ -82,11 +81,13 @@ async function jsonRequest<T>(url: string, init?: RequestInit): Promise<T> {
 
 export function CommerceProvider({children, locale}: {children: ReactNode; locale: AppLocale}) {
   const {data: session, isPending: sessionPending} = authClient.useSession();
+  const userId = session?.user.id ?? null;
   const [guestCart, setGuestCart] = useState<StoredCartItem[]>([]);
   const [guestWishlist, setGuestWishlist] = useState<string[]>([]);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<WishlistEntry[]>([]);
   const [storageReady, setStorageReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const syncedUser = useRef<string | null>(null);
 
   useEffect(() => {
@@ -96,36 +97,40 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
   }, []);
 
   const refresh = useCallback(async () => {
-    if (session?.user) {
+    try {
+      if (userId) {
+        const [cartPayload, wishlistPayload] = await Promise.all([
+          jsonRequest<{items: CartLine[]}>(`/api/cart?locale=${locale}`),
+          jsonRequest<{items: WishlistEntry[]}>(`/api/wishlist?locale=${locale}`)
+        ]);
+        setCart(cartPayload.items);
+        setWishlist(wishlistPayload.items);
+        return;
+      }
+
+      if (!storageReady) return;
       const [cartPayload, wishlistPayload] = await Promise.all([
-        jsonRequest<{items: CartLine[]}>(`/api/cart?locale=${locale}`),
-        jsonRequest<{items: WishlistEntry[]}>(`/api/wishlist?locale=${locale}`)
+        jsonRequest<{items: CartLine[]}>('/api/cart/quote', {
+          method: 'POST',
+          body: JSON.stringify({locale, items: guestCart})
+        }),
+        jsonRequest<{items: WishlistEntry[]}>('/api/wishlist/quote', {
+          method: 'POST',
+          body: JSON.stringify({locale, productIds: guestWishlist})
+        })
       ]);
       setCart(cartPayload.items);
       setWishlist(wishlistPayload.items);
-      return;
+    } finally {
+      setHydrated(true);
     }
-
-    if (!storageReady) return;
-    const [cartPayload, wishlistPayload] = await Promise.all([
-      jsonRequest<{items: CartLine[]}>('/api/cart/quote', {
-        method: 'POST',
-        body: JSON.stringify({locale, items: guestCart})
-      }),
-      jsonRequest<{items: WishlistEntry[]}>('/api/wishlist/quote', {
-        method: 'POST',
-        body: JSON.stringify({locale, productIds: guestWishlist})
-      })
-    ]);
-    setCart(cartPayload.items);
-    setWishlist(wishlistPayload.items);
-  }, [guestCart, guestWishlist, locale, session?.user, storageReady]);
+  }, [guestCart, guestWishlist, locale, storageReady, userId]);
 
   useEffect(() => {
     if (sessionPending || !storageReady) return;
 
     async function syncAndRefresh() {
-      if (session?.user && syncedUser.current !== session.user.id) {
+      if (userId && syncedUser.current !== userId) {
         const cartResults = await Promise.allSettled(
           guestCart.map((item) => jsonRequest('/api/cart', {method: 'POST', body: JSON.stringify(item)}))
         );
@@ -142,18 +147,18 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
         const keptWishlist = guestWishlist.filter((_, index) => wishlistResults[index]?.status === 'rejected');
         setGuestWishlist(keptWishlist);
         writeGuestWishlist(keptWishlist);
-        syncedUser.current = session.user.id;
+        syncedUser.current = userId;
       }
 
-      if (!session?.user) syncedUser.current = null;
+      if (!userId) syncedUser.current = null;
       await refresh();
     }
 
-    void syncAndRefresh().catch(() => undefined);
-  }, [guestCart, guestWishlist, refresh, session?.user, sessionPending, storageReady]);
+    void syncAndRefresh().catch(() => setHydrated(true));
+  }, [guestCart, guestWishlist, refresh, sessionPending, storageReady, userId]);
 
   const addToCart = useCallback(async (variantId: string, quantity = 1) => {
-    if (session?.user) {
+    if (userId) {
       await jsonRequest('/api/cart', {method: 'POST', body: JSON.stringify({variantId, quantity})});
       await refresh();
       return;
@@ -169,10 +174,10 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
       writeGuestCart(next);
       return next;
     });
-  }, [refresh, session?.user]);
+  }, [refresh, userId]);
 
   const setCartQuantity = useCallback(async (variantId: string, quantity: number) => {
-    if (session?.user) {
+    if (userId) {
       await jsonRequest('/api/cart', {method: 'PATCH', body: JSON.stringify({variantId, quantity})});
       await refresh();
       return;
@@ -182,10 +187,10 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
       writeGuestCart(next);
       return next;
     });
-  }, [refresh, session?.user]);
+  }, [refresh, userId]);
 
   const removeFromCart = useCallback(async (variantId: string) => {
-    if (session?.user) {
+    if (userId) {
       await jsonRequest('/api/cart', {method: 'DELETE', body: JSON.stringify({variantId})});
       await refresh();
       return;
@@ -195,11 +200,11 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
       writeGuestCart(next);
       return next;
     });
-  }, [refresh, session?.user]);
+  }, [refresh, userId]);
 
   const toggleWishlist = useCallback(async (productId: string) => {
     const active = wishlist.some((item) => item.productId === productId);
-    if (session?.user) {
+    if (userId) {
       await jsonRequest('/api/wishlist', {
         method: active ? 'DELETE' : 'POST',
         body: JSON.stringify({productId})
@@ -212,15 +217,15 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
       writeGuestWishlist(next);
       return next;
     });
-  }, [refresh, session?.user, wishlist]);
+  }, [refresh, userId, wishlist]);
 
   const value = useMemo<CommerceContextValue>(() => ({
     cart,
     wishlist,
     cartCount: cart.reduce((count, item) => count + item.quantity, 0),
     wishlistCount: wishlist.length,
-    ready: storageReady && !sessionPending,
-    signedIn: Boolean(session?.user),
+    ready: storageReady && !sessionPending && hydrated,
+    signedIn: Boolean(userId),
     addToCart,
     setCartQuantity,
     removeFromCart,
@@ -230,13 +235,14 @@ export function CommerceProvider({children, locale}: {children: ReactNode; local
   }), [
     addToCart,
     cart,
+    hydrated,
     refresh,
     removeFromCart,
-    session?.user,
     sessionPending,
     setCartQuantity,
     storageReady,
     toggleWishlist,
+    userId,
     wishlist
   ]);
 
