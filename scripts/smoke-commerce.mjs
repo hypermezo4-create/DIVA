@@ -8,6 +8,7 @@ const testUserId = `smoke-${Date.now()}`;
 const testOrderNumber = `DIVA-SMOKE-${Date.now()}`;
 const testConfirmationToken = `smoke${Date.now()}confirmationtoken`;
 const testPaymentKey = `smoke-payment-${Date.now()}`;
+const testContentKey = `__smoke__.${Date.now()}`;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -62,7 +63,25 @@ try {
   `;
   assert(product?.id && variant?.id, 'Smoke fixture product and variant are required.');
 
-  await sql`insert into "user" (id, name, email) values (${testUserId}, 'Smoke Customer', ${`${testUserId}@example.invalid`})`;
+  const [smokeUser] = await sql`
+    insert into "user" (id, name, email)
+    values (${testUserId}, 'Smoke Customer', ${`${testUserId}@example.invalid`})
+    returning role
+  `;
+  assert(smokeUser?.role === 'customer', 'New accounts must default to the customer role.');
+  await sql`update "user" set role = 'admin' where id = ${testUserId}`;
+  const [adminUser] = await sql`select role from "user" where id = ${testUserId}`;
+  assert(adminUser?.role === 'admin', 'Admin role persistence smoke check failed.');
+
+  await sql`
+    insert into site_content (key, locale, value, updated_by)
+    values (${testContentKey}, 'en', 'Smoke editorial override', ${testUserId})
+  `;
+  const [contentOverride] = await sql`
+    select value from site_content where key = ${testContentKey} and locale = 'en'
+  `;
+  assert(contentOverride?.value === 'Smoke editorial override', 'Editable content persistence smoke check failed.');
+
   const [cart] = await sql`insert into carts (user_id) values (${testUserId}) returning id`;
   await sql`insert into cart_items (cart_id, variant_id, quantity) values (${cart.id}, ${variant.id}, 1)`;
   await sql`insert into wishlists (user_id, product_id) values (${testUserId}, ${product.id})`;
@@ -110,8 +129,9 @@ try {
   assert(orderCount === 1 && orderItemCount === 1, 'Order persistence smoke check failed.');
   assert(paymentCount === 1, 'Payment attempt persistence smoke check failed.');
 
-  console.log(`Commerce smoke passed: ${activeProducts} products, ${sellableVariants} sellable variants, ${offerVariants} offer variants, ${shippingMethods} shipping methods.`);
+  console.log(`Commerce smoke passed: ${activeProducts} products, ${sellableVariants} sellable variants, ${offerVariants} offer variants, ${shippingMethods} shipping methods, admin/content persistence verified.`);
 } finally {
+  await sql`delete from site_content where key = ${testContentKey}`.catch(() => undefined);
   await sql`delete from orders where number = ${testOrderNumber}`.catch(() => undefined);
   await sql`delete from "user" where id = ${testUserId}`.catch(() => undefined);
   await sql.end();
