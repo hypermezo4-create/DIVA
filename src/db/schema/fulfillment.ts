@@ -51,6 +51,7 @@ export const paymentAttemptStatusEnum = pgEnum('payment_attempt_status', [
   'pending',
   'paid',
   'failed',
+  'cancelled',
   'refunded'
 ]);
 
