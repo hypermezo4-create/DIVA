@@ -8,7 +8,8 @@
       "storefront": "Storefront-Übersetzungen",
       "storefrontNote": "{count} bearbeitbare Inhaltsfelder mit Arabisch, Englisch, Deutsch und Russisch.",
       "inherited": "Verwendet Datei-Standard",
-      "override": "Datenbank-Überschreibung"
+      "override": "Datenbank-Überschreibung",
+      "reset": "Auf Standard zurücksetzen"
     }
   }
 }
