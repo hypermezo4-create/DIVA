@@ -11,6 +11,7 @@
     "kids": "Kids",
     "collections": "Collections",
     "shop": "Shop",
+    "account": "Account",
     "home": "Home",
     "language": "Language",
     "theme": "Toggle color theme"
@@ -68,5 +69,23 @@
       "mirror": "The Mirror Edition",
       "city": "The City Edit"
     }
+  },
+  "Account": {
+    "metaTitle": "Private Client Account",
+    "title": "Your DIVA account.",
+    "intro": "Sign in to manage your future orders and private-client experience, or create a new DIVA account.",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "loginAction": "Enter account",
+    "registerAction": "Create account",
+    "switchToRegister": "New to DIVA? Create an account",
+    "switchToLogin": "Already have an account? Sign in",
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out",
+    "working": "Please wait…",
+    "genericError": "We could not complete that request. Please try again."
   }
 }
