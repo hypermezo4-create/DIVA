@@ -1,5 +1,6 @@
 import 'server-only';
 
+import {cache} from 'react';
 import {and, asc, eq} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
 import {siteContent} from '@/db/schema';
@@ -10,7 +11,7 @@ function isMissingContentTable(error: unknown) {
   return typeof error === 'object' && error !== null && 'code' in error && error.code === '42P01';
 }
 
-export async function getStorefrontContent(locale: AppLocale) {
+async function readStorefrontContent(locale: AppLocale) {
   if (!process.env.DATABASE_URL) return new Map<StorefrontContentKey, string>();
 
   try {
@@ -26,6 +27,8 @@ export async function getStorefrontContent(locale: AppLocale) {
     throw error;
   }
 }
+
+export const getStorefrontContent = cache(readStorefrontContent);
 
 export async function listStorefrontContentOverrides() {
   return getDatabase()
