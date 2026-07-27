@@ -163,7 +163,7 @@ export default async function ProductPage({params}: ProductPageProps) {
         </section>
 
         {relatedProducts.length > 0 && (
-          <section className="product-related">
+          <section className="home-featured-section product-related">
             <div className="home-featured-heading">
               <div>
                 <p className="eyebrow">{shopT('title')}</p>
@@ -171,7 +171,7 @@ export default async function ProductPage({params}: ProductPageProps) {
               </div>
               <Link href={`/${locale}/shop?category=${product.audience}`} className="text-link">{t('backToShop')} ↗</Link>
             </div>
-            <div className="product-related__grid">
+            <div className="home-featured-grid">
               {relatedProducts.map((item) => (
                 <ProductCard
                   key={item.id}
