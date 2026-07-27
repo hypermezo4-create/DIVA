@@ -24,6 +24,7 @@ features/
 ├── payments/             payment attempts + provider adapter boundary
 ├── orders/               confirmation, history, ownership and lifecycle operations
 ├── customers/            Better Auth backend + localized account UI
+├── content/              whitelisted multilingual storefront overrides
 └── admin/                role-gated reporting and operational mutations
 ```
 
@@ -46,6 +47,8 @@ Drizzle owns the database model in `src/db/schema`. The catalog model contains l
 Customer commerce adds one account cart per user, cart items keyed by variant, and wishlist entries keyed by user and product. Checkout adds orders and immutable order-item snapshots containing the SKU, localized product name, option labels, quantity and price used when the order was created.
 
 Fulfilment persistence adds localized shipping methods with server-owned prices plus payment attempts with provider identity, idempotency key, provider reference, amount, currency, checkout URL and state. The order and payment models distinguish pending, paid, failed/cancelled and refunded states instead of encoding provider details into the order table.
+
+Editorial persistence uses `site_content` with a composite `(key, locale)` identity, the editing admin user and an update timestamp. Only whitelisted storefront content keys can be written through the admin API. Source message files remain the fallback, so an empty override table does not replace the versioned translation baseline.
 
 Tracked SQL files in `drizzle/` are applied by `scripts/migrate.mjs`. The migration runner records migration names and checksums in PostgreSQL so an already-applied migration cannot be silently rewritten. Catalog and commerce seed scripts provide repeatable demo merchandising and shipping configuration for development and CI.
 
@@ -85,13 +88,16 @@ The localized `/[locale]/admin` route tree checks the current session before ren
 
 The admin reporting repository exposes currency-safe dashboard metrics, product publication state, SKU stock/pricing, order queues and customer activity. Revenue is grouped by currency rather than summing unlike currencies.
 
-Operational mutations currently cover:
+Operational mutations cover:
 
 - product `draft` / `active` / `archived` state and new-arrival flags;
 - variant active state, selling price and compare-at offer price;
 - `onHand` inventory updates only when the new stock level remains at or above existing reservations;
 - pending-payment cancellation through the same inventory-release lifecycle used by customer cancellation;
-- forward-only paid-order fulfilment transitions: `confirmed → processing → shipped → delivered`.
+- forward-only paid-order fulfilment transitions: `confirmed → processing → shipped → delivered`;
+- whitelisted home/footer copy overrides independently for Arabic, English, German and Russian.
+
+The editorial desk displays the source-message value when no database override exists. Storefront home/footer reads merge those overrides at request time, and successful edits revalidate the localized route tree. The public storefront also falls back safely to file copy when the content migration has not yet been applied.
 
 Admin order operations deliberately do not reverse paid fulfilment states or perform refunds. Those actions require the production payment/refund boundary so stock and money cannot drift apart.
 
@@ -103,10 +109,10 @@ Admin order operations deliberately do not reverse paid fulfilment states or per
 
 ## Internationalization and presentation
 
-Locale URLs are explicit: `/ar`, `/en`, `/de` and `/ru`. Arabic switches the root document to RTL. Interface copy lives in locale messages. Persistent product, color, collection and shipping copy is stored by locale.
+Locale URLs are explicit: `/ar`, `/en`, `/de` and `/ru`. Arabic switches the root document to RTL. Interface copy lives in locale messages. Persistent product, color, collection and shipping copy is stored by locale, while selected marketing copy can be overridden in `site_content` without modifying source files.
 
 The visual system is derived from the supplied DIVA mark: warm ivory, espresso, champagne gold and bronze. Dark mode uses deep espresso surfaces rather than neutral black. Women, Men, Kids and Offers remain the four primary storefront pillars. The admin workspace uses the same design tokens rather than a separate generic dashboard theme.
 
 ## Next implementation boundary
 
-Admin content management and editable storefront translations are the remaining admin slice. Provider-specific payment handoff/webhook verification and final destination-aware shipping rules also remain before production hardening. Production hardening then focuses on test depth, accessibility, security review, SEO, performance and deployment operations.
+The core admin operations phase is now in place for dashboard reporting, product publication, SKU stock/pricing/offers, order fulfilment, customer visibility and multilingual storefront content. Production hardening is the next major boundary: deeper automated tests, accessibility, security review, SEO, performance and deployment operations. Provider-specific payment handoff/webhook verification and destination-aware production shipping rules remain required for live commerce.
