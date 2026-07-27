@@ -10,7 +10,6 @@ import '../catalog.css';
 import '../accessibility.css';
 import '../storefront-redesign.css';
 import '../storefront-polish.css';
-import '../storefront-vitality.css';
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
@@ -39,8 +38,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: 'light dark',
   themeColor: [
-    {media: '(prefers-color-scheme: light)', color: '#f4ece2'},
-    {media: '(prefers-color-scheme: dark)', color: '#120d0a'}
+    {media: '(prefers-color-scheme: light)', color: '#f5eee4'},
+    {media: '(prefers-color-scheme: dark)', color: '#1f1712'}
   ]
 };
 
