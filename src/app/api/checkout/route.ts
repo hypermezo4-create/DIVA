@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 import {CheckoutError, createCheckoutOrder} from '@/features/checkout/service';
 import {isAppLocale} from '@/i18n/routing';
+import {isTrustedMutationRequest} from '@/lib/request-security';
 import {getSessionFromHeaders} from '@/lib/session';
 
 const checkoutSchema = z.object({
@@ -25,6 +26,10 @@ const checkoutSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (!isTrustedMutationRequest(request)) {
+    return NextResponse.json({error: 'CROSS_SITE_REQUEST'}, {status: 403});
+  }
+
   const parsed = checkoutSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success || !isAppLocale(parsed.data.locale)) {
     return NextResponse.json({error: 'INVALID_CHECKOUT'}, {status: 400});
