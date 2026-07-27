@@ -35,7 +35,7 @@ function readCredentials(form: HTMLFormElement): Credentials {
 
 function AccountTabs({mode, copy, onChange}: {mode: AccountMode; copy: AccountCopy; onChange: (mode: AccountMode) => void}) {
   return (
-    <div className={styles.tabs} role="tablist" aria-label={`${copy.signIn} / ${copy.signUp}`}>
+    <div className={styles.tabs}>
       <button type="button" className={mode === 'sign-in' ? styles.active : ''} onClick={() => onChange('sign-in')}>
         {copy.signIn}
       </button>
