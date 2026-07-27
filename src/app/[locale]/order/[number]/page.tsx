@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
+import {OrderCancelButton} from '@/components/orders/order-cancel-button';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
 import {findOrderConfirmation} from '@/features/orders/repository';
@@ -67,7 +68,18 @@ export default async function OrderPage({params, searchParams}: PageProps) {
           <div className={styles.totalRow}><span>{t('shipping')}</span><strong>{money(locale, order.shippingMinor, order.currency)}</strong></div>
           <div className={`${styles.totalRow} ${styles.grandTotal}`}><span>{t('total')}</span><strong>{money(locale, order.totalMinor, order.currency)}</strong></div>
           <p className={styles.note}>{t('paymentNote')}</p>
-          <Link href={`/${locale}/shop`} className="button button--primary">{t('continueShopping')}</Link>
+          <div className={styles.actions}>
+            <Link href={`/${locale}/shop`} className="button button--primary">{t('continueShopping')}</Link>
+            {order.status === 'pending_payment' && order.paymentStatus === 'pending' ? (
+              <OrderCancelButton
+                orderNumber={order.number}
+                confirmationToken={token}
+                cancelLabel={t('cancel')}
+                cancellingLabel={t('cancelling')}
+                errorLabel={t('cancelError')}
+              />
+            ) : null}
+          </div>
         </section>
       </main>
       <SiteFooter locale={locale} />
