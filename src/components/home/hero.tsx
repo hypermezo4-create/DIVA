@@ -14,16 +14,19 @@ type HeroCopy = {
   edition: string;
 };
 
-export function Hero({locale, copy}: {locale: AppLocale; copy: HeroCopy}) {
+type HeroVisual = {
+  primaryImage: string | null;
+  secondaryImage: string | null;
+  productName: string;
+};
+
+export function Hero({locale, copy, visual}: {locale: AppLocale; copy: HeroCopy; visual: HeroVisual}) {
   const reduceMotion = useReducedMotion();
-  const rise = reduceMotion ? {} : {initial: {opacity: 0, y: 24}, animate: {opacity: 1, y: 0}};
+  const rise = reduceMotion ? {} : {initial: {opacity: 0, y: 28}, animate: {opacity: 1, y: 0}};
 
   return (
     <section className="hero-shell">
-      <div className="hero-orb hero-orb--one" />
-      <div className="hero-orb hero-orb--two" />
-
-      <motion.div className="hero-copy" {...rise} transition={{duration: 0.75, ease: [0.22, 1, 0.36, 1]}}>
+      <motion.div className="hero-copy" {...rise} transition={{duration: 0.7, ease: [0.22, 1, 0.36, 1]}}>
         <p className="eyebrow">{copy.kicker}</p>
         <h1>{copy.title}</h1>
         <p className="hero-description">{copy.description}</p>
@@ -35,23 +38,44 @@ export function Hero({locale, copy}: {locale: AppLocale; copy: HeroCopy}) {
             {copy.secondary}
           </a>
         </div>
+        <div className="hero-signature-line" aria-hidden="true">
+          <span>DIVA</span>
+          <i />
+          <span>{copy.edition}</span>
+        </div>
       </motion.div>
 
       <motion.div
         className="hero-art"
-        initial={reduceMotion ? undefined : {opacity: 0, scale: 0.96}}
-        animate={reduceMotion ? undefined : {opacity: 1, scale: 1}}
-        transition={{duration: 1, delay: 0.08, ease: [0.22, 1, 0.36, 1]}}
+        initial={reduceMotion ? undefined : {opacity: 0, x: 26}}
+        animate={reduceMotion ? undefined : {opacity: 1, x: 0}}
+        transition={{duration: 0.9, delay: 0.05, ease: [0.22, 1, 0.36, 1]}}
       >
-        <div className="hero-art__frame">
-          <Image
-            src="/brand/diva-mark.svg"
-            alt="DIVA logo in champagne gold"
-            fill
-            sizes="(max-width: 900px) 86vw, 42vw"
-            className="hero-logo-image"
-            priority
-          />
+        <div className="hero-visual-grid">
+          <div className="hero-art__frame hero-art__frame--primary">
+            {visual.primaryImage ? (
+              <Image
+                src={visual.primaryImage}
+                alt={visual.productName}
+                fill
+                sizes="(max-width: 900px) 92vw, 44vw"
+                className="cover-image"
+                priority
+              />
+            ) : <div className="hero-art__placeholder" aria-hidden="true" />}
+          </div>
+          <div className="hero-art__frame hero-art__frame--secondary">
+            {visual.secondaryImage ? (
+              <Image
+                src={visual.secondaryImage}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 42vw, 18vw"
+                className="cover-image"
+              />
+            ) : <div className="hero-art__placeholder" aria-hidden="true" />}
+          </div>
+          <div className="hero-monogram" aria-hidden="true">D</div>
           <span className="hero-edition">{copy.edition}</span>
         </div>
       </motion.div>
