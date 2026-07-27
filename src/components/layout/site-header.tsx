@@ -33,7 +33,7 @@ export async function SiteHeader({locale}: {locale: AppLocale}) {
         <div className="header-actions">
           <LocaleSwitcher locale={locale} label={t('language')} />
           <ThemeToggle label={t('theme')} />
-          <Link href={`/${locale}/account`} className="header-account-link">
+          <Link href={`/${locale}/account`} className="header-shop-link">
             {t('account')}
           </Link>
           <Link href={`/${locale}/shop`} className="header-shop-link">
