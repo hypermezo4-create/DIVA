@@ -8,21 +8,6 @@ import {getServerEnv} from '@/lib/server-env';
 
 const authSchema = {user, session, account, verification};
 
-const customerFields = {
-  role: {
-    type: ['customer', 'admin'] as const,
-    required: false,
-    defaultValue: 'customer',
-    input: false
-  },
-  locale: {
-    type: 'string' as const,
-    required: false,
-    defaultValue: 'en',
-    input: false
-  }
-};
-
 function createAuth() {
   const env = getServerEnv();
   const database = drizzleAdapter(getDatabase(), {provider: 'pg', schema: authSchema});
@@ -32,7 +17,12 @@ function createAuth() {
     baseURL: env.BETTER_AUTH_URL,
     database,
     emailAndPassword: {enabled: true},
-    user: {additionalFields: customerFields}
+    user: {
+      additionalFields: {
+        role: {type: ['customer', 'admin'], required: false, defaultValue: 'customer', input: false},
+        locale: {type: 'string', required: false, defaultValue: 'en', input: false}
+      }
+    }
   });
 }
 
