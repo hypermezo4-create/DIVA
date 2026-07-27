@@ -4,6 +4,7 @@ import {setRequestLocale} from 'next-intl/server';
 import {ThemeProvider} from '@/components/providers/theme-provider';
 import {directionFor, isAppLocale, locales} from '@/i18n/routing';
 import '../globals.css';
+import '../catalog.css';
 
 export const metadata: Metadata = {
   title: {
