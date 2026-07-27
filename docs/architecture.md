@@ -8,7 +8,7 @@ src/
 ├── components/   reusable UI, layout and commerce interaction primitives
 ├── db/           PostgreSQL client and Drizzle schema
 ├── i18n/         locale routing and request configuration
-├── lib/          cross-cutting server integrations such as auth
+├── lib/          cross-cutting server integrations such as auth, SEO and request security
 └── features/     commerce domains and use-cases
 ```
 
@@ -101,6 +101,18 @@ The editorial desk displays the source-message value when no database override e
 
 Admin order operations deliberately do not reverse paid fulfilment states or perform refunds. Those actions require the production payment/refund boundary so stock and money cannot drift apart.
 
+## Production hardening boundary
+
+Global response headers now disable framing, MIME sniffing, unnecessary browser capabilities and cross-origin resource sharing by default. Production responses add HSTS and a restrictive Content Security Policy that keeps application scripts, forms and connections same-origin while allowing the current catalog image source.
+
+State-changing checkout, order-cancellation, account cart/wishlist and admin APIs reject browser requests whose Fetch Metadata or `Origin` signals indicate a cross-site mutation. Authentication and authorization remain separate checks; the origin guard reduces CSRF exposure but does not replace session ownership or admin-role validation.
+
+Private route trees for account, cart, wishlist, checkout, order confirmation and admin declare `noindex`. Public home, shop and product pages expose canonical and language-alternate metadata; home and product surfaces publish JSON-LD, while `robots.txt` and `sitemap.xml` define the crawl boundary.
+
+`/api/health` performs a live database readiness check and disables caching. CI uses the tracked lockfile, migrates/seeds PostgreSQL, runs commerce smoke tests, lint, typecheck and production build, then boots the built server and verifies health, security headers, canonical metadata, crawl policy and cross-site mutation rejection.
+
+Keyboard focus indicators and high-contrast affordances are global, while the existing reduced-motion rules remain the motion accessibility baseline.
+
 ## Catalog and customer-commerce boundaries
 
 `/[locale]/shop` and `/[locale]/product/[slug]` read active products from PostgreSQL. The primary customer-facing taxonomy is Women, Men, Kids and Offers. Catalog queries expose localized copy, imagery, active/compare-at prices and inventory availability while keeping route components independent from Drizzle.
@@ -115,4 +127,4 @@ The visual system is derived from the supplied DIVA mark: warm ivory, espresso, 
 
 ## Next implementation boundary
 
-The core admin operations phase is now in place for dashboard reporting, product publication, SKU stock/pricing/offers, order fulfilment, customer visibility and multilingual storefront content. Production hardening is the next major boundary: deeper automated tests, accessibility, security review, SEO, performance and deployment operations. Provider-specific payment handoff/webhook verification and destination-aware production shipping rules remain required for live commerce.
+The first production-hardening pass is in place. The remaining launch-critical commerce work is the selected payment gateway handoff/webhook/refund integration plus destination-aware production shipping rules. The remaining hardening work is deeper browser E2E coverage, accessibility auditing, performance budgets/measurement, observability and verified deployment/runtime environment configuration.
