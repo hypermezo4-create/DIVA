@@ -23,6 +23,7 @@ DIVA is a multilingual luxury-footwear storefront being built from scratch aroun
 - PostgreSQL schema for products, translations, images, variants, sizes, colors and inventory
 - Atomic stock reservation and release service
 - Email/password authentication API at `/api/auth/[...all]`
+- Localized `/[locale]/account` sign-in, registration, session and sign-out experience
 
 ## Local development
 
@@ -61,7 +62,7 @@ npm run build
 1. Foundation and design system — complete
 2. Catalog and product experience — complete
 3. Commerce backend — complete in code; deployment requires a PostgreSQL connection and auth secret
-4. Customer commerce — cart, wishlist, account UI, checkout, orders, payments and shipping
+4. Customer commerce — in progress: account UI is implemented; cart, wishlist, checkout, orders, payments and shipping remain
 5. Admin operations — products, stock, orders, customers, content and translations
 6. Production hardening — tests, accessibility, security, SEO, performance and deployment
 
