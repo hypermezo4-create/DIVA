@@ -1,0 +1,30 @@
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+:where(button, input, select, textarea):disabled {
+  cursor: not-allowed;
+}
+
+:where(h1, h2, h3, [id]) {
+  scroll-margin-top: 7rem;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: color-mix(in srgb, var(--espresso) 42%, transparent);
+  }
+
+  .button,
+  .icon-button,
+  .locale-control select {
+    border-width: 2px;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid Highlight;
+  }
+}
