@@ -12,6 +12,8 @@
     "collections": "Collections",
     "shop": "Shop",
     "account": "Account",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
     "home": "Home",
     "language": "Language",
     "theme": "Toggle color theme"
@@ -45,8 +47,9 @@
   "Shop": {
     "metaTitle": "The DIVA Edit · Luxury Footwear",
     "title": "The DIVA edit.",
-    "description": "Explore the first DIVA catalog across women, men, kids, new arrivals and signature collections.",
+    "description": "Explore the live DIVA catalog across women, men, kids, new arrivals and signature collections.",
     "newBadge": "New",
+    "soldOut": "Sold out",
     "resultCount": "{count, plural, one {# silhouette} other {# silhouettes}}",
     "filters": {
       "all": "All footwear",
@@ -60,15 +63,42 @@
   "Product": {
     "home": "Home",
     "shop": "Shop",
-    "sizes": "Available sizes",
-    "colors": "Colorways",
+    "sizes": "Size",
+    "colors": "Color",
     "collection": "Collection",
+    "priceFrom": "Price",
+    "addToCart": "Add to cart",
+    "adding": "Adding…",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist",
+    "outOfStock": "This option is currently out of stock.",
+    "chooseOptions": "Choose a color and size first.",
+    "unavailable": "This option is unavailable right now.",
+    "added": "Added to your cart.",
     "moreFromCategory": "Explore the category",
-    "backToShop": "Back to shop",
-    "collections": {
-      "mirror": "The Mirror Edition",
-      "city": "The City Edit"
-    }
+    "backToShop": "Back to shop"
+  },
+  "Cart": {
+    "metaTitle": "Shopping Bag",
+    "title": "Your DIVA bag.",
+    "intro": "Review selected sizes, colors and live availability before checkout.",
+    "empty": "Your bag is waiting for its first pair.",
+    "continueShopping": "Continue shopping",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "stock": "{count} available",
+    "checkout": "Continue to checkout",
+    "checkoutSoon": "Checkout is the next commerce phase.",
+    "refreshing": "Refreshing availability…"
+  },
+  "Wishlist": {
+    "metaTitle": "Wishlist",
+    "title": "Your DIVA wishlist.",
+    "intro": "Keep the silhouettes you want to revisit in one place.",
+    "empty": "No saved silhouettes yet.",
+    "continueShopping": "Discover the collection",
+    "remove": "Remove"
   },
   "Account": {
     "metaTitle": "Private Client Account",
