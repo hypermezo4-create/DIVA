@@ -1,0 +1,137 @@
+.list {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.key {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.key strong {
+  font-family: Arial, sans-serif;
+  font-size: .76rem;
+  letter-spacing: .04em;
+}
+
+.key span {
+  color: var(--espresso-soft);
+  font-family: Arial, sans-serif;
+  font-size: .68rem;
+}
+
+.locales {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field {
+  min-width: 0;
+  padding: 20px 22px;
+  border-inline-end: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+}
+
+.field:nth-child(2n) {
+  border-inline-end: 0;
+}
+
+.field > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--espresso-soft);
+  font-family: Arial, sans-serif;
+  font-size: .7rem;
+}
+
+.field > span strong {
+  color: var(--espresso);
+}
+
+.field > span small {
+  color: var(--gold);
+  font-size: .64rem;
+}
+
+.field textarea {
+  width: 100%;
+  min-height: 104px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--espresso);
+  padding: 12px 14px;
+  outline: none;
+  font-family: Arial, sans-serif;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.field textarea:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 14%, transparent);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--espresso);
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.button:hover {
+  border-color: var(--gold);
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.success,
+.error {
+  font-family: Arial, sans-serif;
+  font-size: .72rem;
+}
+
+.success { color: #4c765a; }
+.error { color: #a13b32; }
+
+@media (max-width: 780px) {
+  .locales {
+    grid-template-columns: 1fr;
+  }
+
+  .field,
+  .field:nth-child(2n) {
+    border-inline-end: 0;
+  }
+}
