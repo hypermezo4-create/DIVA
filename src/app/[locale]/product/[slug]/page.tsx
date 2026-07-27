@@ -129,6 +129,7 @@ export default async function ProductPage({params}: ProductPageProps) {
               locale={locale}
               productId={product.id}
               variants={product.variants}
+              commerceEnabled={product.commerceEnabled}
               copy={{
                 size: t('sizes'),
                 color: t('colors'),
