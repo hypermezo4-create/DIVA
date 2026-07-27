@@ -1,6 +1,11 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
-import {addWishlistItem, getWishlistEntries, removeWishlistItem} from '@/features/customer-commerce/repository';
+import {
+  addWishlistItem,
+  CustomerCommerceError,
+  getWishlistEntries,
+  removeWishlistItem
+} from '@/features/customer-commerce/repository';
 import {isAppLocale} from '@/i18n/routing';
 import {getSessionFromHeaders} from '@/lib/session';
 
@@ -24,8 +29,16 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({error: 'UNAUTHORIZED'}, {status: 401});
   const parsed = itemSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({error: 'INVALID_ITEM'}, {status: 400});
-  await addWishlistItem(user.id, parsed.data.productId);
-  return NextResponse.json({ok: true}, {status: 201});
+
+  try {
+    await addWishlistItem(user.id, parsed.data.productId);
+    return NextResponse.json({ok: true}, {status: 201});
+  } catch (error) {
+    if (error instanceof CustomerCommerceError && error.code === 'PRODUCT_NOT_FOUND') {
+      return NextResponse.json({error: error.code}, {status: 404});
+    }
+    throw error;
+  }
 }
 
 export async function DELETE(request: NextRequest) {
