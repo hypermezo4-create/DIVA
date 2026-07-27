@@ -48,7 +48,16 @@ const nextConfig: NextConfig = {
     ]
   },
   async headers() {
-    return [{source: '/:path*', headers: securityHeaders}];
+    return [
+      {source: '/:path*', headers: securityHeaders},
+      {
+        source: '/api/:path*',
+        headers: [
+          {key: 'Cache-Control', value: 'no-store'},
+          {key: 'X-Robots-Tag', value: 'noindex, nofollow'}
+        ]
+      }
+    ];
   }
 };
 
