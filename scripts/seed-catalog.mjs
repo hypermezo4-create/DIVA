@@ -22,7 +22,7 @@ const products = [
   {
     slug: 'milano-court-01', sku: 'MILANO01', audience: 'men', family: 'sneaker', collection: 'city', newArrival: true,
     images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=88', 'https://images.unsplash.com/photo-1600269452121-4f2416e55c28?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['40', '41', '42', '43', '44'], colors: ['ivory', 'espresso'], priceMinor: 18900,
+    sizes: ['40', '41', '42', '43', '44'], colors: ['ivory', 'espresso'], priceMinor: 18900, compareAtMinor: 22900,
     copy: {
       en: ['Milano Court 01', 'City sneaker', 'A clean court silhouette with a sculpted sole and understated detailing for polished everyday movement.'],
       ar: ['Milano Court 01', 'سنيكرز للمدينة', 'تصميم كورت نظيف بنعل منحوت وتفاصيل هادئة يمنح الإطلالة اليومية لمسة مصقولة.'],
@@ -33,7 +33,7 @@ const products = [
   {
     slug: 'aurelia-08', sku: 'AURELIA08', audience: 'women', family: 'heel', collection: 'mirror', newArrival: true,
     images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1400&q=88', 'https://images.unsplash.com/photo-1535043934128-cf0b28d52f95?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['36', '37', '38', '39', '40'], colors: ['gold', 'black'], priceMinor: 22900,
+    sizes: ['36', '37', '38', '39', '40'], colors: ['gold', 'black'], priceMinor: 22900, compareAtMinor: null,
     copy: {
       en: ['Aurelia 08', 'Sculpted heel', 'A refined pointed profile balanced by a confident sculpted heel and a luminous evening finish.'],
       ar: ['Aurelia 08', 'كعب منحوت', 'مقدمة راقية بخط مدبب تتوازن مع كعب منحوت واثق ولمسة لامعة تناسب السهرات.'],
@@ -44,7 +44,7 @@ const products = [
   {
     slug: 'noir-loafer-03', sku: 'NOIR03', audience: 'men', family: 'loafer', collection: 'mirror', newArrival: false,
     images: ['https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['40', '41', '42', '43', '44'], colors: ['black', 'espresso'], priceMinor: 21500,
+    sizes: ['40', '41', '42', '43', '44'], colors: ['black', 'espresso'], priceMinor: 21500, compareAtMinor: null,
     copy: {
       en: ['Noir Loafer 03', 'Leather loafer', 'A streamlined loafer with a low profile, softened structure and a polished finish that moves between tailoring and denim.'],
       ar: ['Noir Loafer 03', 'لوفر جلد', 'لوفر بانسيابية هادئة وبناء مرن وتشطيب مصقول يناسب الإطلالات الرسمية والكاجوال.'],
@@ -55,7 +55,7 @@ const products = [
   {
     slug: 'celeste-line-02', sku: 'CELESTE02', audience: 'women', family: 'sandal', collection: 'city', newArrival: true,
     images: ['https://images.unsplash.com/photo-1603487742131-4160ec999306?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['36', '37', '38', '39', '40'], colors: ['ivory', 'gold'], priceMinor: 17900,
+    sizes: ['36', '37', '38', '39', '40'], colors: ['ivory', 'gold'], priceMinor: 17900, compareAtMinor: 20900,
     copy: {
       en: ['Celeste Line 02', 'Minimal sandal', 'Slim straps, a balanced footbed and a restrained metallic accent create an effortless warm-weather signature.'],
       ar: ['Celeste Line 02', 'صندل مينيمال', 'سيور رفيعة وقاعدة متوازنة ولمسة معدنية هادئة تصنع توقيعًا أنيقًا للأيام الدافئة.'],
@@ -66,7 +66,7 @@ const products = [
   {
     slug: 'junior-court-05', sku: 'JUNIOR05', audience: 'kids', family: 'sneaker', collection: 'city', newArrival: true,
     images: ['https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['28', '29', '30', '31', '32', '33', '34'], colors: ['ivory', 'burgundy'], priceMinor: 12900,
+    sizes: ['28', '29', '30', '31', '32', '33', '34'], colors: ['ivory', 'burgundy'], priceMinor: 12900, compareAtMinor: null,
     copy: {
       en: ['Junior Court 05', 'Kids sneaker', 'A lightweight everyday sneaker with a supportive profile and clean details designed for busy little steps.'],
       ar: ['Junior Court 05', 'سنيكرز أطفال', 'سنيكرز يومي خفيف ببناء داعم وتفاصيل نظيفة يناسب الحركة المستمرة والخطوات الصغيرة.'],
@@ -77,7 +77,7 @@ const products = [
   {
     slug: 'mini-mirror-04', sku: 'MINI04', audience: 'kids', family: 'boot', collection: 'mirror', newArrival: false,
     images: ['https://images.unsplash.com/photo-1554139844-af2fc8ad3a3a?auto=format&fit=crop&w=1400&q=88'],
-    sizes: ['29', '30', '31', '32', '33', '34'], colors: ['espresso', 'black'], priceMinor: 14900,
+    sizes: ['29', '30', '31', '32', '33', '34'], colors: ['espresso', 'black'], priceMinor: 14900, compareAtMinor: 17900,
     copy: {
       en: ['Mini Mirror 04', 'Kids ankle boot', 'A compact ankle boot with a soft structure, stable sole and polished finish inspired by the DIVA Mirror line.'],
       ar: ['Mini Mirror 04', 'بوت أطفال قصير', 'بوت قصير ببناء مريح ونعل ثابت وتشطيب مصقول مستوحى من مجموعة DIVA Mirror.'],
@@ -133,9 +133,9 @@ await sql.begin(async (tx) => {
       for (const size of product.sizes) {
         const sku = `${product.sku}-${colorCode}-${size}`.toUpperCase();
         const [variant] = await tx`
-          insert into product_variants (product_id, color_id, size_id, sku, price_minor, currency, active)
-          values (${row.id}, ${colorIds.get(colorCode)}, ${sizeIds.get(size)}, ${sku}, ${product.priceMinor}, 'USD', true)
-          on conflict (sku) do update set product_id = excluded.product_id, color_id = excluded.color_id, size_id = excluded.size_id, price_minor = excluded.price_minor, currency = excluded.currency, active = true, updated_at = now()
+          insert into product_variants (product_id, color_id, size_id, sku, price_minor, compare_at_minor, currency, active)
+          values (${row.id}, ${colorIds.get(colorCode)}, ${sizeIds.get(size)}, ${sku}, ${product.priceMinor}, ${product.compareAtMinor}, 'USD', true)
+          on conflict (sku) do update set product_id = excluded.product_id, color_id = excluded.color_id, size_id = excluded.size_id, price_minor = excluded.price_minor, compare_at_minor = excluded.compare_at_minor, currency = excluded.currency, active = true, updated_at = now()
           returning id
         `;
         const stock = 4 + ((Number(size) + colorCode.length) % 8);
@@ -146,4 +146,4 @@ await sql.begin(async (tx) => {
 });
 
 await sql.end();
-console.log(`Seeded ${products.length} DIVA products with live variants and inventory.`);
+console.log(`Seeded ${products.length} DIVA products with live variants, offers and inventory.`);
