@@ -17,8 +17,10 @@ import {
 import type {AppLocale} from '@/i18n/routing';
 import type {CartLine, StoredCartItem, WishlistEntry} from './types';
 
+type CommerceErrorCode = 'NOT_SELLABLE' | 'INSUFFICIENT_STOCK' | 'CART_NOT_FOUND' | 'PRODUCT_NOT_FOUND';
+
 export class CustomerCommerceError extends Error {
-  constructor(public readonly code: 'NOT_SELLABLE' | 'INSUFFICIENT_STOCK' | 'CART_NOT_FOUND') {
+  constructor(public readonly code: CommerceErrorCode) {
     super(code);
   }
 }
@@ -167,6 +169,12 @@ export async function quoteGuestCart(items: readonly StoredCartItem[], locale: A
 }
 
 export async function addWishlistItem(userId: string, productId: string) {
+  const [product] = await getDatabase()
+    .select({id: products.id})
+    .from(products)
+    .where(and(eq(products.id, productId), eq(products.status, 'active')))
+    .limit(1);
+  if (!product) throw new CustomerCommerceError('PRODUCT_NOT_FOUND');
   await getDatabase().insert(wishlists).values({userId, productId}).onConflictDoNothing();
 }
 
