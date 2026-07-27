@@ -42,14 +42,31 @@
     "note": "Der neue digitale DIVA Flagship Store entsteht als mehrsprachiges Luxury-Commerce-Erlebnis."
   },
   "Shop": {
+    "metaTitle": "The DIVA Edit · Luxuriöse Schuhe",
     "title": "The DIVA Edit.",
-    "description": "Ein erster Blick auf die Silhouetten des Hauses DIVA — elegante Essentials, markante Formen und moderne Ikonen für jeden Tag.",
-    "preview": "Signatur-Vorschau",
-    "back": "Zur Startseite",
-    "categories": {
-      "sneaker": "Signature Sneaker",
-      "heel": "Skulpturaler Absatz",
-      "loafer": "Leder-Loafer"
+    "description": "Entdecke den ersten DIVA Katalog für Damen, Herren und Kinder sowie Neuheiten und Signatur-Kollektionen.",
+    "newBadge": "Neu",
+    "resultCount": "{count, plural, one {# Silhouette} other {# Silhouetten}}",
+    "filters": {
+      "all": "Alle Schuhe",
+      "new": "Neuheiten",
+      "women": "Damen",
+      "men": "Herren",
+      "kids": "Kinder",
+      "collections": "Kollektionen"
+    }
+  },
+  "Product": {
+    "home": "Startseite",
+    "shop": "Shop",
+    "sizes": "Verfügbare Größen",
+    "colors": "Farben",
+    "collection": "Kollektion",
+    "moreFromCategory": "Kategorie entdecken",
+    "backToShop": "Zurück zum Shop",
+    "collections": {
+      "mirror": "The Mirror Edition",
+      "city": "The City Edit"
     }
   }
 }

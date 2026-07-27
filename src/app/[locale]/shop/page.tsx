@@ -1,33 +1,30 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import type {Metadata} from 'next';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
+import {CatalogFilterNav} from '@/components/catalog/catalog-filter-nav';
+import {ProductCard} from '@/components/catalog/product-card';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
+import {isCatalogFilter, listCatalogProducts} from '@/features/catalog/catalog';
+import {catalogFilters, type CatalogFilter} from '@/features/catalog/types';
 import {isAppLocale} from '@/i18n/routing';
 
-const products = [
-  {
-    name: 'Milano Court 01',
-    categoryKey: 'sneaker',
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=86'
-  },
-  {
-    name: 'Aurelia 08',
-    categoryKey: 'heel',
-    image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=86'
-  },
-  {
-    name: 'Noir Loafer 03',
-    categoryKey: 'loafer',
-    image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=1200&q=86'
-  }
-] as const;
+type ShopPageProps = {
+  params: Promise<{locale: string}>;
+  searchParams: Promise<{category?: string}>;
+};
 
-type ShopPageProps = {params: Promise<{locale: string}>};
-
-export default async function ShopPage({params}: ShopPageProps) {
+export async function generateMetadata({params}: ShopPageProps): Promise<Metadata> {
   const {locale} = await params;
+  if (!isAppLocale(locale)) return {};
+
+  const t = await getTranslations({locale, namespace: 'Shop'});
+  return {title: t('metaTitle'), description: t('description')};
+}
+
+export default async function ShopPage({params, searchParams}: ShopPageProps) {
+  const {locale} = await params;
+  const {category} = await searchParams;
 
   if (!isAppLocale(locale)) {
     notFound();
@@ -35,6 +32,11 @@ export default async function ShopPage({params}: ShopPageProps) {
 
   setRequestLocale(locale);
   const t = await getTranslations({locale, namespace: 'Shop'});
+  const activeFilter: CatalogFilter = isCatalogFilter(category) ? category : 'all';
+  const products = listCatalogProducts(activeFilter);
+  const filterLabels = Object.fromEntries(
+    catalogFilters.map((filter) => [filter, t(`filters.${filter}`)])
+  ) as Record<CatalogFilter, string>;
 
   return (
     <>
@@ -46,22 +48,18 @@ export default async function ShopPage({params}: ShopPageProps) {
           <p>{t('description')}</p>
         </header>
 
-        <div className="product-grid">
-          {products.map((product) => (
-            <article className="product-card" key={product.name}>
-              <div className="product-card__image">
-                <Image src={product.image} alt="" fill sizes="(max-width: 800px) 100vw, 33vw" className="cover-image" />
-              </div>
-              <p>{t(`categories.${product.categoryKey}`)}</p>
-              <h2>{product.name}</h2>
-              <span>{t('preview')}</span>
-            </article>
-          ))}
+        <CatalogFilterNav locale={locale} active={activeFilter} labels={filterLabels} />
+
+        <div className="catalog-result-meta">
+          <span>{t('resultCount', {count: products.length})}</span>
+          <span>{filterLabels[activeFilter]}</span>
         </div>
 
-        <Link href={`/${locale}`} className="button button--ghost shop-back">
-          {t('back')}
-        </Link>
+        <div className="product-grid">
+          {products.map((product) => (
+            <ProductCard key={product.slug} locale={locale} product={product} newLabel={t('newBadge')} />
+          ))}
+        </div>
       </main>
       <SiteFooter locale={locale} />
     </>

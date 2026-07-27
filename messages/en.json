@@ -42,14 +42,31 @@
     "note": "The new DIVA digital flagship is being built as a multilingual luxury commerce experience."
   },
   "Shop": {
+    "metaTitle": "The DIVA Edit · Luxury Footwear",
     "title": "The DIVA edit.",
-    "description": "A first look at the silhouettes shaping the DIVA house — polished essentials, statement forms and modern everyday icons.",
-    "preview": "Signature preview",
-    "back": "Back to home",
-    "categories": {
-      "sneaker": "Signature sneaker",
-      "heel": "Sculpted heel",
-      "loafer": "Leather loafer"
+    "description": "Explore the first DIVA catalog across women, men, kids, new arrivals and signature collections.",
+    "newBadge": "New",
+    "resultCount": "{count, plural, one {# silhouette} other {# silhouettes}}",
+    "filters": {
+      "all": "All footwear",
+      "new": "New arrivals",
+      "women": "Women",
+      "men": "Men",
+      "kids": "Kids",
+      "collections": "Collections"
+    }
+  },
+  "Product": {
+    "home": "Home",
+    "shop": "Shop",
+    "sizes": "Available sizes",
+    "colors": "Colorways",
+    "collection": "Collection",
+    "moreFromCategory": "Explore the category",
+    "backToShop": "Back to shop",
+    "collections": {
+      "mirror": "The Mirror Edition",
+      "city": "The City Edit"
     }
   }
 }
