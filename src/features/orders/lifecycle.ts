@@ -1,8 +1,8 @@
 import 'server-only';
 
-import {and, eq, gte, sql} from 'drizzle-orm';
+import {and, eq, gte, inArray, sql} from 'drizzle-orm';
 import {getDatabase} from '@/db/client';
-import {inventory, orderItems, orders} from '@/db/schema';
+import {inventory, orderItems, orders, paymentAttempts} from '@/db/schema';
 
 export class OrderLifecycleError extends Error {
   constructor(public readonly code: 'ORDER_NOT_FOUND' | 'INVALID_ORDER_STATE' | 'RESERVATION_MISSING') {
@@ -89,8 +89,16 @@ export async function cancelPendingOrder(orderId: string) {
     }
 
     await tx
-      .update(orders)
+      .update(paymentAttempts)
       .set({status: 'cancelled', updatedAt: new Date()})
+      .where(and(
+        eq(paymentAttempts.orderId, orderId),
+        inArray(paymentAttempts.status, ['created', 'pending'])
+      ));
+
+    await tx
+      .update(orders)
+      .set({status: 'cancelled', paymentStatus: 'cancelled', updatedAt: new Date()})
       .where(eq(orders.id, orderId));
 
     return {changed: true};
