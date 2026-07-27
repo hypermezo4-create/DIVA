@@ -38,6 +38,11 @@ DIVA is a multilingual luxury-footwear storefront being built from scratch aroun
 - Customer directory with account role and order-count visibility
 - Database-backed multilingual home/footer content overrides with file-message fallback
 - Admin editorial desk for Arabic, English, German and Russian storefront copy
+- Production security headers, HSTS/CSP baseline and cross-site mutation guards
+- Canonical/language metadata, JSON-LD, robots policy and localized sitemap
+- Private-route `noindex` boundaries for account, cart, checkout, wishlist, order and admin surfaces
+- Database-backed `/api/health` readiness endpoint and built-runtime smoke checks
+- Global keyboard focus and high-contrast accessibility affordances
 
 ## Local development
 
@@ -85,7 +90,16 @@ npm run typecheck
 npm run build
 ```
 
-The commerce smoke test covers catalog/offers, shipping configuration, cart/wishlist persistence, orders, payment attempts, cancelled payment/order states, admin-role persistence and editable storefront-content persistence.
+After starting a production build against a migrated/seeded database:
+
+```bash
+npm start
+npm run test:runtime
+```
+
+The commerce smoke test covers catalog/offers, shipping configuration, cart/wishlist persistence, orders, payment attempts, cancelled payment/order states, admin-role persistence and editable storefront-content persistence. The runtime smoke verifies database health, security headers, canonical metadata, crawl policy and cross-site mutation rejection.
+
+GitHub Actions uses `npm ci`, provisions PostgreSQL, migrates/seeds it, runs the commerce checks, lint, typecheck and production build, then boots the built server and runs the runtime hardening smoke suite.
 
 ## Delivery roadmap
 
@@ -94,6 +108,6 @@ The commerce smoke test covers catalog/offers, shipping configuration, cart/wish
 3. Commerce backend — implemented; production still requires real environment provisioning and runtime validation
 4. Customer commerce — checkout, configurable shipping, order history, payment-attempt boundary and cancellation lifecycle implemented; provider-specific payment handoff/webhooks and final production shipping rules remain
 5. Admin operations — core operational surface implemented: dashboard, products, stock, offers, orders, customers, content and multilingual storefront copy
-6. Production hardening — next major phase: test depth, accessibility, security, SEO, performance and deployment, alongside the selected production payment/shipping integrations
+6. Production hardening — in progress: security headers, CSRF-origin guards, health checks, SEO/crawl controls, structured data, accessibility focus states and built-runtime CI checks are implemented; deeper E2E, accessibility/performance measurement, observability and verified deployment remain
 
-See [`docs/architecture.md`](docs/architecture.md) for the current boundaries.
+See [`docs/architecture.md`](docs/architecture.md) for the current boundaries and [`docs/production.md`](docs/production.md) for the production operations checklist.
