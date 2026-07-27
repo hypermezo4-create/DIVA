@@ -14,6 +14,7 @@ import {
   productTranslations,
   products,
   productVariants,
+  shippingMethods,
   sizes
 } from '@/db/schema';
 import type {AppLocale} from '@/i18n/routing';
@@ -43,7 +44,7 @@ type OrderItemSnapshot = {
 };
 
 export class CheckoutError extends Error {
-  constructor(public readonly code: 'EMPTY_CART' | 'INVALID_ITEM' | 'INSUFFICIENT_STOCK' | 'MIXED_CURRENCY') {
+  constructor(public readonly code: 'EMPTY_CART' | 'INVALID_ITEM' | 'INSUFFICIENT_STOCK' | 'MIXED_CURRENCY' | 'INVALID_SHIPPING') {
     super(code);
   }
 }
@@ -69,7 +70,7 @@ export async function createCheckoutOrder({
   locale: AppLocale;
   items: CheckoutItem[];
   address: CheckoutAddress;
-  shippingMethod: 'standard';
+  shippingMethod: string;
 }) {
   if (items.length === 0) throw new CheckoutError('EMPTY_CART');
 
@@ -120,6 +121,17 @@ export async function createCheckoutOrder({
     const currency = sellableRows[0]?.currency;
     if (!currency) throw new CheckoutError('INVALID_ITEM');
 
+    const [shipping] = await tx
+      .select({code: shippingMethods.code, priceMinor: shippingMethods.priceMinor})
+      .from(shippingMethods)
+      .where(and(
+        eq(shippingMethods.code, shippingMethod),
+        eq(shippingMethods.active, true),
+        eq(shippingMethods.currency, currency)
+      ))
+      .limit(1);
+    if (!shipping) throw new CheckoutError('INVALID_SHIPPING');
+
     let subtotalMinor = 0;
     const snapshots: OrderItemSnapshot[] = [];
 
@@ -151,7 +163,7 @@ export async function createCheckoutOrder({
       });
     }
 
-    const shippingMinor = 0;
+    const shippingMinor = shipping.priceMinor;
     const totalMinor = subtotalMinor + shippingMinor;
     const confirmationToken = createConfirmationToken();
     const [order] = await tx
@@ -169,7 +181,7 @@ export async function createCheckoutOrder({
         region: address.region || null,
         postalCode: address.postalCode || null,
         countryCode: address.countryCode.toUpperCase(),
-        shippingMethod,
+        shippingMethod: shipping.code,
         currency,
         subtotalMinor,
         shippingMinor,
