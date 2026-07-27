@@ -6,16 +6,25 @@ import {siteContent} from '@/db/schema';
 import type {AppLocale} from '@/i18n/routing';
 import type {StorefrontContentKey} from './definitions';
 
+function isMissingContentTable(error: unknown) {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === '42P01';
+}
+
 export async function getStorefrontContent(locale: AppLocale) {
   if (!process.env.DATABASE_URL) return new Map<StorefrontContentKey, string>();
 
-  const rows = await getDatabase()
-    .select({key: siteContent.key, value: siteContent.value})
-    .from(siteContent)
-    .where(eq(siteContent.locale, locale))
-    .orderBy(asc(siteContent.key));
+  try {
+    const rows = await getDatabase()
+      .select({key: siteContent.key, value: siteContent.value})
+      .from(siteContent)
+      .where(eq(siteContent.locale, locale))
+      .orderBy(asc(siteContent.key));
 
-  return new Map(rows.map((row) => [row.key as StorefrontContentKey, row.value]));
+    return new Map(rows.map((row) => [row.key as StorefrontContentKey, row.value]));
+  } catch (error) {
+    if (isMissingContentTable(error)) return new Map<StorefrontContentKey, string>();
+    throw error;
+  }
 }
 
 export async function listStorefrontContentOverrides() {
