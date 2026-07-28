@@ -1,9 +1,9 @@
 import type {Metadata} from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {ProductCard} from '@/components/catalog/product-card';
+import {ProductGallery} from '@/components/catalog/product-gallery';
 import {ProductPurchasePanel} from '@/components/catalog/product-purchase-panel';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {SiteHeader} from '@/components/layout/site-header';
@@ -92,37 +92,23 @@ export default async function ProductPage({params}: ProductPageProps) {
         }}
       />
       <SiteHeader locale={locale} />
-      <main className="product-page">
-        <div className="product-breadcrumbs">
+      <main id="main-content" className="product-page">
+        <nav className="product-breadcrumbs" aria-label={product.name}>
           <Link href={`/${locale}`}>{t('home')}</Link>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <Link href={`/${locale}/shop`}>{t('shop')}</Link>
-          <span>/</span>
-          <span>{product.name}</span>
-        </div>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{product.name}</span>
+        </nav>
 
-        <section className="product-detail">
-          <div className="product-gallery">
-            {product.images.map((image, index) => (
-              <div className="product-gallery__frame" key={`${image.url}-${index}`}>
-                <Image
-                  src={image.url}
-                  alt={image.altText ?? (index === 0 ? product.name : `${product.name} ${index + 1}`)}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 55vw"
-                  className="cover-image"
-                  priority={index === 0}
-                />
-              </div>
-            ))}
-          </div>
+        <section className="product-detail" aria-labelledby="product-title">
+          <ProductGallery name={product.name} images={product.images} />
 
           <div className="product-detail__copy">
-            <div>
+            <header className="product-summary">
               <p className="eyebrow">{product.subtitle}</p>
-              <h1>{product.name}</h1>
-              <p className="product-description">{product.description}</p>
-            </div>
+              <h1 id="product-title">{product.name}</h1>
+            </header>
 
             {product.collection && (
               <div className="product-collection">
@@ -151,6 +137,12 @@ export default async function ProductPage({params}: ProductPageProps) {
               }}
             />
 
+            <div className="product-story">
+              <div className="product-story__section">
+                <p className="product-description">{product.description}</p>
+              </div>
+            </div>
+
             <div className="product-detail__actions">
               <Link href={`/${locale}/shop?category=${product.audience}`} className="button button--ghost">
                 {t('moreFromCategory')}
@@ -163,11 +155,11 @@ export default async function ProductPage({params}: ProductPageProps) {
         </section>
 
         {relatedProducts.length > 0 && (
-          <section className="home-featured-section product-related">
+          <section className="home-featured-section product-related" aria-labelledby="related-products-title">
             <div className="home-featured-heading">
               <div>
-                <p className="eyebrow">{shopT('title')}</p>
-                <h2>{t('moreFromCategory')}</h2>
+                <p className="eyebrow" translate="no">DIVA EDIT</p>
+                <h2 id="related-products-title">{t('moreFromCategory')}</h2>
               </div>
               <Link href={`/${locale}/shop?category=${product.audience}`} className="text-link">{t('backToShop')} ↗</Link>
             </div>
@@ -180,6 +172,7 @@ export default async function ProductPage({params}: ProductPageProps) {
                   newLabel={shopT('newBadge')}
                   offerLabel={shopT('offerBadge')}
                   soldOutLabel={shopT('soldOut')}
+                  headingLevel="h3"
                 />
               ))}
             </div>
