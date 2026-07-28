@@ -150,6 +150,7 @@ export default async function HomePage({params}: PageProps) {
                 newLabel={shopT('newBadge')}
                 offerLabel={shopT('offerBadge')}
                 soldOutLabel={shopT('soldOut')}
+                headingLevel="h3"
               />
             ))}
           </div>
