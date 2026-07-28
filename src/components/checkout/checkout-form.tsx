@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
 import {useEffect, useState, type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import {useCommerce} from '@/components/providers/commerce-provider';
@@ -82,7 +84,7 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
     return () => { cancelled = true; };
   }, [cart.length, currency, locale, ready]);
 
-  if (!ready) return <div className={styles.status}>{copy.refresh}</div>;
+  if (!ready) return <div className={styles.status} role="status">{copy.refresh}</div>;
   if (cart.length === 0) {
     return (
       <div className={styles.status}>
@@ -142,18 +144,25 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
   }
 
   return (
-    <form className={styles.layout} onSubmit={(event) => void submit(event)}>
+    <form className={styles.layout} onSubmit={(event) => void submit(event)} aria-busy={submitting}>
       <div className={styles.fields}>
-        <section className={styles.section}>
-          <h2>{copy.contact}</h2>
+        <section className={styles.section} aria-labelledby="checkout-contact-title">
+          <div className={styles.sectionHeading}>
+            <span aria-hidden="true">01</span>
+            <h2 id="checkout-contact-title">{copy.contact}</h2>
+          </div>
           <div className={styles.grid}>
             <Field label={copy.name} name="customerName" autoComplete="name" />
             <Field label={copy.email} name="email" type="email" autoComplete="email" />
-            <Field label={copy.phone} name="phone" autoComplete="tel" />
+            <Field label={copy.phone} name="phone" type="tel" autoComplete="tel" />
           </div>
         </section>
-        <section className={styles.section}>
-          <h2>{copy.delivery}</h2>
+
+        <section className={styles.section} aria-labelledby="checkout-delivery-title">
+          <div className={styles.sectionHeading}>
+            <span aria-hidden="true">02</span>
+            <h2 id="checkout-delivery-title">{copy.delivery}</h2>
+          </div>
           <div className={styles.grid}>
             <Field label={copy.address1} name="addressLine1" autoComplete="address-line1" wide />
             <Field label={copy.address2} name="addressLine2" autoComplete="address-line2" wide required={false} />
@@ -163,10 +172,16 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
             <Field label={copy.countryCode} name="countryCode" autoComplete="country" minLength={2} maxLength={2} />
           </div>
         </section>
-        <section className={styles.section}>
-          <h2>{copy.shipping}</h2>
-          {shippingLoading ? <p className={styles.shippingStatus}>{copy.refresh}</p> : null}
-          {!shippingLoading && shippingMethods.length === 0 ? <p className={styles.shippingStatus}>{copy.shippingUnavailable}</p> : null}
+
+        <section className={styles.section} aria-labelledby="checkout-shipping-title">
+          <div className={styles.sectionHeading}>
+            <span aria-hidden="true">03</span>
+            <h2 id="checkout-shipping-title">{copy.shipping}</h2>
+          </div>
+          <div aria-live="polite">
+            {shippingLoading ? <p className={styles.shippingStatus}>{copy.refresh}</p> : null}
+            {!shippingLoading && shippingMethods.length === 0 ? <p className={styles.shippingStatus}>{copy.shippingUnavailable}</p> : null}
+          </div>
           <div className={styles.shippingList}>
             {shippingMethods.map((method) => (
               <label className={styles.shippingOption} key={method.code}>
@@ -188,15 +203,28 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
         </section>
       </div>
 
-      <aside className={styles.summary}>
+      <aside className={styles.summary} aria-label={copy.total}>
+        <div className={styles.summaryHeader}>
+          <span translate="no">DIVA · ORDER SUMMARY</span>
+          <Link href={`/${locale}/cart`}>{copy.backToCart} ↗</Link>
+        </div>
+
         <div className={styles.summaryLines}>
           {cart.map((item) => (
             <div className={styles.summaryLine} key={item.variantId}>
-              <span>{item.name} · {item.colorLabel} · {item.size} × {item.quantity}</span>
-              <strong>{money(locale, item.priceMinor * item.quantity, item.currency)}</strong>
+              <Link href={`/${locale}/product/${item.slug}`} className={styles.summaryImage} aria-label={item.name}>
+                {item.image && <Image src={item.image} alt="" fill sizes="68px" />}
+                <span>{item.quantity}</span>
+              </Link>
+              <div className={styles.summaryProduct}>
+                <strong>{item.name}</strong>
+                <span>{item.colorLabel} · {item.size}</span>
+              </div>
+              <strong className={styles.summaryPrice}>{money(locale, item.priceMinor * item.quantity, item.currency)}</strong>
             </div>
           ))}
         </div>
+
         <div className={styles.totalRow}><span>{copy.subtotal}</span><strong>{currency && subtotal !== null ? money(locale, subtotal, currency) : '—'}</strong></div>
         <div className={styles.totalRow}><span>{copy.shippingCost}</span><strong>{currency && shippingMinor !== null ? money(locale, shippingMinor, currency) : '—'}</strong></div>
         <div className={`${styles.totalRow} ${styles.grandTotal}`}><span>{copy.total}</span><strong>{currency && totalMinor !== null ? money(locale, totalMinor, currency) : '—'}</strong></div>
@@ -212,7 +240,7 @@ export function CheckoutForm({locale, copy}: {locale: AppLocale; copy: Copy}) {
 type FieldProps = {
   label: string;
   name: string;
-  type?: 'text' | 'email';
+  type?: 'text' | 'email' | 'tel';
   autoComplete: string;
   wide?: boolean;
   required?: boolean;
