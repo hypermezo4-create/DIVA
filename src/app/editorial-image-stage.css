@@ -1,0 +1,234 @@
+/* Product photos come from real retail capture; this layer makes that variation feel intentional without altering catalog data. */
+
+:root {
+  --image-stage-border: color-mix(in srgb, var(--lux-gold) 28%, var(--lux-line));
+  --image-stage-inner: color-mix(in srgb, var(--lux-paper-strong) 42%, transparent);
+  --image-stage-vignette: color-mix(in srgb, var(--lux-ink) 11%, transparent);
+  --image-stage-gold-wash: color-mix(in srgb, var(--lux-gold-soft) 12%, transparent);
+  --image-stage-shadow: 0 34px 78px -58px color-mix(in srgb, var(--lux-shadow) 86%, transparent);
+}
+
+.dark {
+  --image-stage-border: color-mix(in srgb, var(--lux-gold) 32%, var(--lux-line));
+  --image-stage-inner: color-mix(in srgb, var(--lux-paper-strong) 24%, transparent);
+  --image-stage-vignette: rgba(4, 2, 1, .19);
+  --image-stage-gold-wash: color-mix(in srgb, var(--lux-gold) 10%, transparent);
+  --image-stage-shadow: 0 38px 82px -58px rgba(0, 0, 0, .72);
+}
+
+.hero-showcase__image,
+.product-card__image,
+.product-gallery__stage,
+.product-gallery__thumb,
+.signature-card__image,
+.offer-spotlight__visual {
+  isolation: isolate;
+  border: 1px solid var(--image-stage-border);
+  background:
+    radial-gradient(circle at 50% 36%, var(--image-stage-gold-wash), transparent 48%),
+    linear-gradient(145deg, var(--lux-paper-strong), var(--lux-paper));
+  box-shadow:
+    inset 0 0 0 8px var(--image-stage-inner),
+    var(--image-stage-shadow);
+}
+
+.hero-showcase__image .cover-image,
+.product-card__image .cover-image,
+.product-gallery__stage .cover-image,
+.product-gallery__thumb .cover-image,
+.signature-card__image .cover-image,
+.offer-spotlight__visual .cover-image {
+  z-index: 0;
+  object-position: center 48%;
+  filter: saturate(.95) contrast(1.025);
+}
+
+.hero-showcase__image::before,
+.product-card__image::before,
+.product-gallery__stage::before,
+.product-gallery__thumb::before,
+.signature-card__image::before,
+.offer-spotlight__visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(128deg, var(--image-stage-gold-wash), transparent 30%, transparent 72%, var(--image-stage-vignette)),
+    radial-gradient(ellipse at 50% 42%, transparent 46%, var(--image-stage-vignette) 100%);
+  opacity: .86;
+  transition: opacity 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.hero-showcase__image,
+.product-gallery__stage {
+  border-radius: 2px 48px 2px 2px;
+}
+
+[dir='rtl'] .hero-showcase__image,
+[dir='rtl'] .product-gallery__stage {
+  border-radius: 48px 2px 2px 2px;
+}
+
+.product-card__image,
+.shop-page .product-card__image,
+.home-featured-grid .product-card__image {
+  border-radius: 2px 28px 2px 2px;
+}
+
+[dir='rtl'] .product-card__image,
+[dir='rtl'] .shop-page .product-card__image,
+[dir='rtl'] .home-featured-grid .product-card__image {
+  border-radius: 28px 2px 2px 2px;
+}
+
+.product-gallery__thumb {
+  border-radius: 2px 14px 2px 2px;
+}
+
+[dir='rtl'] .product-gallery__thumb {
+  border-radius: 14px 2px 2px 2px;
+}
+
+.home-experience .signature-card,
+.home-experience .signature-card__image {
+  border-radius: 2px 38px 2px 2px;
+}
+
+[dir='rtl'] .home-experience .signature-card,
+[dir='rtl'] .home-experience .signature-card__image {
+  border-radius: 38px 2px 2px 2px;
+}
+
+.home-experience .hero-showcase__image {
+  box-shadow:
+    inset 0 0 0 10px var(--image-stage-inner),
+    0 44px 96px -62px color-mix(in srgb, var(--lux-shadow) 92%, transparent);
+}
+
+.home-experience .hero-showcase__image::before {
+  background:
+    linear-gradient(118deg, var(--image-stage-gold-wash), transparent 26%, transparent 70%, var(--image-stage-vignette)),
+    radial-gradient(ellipse at 52% 40%, transparent 38%, var(--image-stage-vignette) 100%);
+  opacity: .9;
+}
+
+.product-gallery__stage {
+  box-shadow:
+    inset 0 0 0 10px var(--image-stage-inner),
+    0 40px 88px -62px color-mix(in srgb, var(--lux-shadow) 90%, transparent);
+}
+
+.product-card__image,
+.shop-page .product-card__image,
+.home-featured-grid .product-card__image {
+  transition:
+    border-color 220ms ease,
+    box-shadow 320ms cubic-bezier(.22, 1, .36, 1),
+    transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.product-card:hover .product-card__image {
+  border-color: color-mix(in srgb, var(--lux-gold) 48%, var(--lux-line));
+  box-shadow:
+    inset 0 0 0 8px color-mix(in srgb, var(--lux-paper-strong) 52%, transparent),
+    0 38px 86px -56px color-mix(in srgb, var(--lux-shadow) 94%, transparent);
+  transform: translateY(-2px);
+}
+
+.product-card:hover .product-card__image::before,
+.hero-showcase__product-link:hover .hero-showcase__image::before,
+.signature-card:hover .signature-card__image::before {
+  opacity: .64;
+}
+
+.product-gallery__thumb.is-active {
+  border-color: var(--lux-gold);
+  box-shadow:
+    inset 0 0 0 5px color-mix(in srgb, var(--lux-paper-strong) 40%, transparent),
+    0 14px 32px -28px var(--lux-shadow);
+}
+
+.offer-spotlight__visual {
+  border: 0;
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px rgba(238, 201, 146, .14);
+}
+
+.offer-spotlight__visual::before {
+  background:
+    linear-gradient(90deg, transparent 52%, rgba(37, 21, 12, .3)),
+    radial-gradient(ellipse at 42% 42%, transparent 38%, rgba(25, 12, 5, .19) 100%);
+}
+
+[dir='rtl'] .offer-spotlight__visual::before {
+  background:
+    linear-gradient(270deg, transparent 52%, rgba(37, 21, 12, .3)),
+    radial-gradient(ellipse at 58% 42%, transparent 38%, rgba(25, 12, 5, .19) 100%);
+}
+
+@media (max-width: 620px) {
+  .hero-showcase__image,
+  .product-gallery__stage {
+    border-radius: 2px 34px 2px 2px;
+  }
+
+  [dir='rtl'] .hero-showcase__image,
+  [dir='rtl'] .product-gallery__stage {
+    border-radius: 34px 2px 2px 2px;
+  }
+
+  .product-card__image,
+  .shop-page .product-card__image,
+  .home-featured-grid .product-card__image {
+    border-radius: 2px 20px 2px 2px;
+    box-shadow:
+      inset 0 0 0 5px var(--image-stage-inner),
+      0 20px 48px -40px var(--lux-shadow);
+  }
+
+  [dir='rtl'] .product-card__image,
+  [dir='rtl'] .shop-page .product-card__image,
+  [dir='rtl'] .home-featured-grid .product-card__image {
+    border-radius: 20px 2px 2px 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-showcase__image::before,
+  .product-card__image,
+  .product-card__image::before,
+  .product-gallery__stage::before,
+  .product-gallery__thumb::before,
+  .signature-card__image::before,
+  .offer-spotlight__visual::before {
+    transition: none;
+  }
+
+  .product-card:hover .product-card__image {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .hero-showcase__image,
+  .product-card__image,
+  .product-gallery__stage,
+  .product-gallery__thumb,
+  .signature-card__image,
+  .offer-spotlight__visual {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+
+  .hero-showcase__image::before,
+  .product-card__image::before,
+  .product-gallery__stage::before,
+  .product-gallery__thumb::before,
+  .signature-card__image::before,
+  .offer-spotlight__visual::before {
+    display: none;
+  }
+}
