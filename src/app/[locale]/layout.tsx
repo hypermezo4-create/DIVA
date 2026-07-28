@@ -8,7 +8,6 @@ import {getSiteUrl} from '@/lib/site-url';
 import '../globals.css';
 import '../catalog.css';
 import '../accessibility.css';
-import '../storefront-redesign.css';
 import '../storefront-polish.css';
 
 const brandMark = '/brand/diva-logo-original-mark.svg';
