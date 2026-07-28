@@ -31,7 +31,7 @@
   stroke-width: 1.6;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .header :global(.site-header__inner) {
     gap: 9px;
   }
@@ -75,7 +75,7 @@
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1081px) {
   .accountLink {
     width: auto;
     height: auto;
