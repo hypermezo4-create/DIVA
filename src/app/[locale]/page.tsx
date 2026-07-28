@@ -105,7 +105,7 @@ export default async function HomePage({params}: PageProps) {
         ]}
       />
       <SiteHeader locale={locale} />
-      <main>
+      <main id="main-content">
         <Hero
           locale={locale}
           copy={{
@@ -118,8 +118,6 @@ export default async function HomePage({params}: PageProps) {
           }}
           items={heroItems}
         />
-
-        <ValueStrip label={t('valuesLabel')} items={values} />
 
         <SignatureGrid
           locale={locale}
@@ -139,7 +137,7 @@ export default async function HomePage({params}: PageProps) {
         <section className="home-featured-section">
           <div className="home-featured-heading">
             <div>
-              <p className="eyebrow">{navigationT('collections')}</p>
+              <p className="eyebrow">DIVA EDIT</p>
               <h2>{shopT('title')}</h2>
             </div>
             <Link href={`/${locale}/shop`} className="text-link">{navigationT('shop')} ↗</Link>
@@ -157,6 +155,8 @@ export default async function HomePage({params}: PageProps) {
             ))}
           </div>
         </section>
+
+        <ValueStrip label={t('valuesLabel')} items={values} />
       </main>
       <SiteFooter locale={locale} />
     </>
