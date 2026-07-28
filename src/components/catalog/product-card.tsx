@@ -15,6 +15,8 @@ type ProductCardItem = {
   available: number;
 };
 
+type ProductCardHeading = 'h2' | 'h3';
+
 function formatPrice(locale: AppLocale, priceMinor: number, currency: string) {
   return new Intl.NumberFormat(locale, {style: 'currency', currency}).format(priceMinor / 100);
 }
@@ -24,14 +26,17 @@ export function ProductCard({
   product,
   newLabel,
   offerLabel,
-  soldOutLabel
+  soldOutLabel,
+  headingLevel = 'h2'
 }: {
   locale: AppLocale;
   product: ProductCardItem;
   newLabel: string;
   offerLabel: string;
   soldOutLabel: string;
+  headingLevel?: ProductCardHeading;
 }) {
+  const Heading = headingLevel;
   const onOffer = product.priceMinor !== null
     && product.compareAtMinor !== null
     && product.compareAtMinor > product.priceMinor;
@@ -54,7 +59,7 @@ export function ProductCard({
       </div>
       <div className="product-card__copy">
         <p>{product.subtitle}</p>
-        <h2>{product.name}</h2>
+        <Heading>{product.name}</Heading>
         <span className="product-card__price">
           {product.available <= 0
             ? soldOutLabel
