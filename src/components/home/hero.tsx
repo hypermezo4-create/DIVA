@@ -42,9 +42,9 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
 
       <motion.div
         className="hero-copy"
-        initial={reduceMotion ? undefined : {opacity: 0, y: 14}}
+        initial={reduceMotion ? undefined : {opacity: 0, y: 10}}
         animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
-        transition={{duration: 0.46, ease: [0.22, 1, 0.36, 1]}}
+        transition={{duration: 0.4, ease: [0.22, 1, 0.36, 1]}}
       >
         <div className="hero-brand-seal" aria-hidden="true">
           <Image src="/brand/diva-logo-original-mark.svg" alt="" width={92} height={96} priority />
@@ -56,22 +56,14 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
           <Link className="button button--primary" href={`/${locale}/shop`}>
             {copy.primary}
           </Link>
-          <a className="button button--ghost" href="#signature">
-            {copy.secondary}
-          </a>
-        </div>
-        <div className="hero-signature-line" aria-hidden="true">
-          <span>DIVA</span>
-          <i />
-          <span>{copy.edition}</span>
         </div>
       </motion.div>
 
       <motion.div
         className="hero-showcase"
-        initial={reduceMotion ? undefined : {opacity: 0, x: 14}}
+        initial={reduceMotion ? undefined : {opacity: 0, x: 10}}
         animate={reduceMotion ? undefined : {opacity: 1, x: 0}}
-        transition={{duration: 0.54, delay: 0.04, ease: [0.22, 1, 0.36, 1]}}
+        transition={{duration: 0.46, delay: 0.03, ease: [0.22, 1, 0.36, 1]}}
       >
         {selected ? (
           <>
@@ -80,10 +72,10 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                 <motion.div
                   className="hero-showcase__content"
                   key={selected.id}
-                  initial={reduceMotion ? undefined : {opacity: 0, y: 7}}
+                  initial={reduceMotion ? undefined : {opacity: 0, y: 5}}
                   animate={reduceMotion ? undefined : {opacity: 1, y: 0}}
-                  exit={reduceMotion ? undefined : {opacity: 0, y: -5}}
-                  transition={{duration: 0.26, ease: [0.22, 1, 0.36, 1]}}
+                  exit={reduceMotion ? undefined : {opacity: 0, y: -4}}
+                  transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}
                 >
                   <Link className="hero-showcase__product-link" href={`/${locale}/product/${selected.slug}`}>
                     <div className="hero-showcase__image">
@@ -91,7 +83,7 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                         src={selected.image!}
                         alt={selected.name}
                         fill
-                        sizes="(max-width: 900px) 92vw, 44vw"
+                        sizes="(max-width: 900px) 94vw, 48vw"
                         className="cover-image"
                         priority
                       />
@@ -128,7 +120,7 @@ export function Hero({locale, copy, items}: {locale: AppLocale; copy: HeroCopy; 
                     aria-pressed={active}
                     aria-label={item.name}
                   >
-                    <Image src={item.image!} alt="" fill sizes="150px" className="cover-image" />
+                    <Image src={item.image!} alt="" fill sizes="120px" className="cover-image" />
                     <span aria-hidden="true">0{index + 1}</span>
                   </button>
                 );
