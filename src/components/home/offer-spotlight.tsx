@@ -27,12 +27,18 @@ export function OfferSpotlight({
   eyebrow: string;
   action: string;
 }) {
-  const hasOffer = product.priceMinor !== null
+  const offer = product.priceMinor !== null
     && product.compareAtMinor !== null
     && product.currency !== null
-    && product.compareAtMinor > product.priceMinor;
-  const discount = hasOffer
-    ? Math.round((1 - product.priceMinor / product.compareAtMinor) * 100)
+    && product.compareAtMinor > product.priceMinor
+    ? {
+        priceMinor: product.priceMinor,
+        compareAtMinor: product.compareAtMinor,
+        currency: product.currency
+      }
+    : null;
+  const discount = offer
+    ? Math.round((1 - offer.priceMinor / offer.compareAtMinor) * 100)
     : null;
 
   return (
@@ -55,10 +61,10 @@ export function OfferSpotlight({
         <h2 id="offer-spotlight-title">{product.name}</h2>
         <p className="offer-spotlight__subtitle">{product.subtitle}</p>
 
-        {hasOffer && (
+        {offer && (
           <div className="offer-spotlight__price">
-            <strong>{formatMoney(locale, product.priceMinor, product.currency)}</strong>
-            <del>{formatMoney(locale, product.compareAtMinor, product.currency)}</del>
+            <strong>{formatMoney(locale, offer.priceMinor, offer.currency)}</strong>
+            <del>{formatMoney(locale, offer.compareAtMinor, offer.currency)}</del>
           </div>
         )}
 
