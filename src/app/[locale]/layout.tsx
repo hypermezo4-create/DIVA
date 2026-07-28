@@ -11,6 +11,7 @@ import '../accessibility.css';
 import '../storefront-polish.css';
 import '../product-experience.css';
 import '../home-editorial.css';
+import '../shop-experience.css';
 
 const brandMark = '/brand/diva-logo-original-mark.svg';
 const brandLockup = '/brand/diva-logo-original-full.svg';
