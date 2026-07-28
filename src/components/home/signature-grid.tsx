@@ -21,7 +21,7 @@ export function SignatureGrid({
   return (
     <section className="signature-section" id="signature">
       <div className="section-heading section-heading--editorial">
-        <p className="eyebrow">DIVA EDITIONS</p>
+        <p className="eyebrow" translate="no">DIVA EDITIONS</p>
         <h2>{title}</h2>
       </div>
 
@@ -38,16 +38,15 @@ export function SignatureGrid({
                   src={item.image}
                   alt=""
                   fill
-                  sizes="(max-width: 620px) 100vw, (max-width: 1200px) 50vw, 58vw"
+                  sizes="(max-width: 620px) 50vw, (max-width: 1200px) 50vw, 58vw"
                   className="cover-image"
                 />
               ) : <div className="signature-card__placeholder" aria-hidden="true" />}
-              <span className="signature-card__index" aria-hidden="true">0{index + 1}</span>
             </div>
             <div className="signature-card__copy">
               <span>{item.label}</span>
               <h3>{item.title}</h3>
-              <span aria-hidden="true">↗</span>
+              <span className="signature-card__arrow" aria-hidden="true">↗</span>
             </div>
           </Link>
         ))}
