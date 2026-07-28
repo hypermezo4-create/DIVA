@@ -9,6 +9,7 @@ import '../globals.css';
 import '../catalog.css';
 import '../accessibility.css';
 import '../storefront-polish.css';
+import '../product-experience.css';
 import '../home-editorial.css';
 
 const brandMark = '/brand/diva-logo-original-mark.svg';
