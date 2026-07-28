@@ -314,7 +314,7 @@
 
 @media (max-width: 800px) {
   .layout {grid-template-columns: 1fr;}
-  .summary {position: static; order: -1;}
+  .summary {position: static;}
 }
 
 @media (max-width: 620px) {
