@@ -105,7 +105,7 @@ export default async function HomePage({params}: PageProps) {
         ]}
       />
       <SiteHeader locale={locale} />
-      <main id="main-content">
+      <main id="main-content" className="home-experience">
         <Hero
           locale={locale}
           copy={{
@@ -113,7 +113,6 @@ export default async function HomePage({params}: PageProps) {
             title: content('home.hero.title', t('hero.title')),
             description: content('home.hero.description', t('hero.description')),
             primary: content('home.hero.primary', t('hero.primary')),
-            secondary: content('home.hero.secondary', t('hero.secondary')),
             edition: content('home.hero.edition', t('hero.edition'))
           }}
           items={heroItems}
@@ -137,7 +136,7 @@ export default async function HomePage({params}: PageProps) {
         <section className="home-featured-section">
           <div className="home-featured-heading">
             <div>
-              <p className="eyebrow">DIVA EDIT</p>
+              <p className="eyebrow" translate="no">DIVA EDIT</p>
               <h2>{shopT('title')}</h2>
             </div>
             <Link href={`/${locale}/shop`} className="text-link">{navigationT('shop')} ↗</Link>
