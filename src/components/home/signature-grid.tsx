@@ -38,7 +38,7 @@ export function SignatureGrid({
                   src={item.image}
                   alt=""
                   fill
-                  sizes="(max-width: 800px) 100vw, (max-width: 1180px) 50vw, 25vw"
+                  sizes="(max-width: 620px) 100vw, (max-width: 1200px) 50vw, 58vw"
                   className="cover-image"
                 />
               ) : <div className="signature-card__placeholder" aria-hidden="true" />}
