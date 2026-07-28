@@ -1,3 +1,8 @@
+:where(a, button, select, summary) {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--gold) 18%, transparent);
+}
+
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 3px solid var(--gold-bright);
   outline-offset: 3px;
