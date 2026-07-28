@@ -56,19 +56,37 @@ export function ProductPurchasePanel({
     return [...unique.values()];
   }, [variants]);
   const [color, setColor] = useState(colors[0]?.colorCode ?? '');
-  const sizes = useMemo(() => [...new Set(variants.filter((variant) => variant.colorCode === color).map((variant) => variant.size))], [color, variants]);
   const [size, setSize] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
-  const selected = variants.find((variant) => variant.colorCode === color && variant.size === size);
-  const sellable = Boolean(commerceEnabled && selected && selected.available > 0 && selected.priceMinor !== null && selected.currency);
-  const availablePrices = variants.filter((variant) => variant.priceMinor !== null && variant.currency);
-  const lowest = [...availablePrices].sort((a, b) => (a.priceMinor ?? 0) - (b.priceMinor ?? 0))[0];
-  const displayed = selected?.priceMinor !== null && selected?.priceMinor !== undefined && selected.currency ? selected : lowest;
+
+  const colorVariants = useMemo(
+    () => variants.filter((variant) => variant.colorCode === color),
+    [color, variants]
+  );
+  const sizes = useMemo(() => [...new Set(colorVariants.map((variant) => variant.size))], [colorVariants]);
+  const variantBySize = useMemo(
+    () => new Map(colorVariants.map((variant) => [variant.size, variant])),
+    [colorVariants]
+  );
+  const selected = size ? variantBySize.get(size) : undefined;
+  const lowest = useMemo(() => {
+    let candidate: Variant | undefined;
+    for (const variant of colorVariants) {
+      if (variant.priceMinor === null || !variant.currency) continue;
+      if (!candidate || (candidate.priceMinor ?? Number.POSITIVE_INFINITY) > variant.priceMinor) candidate = variant;
+    }
+    return candidate;
+  }, [colorVariants]);
+  const displayed = selected?.priceMinor !== null && selected?.currency ? selected : lowest;
   const displayedOffer = displayed?.priceMinor !== null
     && displayed?.priceMinor !== undefined
     && displayed.compareAtMinor !== null
     && displayed.compareAtMinor > displayed.priceMinor;
+  const discount = displayedOffer && displayed?.compareAtMinor && displayed.priceMinor !== null
+    ? Math.round((1 - displayed.priceMinor / displayed.compareAtMinor) * 100)
+    : null;
+  const sellable = Boolean(commerceEnabled && selected && selected.available > 0 && selected.priceMinor !== null && selected.currency);
   const wishlisted = commerceEnabled && isWishlisted(productId);
 
   async function add() {
@@ -90,8 +108,11 @@ export function ProductPurchasePanel({
 
   return (
     <div className={styles.panel}>
-      <div className={styles.price}>
-        <span>{copy.priceFrom}</span>
+      <div className={styles.priceBlock}>
+        <div className={styles.priceLabelRow}>
+          <span>{copy.priceFrom}</span>
+          {discount !== null && <strong className={styles.discount}>−{discount}%</strong>}
+        </div>
         <div className={styles.priceValues}>
           <strong>
             {displayed?.priceMinor !== null && displayed?.priceMinor !== undefined && displayed.currency
@@ -102,31 +123,42 @@ export function ProductPurchasePanel({
             <del>{money(locale, displayed.compareAtMinor, displayed.currency)}</del>
           )}
         </div>
+        {displayed && <p className={styles.variantMeta}>{displayed.colorLabel}{size ? ` · ${size}` : ''}</p>}
       </div>
 
       <fieldset className={styles.fieldset}>
         <legend>{copy.color}</legend>
         <div className={styles.colors}>
-          {colors.map((option) => (
-            <button
-              key={option.colorCode}
-              type="button"
-              className={color === option.colorCode ? styles.selected : ''}
-              onClick={() => { setColor(option.colorCode); setSize(''); setMessage(''); }}
-              aria-pressed={color === option.colorCode}
-            >
-              <i style={{backgroundColor: option.colorHex}} aria-hidden="true" />
-              {option.colorLabel}
-            </button>
-          ))}
+          {colors.map((option) => {
+            const selectedColor = color === option.colorCode;
+            return (
+              <button
+                key={option.colorCode}
+                type="button"
+                className={selectedColor ? styles.selected : ''}
+                onClick={() => {
+                  setColor(option.colorCode);
+                  setSize('');
+                  setMessage('');
+                }}
+                aria-pressed={selectedColor}
+              >
+                <i style={{backgroundColor: option.colorHex}} aria-hidden="true" />
+                <span>{option.colorLabel}</span>
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend>{copy.size}</legend>
+        <div className={styles.legendRow}>
+          <legend>{copy.size}</legend>
+          {!size && <span>{copy.chooseOptions}</span>}
+        </div>
         <div className={styles.sizes}>
           {sizes.map((option) => {
-            const variant = variants.find((item) => item.colorCode === color && item.size === option);
+            const variant = variantBySize.get(option);
             const disabled = !variant || variant.available <= 0 || variant.priceMinor === null || !variant.currency;
             return (
               <button
@@ -134,7 +166,10 @@ export function ProductPurchasePanel({
                 type="button"
                 disabled={disabled}
                 className={size === option ? styles.selected : ''}
-                onClick={() => { setSize(option); setMessage(''); }}
+                onClick={() => {
+                  setSize(option);
+                  setMessage('');
+                }}
                 aria-pressed={size === option}
               >
                 {option}
@@ -145,19 +180,26 @@ export function ProductPurchasePanel({
       </fieldset>
 
       {!commerceEnabled && <p className={styles.notice}>{copy.unavailable}</p>}
-      {commerceEnabled && selected && selected.available <= 0 && <p className={styles.notice}>{copy.outOfStock}</p>}
-      {message && <p className={styles.notice} role="status">{message}</p>}
+      {selected && selected.available <= 0 && <p className={styles.notice}>{copy.outOfStock}</p>}
+      {message && <p className={styles.notice} role="status" aria-live="polite">{message}</p>}
 
       <div className={styles.actions}>
-        <button className="button button--primary" type="button" disabled={busy || !sellable} onClick={() => void add()}>
+        <button
+          className="button button--primary"
+          type="button"
+          disabled={busy || !commerceEnabled}
+          onClick={() => void add()}
+        >
           {busy ? copy.adding : copy.addToCart}
         </button>
         <button
-          className="button button--ghost"
+          className={styles.wishlist}
           type="button"
           disabled={!commerceEnabled}
           onClick={() => void toggleWishlist(productId)}
+          aria-pressed={wishlisted}
         >
+          <span aria-hidden="true">{wishlisted ? '♥' : '♡'}</span>
           {wishlisted ? copy.removeFromWishlist : copy.addToWishlist}
         </button>
       </div>
