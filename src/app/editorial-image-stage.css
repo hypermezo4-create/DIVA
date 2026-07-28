@@ -125,8 +125,7 @@
 .home-featured-grid .product-card__image {
   transition:
     border-color 220ms ease,
-    box-shadow 320ms cubic-bezier(.22, 1, .36, 1),
-    transform 320ms cubic-bezier(.22, 1, .36, 1);
+    box-shadow 320ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .product-card:hover .product-card__image {
@@ -134,7 +133,6 @@
   box-shadow:
     inset 0 0 0 8px color-mix(in srgb, var(--lux-paper-strong) 52%, transparent),
     0 38px 86px -56px color-mix(in srgb, var(--lux-shadow) 94%, transparent);
-  transform: translateY(-2px);
 }
 
 .product-card:hover .product-card__image::before,
@@ -206,7 +204,7 @@
     transition: none;
   }
 
-  .product-card:hover .product-card__image {
+  .product-card:hover {
     transform: none;
   }
 }
