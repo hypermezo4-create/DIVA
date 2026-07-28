@@ -16,14 +16,15 @@ export function ProductGallery({
   images: ProductGalleryImage[];
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const active = images[activeIndex] ?? images[0];
+  const safeIndex = images.length > 0 ? Math.min(activeIndex, images.length - 1) : 0;
+  const active = images[safeIndex];
 
   if (!active) {
     return <div className="product-gallery product-gallery--empty" aria-hidden="true" />;
   }
 
   return (
-    <div className="product-gallery" aria-label={name}>
+    <div className="product-gallery" role="region" aria-label={name}>
       <div className="product-gallery__stage" aria-live="polite">
         <Image
           key={active.url}
@@ -36,7 +37,7 @@ export function ProductGallery({
         />
         {images.length > 1 && (
           <span className="product-gallery__counter" aria-hidden="true">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+            {String(safeIndex + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
           </span>
         )}
       </div>
@@ -44,7 +45,7 @@ export function ProductGallery({
       {images.length > 1 && (
         <div className="product-gallery__rail" role="group" aria-label={name}>
           {images.map((image, index) => {
-            const selected = index === activeIndex;
+            const selected = index === safeIndex;
             return (
               <button
                 key={`${image.url}-${index}`}
