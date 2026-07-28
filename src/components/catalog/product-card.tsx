@@ -44,7 +44,7 @@ export function ProductCard({
             src={product.image}
             alt={product.name}
             fill
-            sizes="(max-width: 800px) 100vw, (max-width: 1180px) 50vw, 33vw"
+            sizes="(max-width: 620px) 50vw, (max-width: 1200px) 50vw, 25vw"
             className="cover-image"
           />
         ) : <div className="product-card__placeholder" aria-hidden="true" />}
