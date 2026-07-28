@@ -85,10 +85,15 @@
 
 .product-gallery__thumb {
   border-radius: 2px 14px 2px 2px;
+  transition: opacity 160ms ease, transform 160ms ease;
 }
 
 [dir='rtl'] .product-gallery__thumb {
   border-radius: 14px 2px 2px 2px;
+}
+
+.hero-thumb {
+  transition: opacity 160ms ease, transform 160ms ease;
 }
 
 .home-experience .signature-card,
@@ -118,21 +123,6 @@
   box-shadow:
     inset 0 0 0 10px var(--image-stage-inner),
     0 40px 88px -62px color-mix(in srgb, var(--lux-shadow) 90%, transparent);
-}
-
-.product-card__image,
-.shop-page .product-card__image,
-.home-featured-grid .product-card__image {
-  transition:
-    border-color 220ms ease,
-    box-shadow 320ms cubic-bezier(.22, 1, .36, 1);
-}
-
-.product-card:hover .product-card__image {
-  border-color: color-mix(in srgb, var(--lux-gold) 48%, var(--lux-line));
-  box-shadow:
-    inset 0 0 0 8px color-mix(in srgb, var(--lux-paper-strong) 52%, transparent),
-    0 38px 86px -56px color-mix(in srgb, var(--lux-shadow) 94%, transparent);
 }
 
 .product-card:hover .product-card__image::before,
@@ -195,16 +185,20 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-showcase__image::before,
-  .product-card__image,
   .product-card__image::before,
   .product-gallery__stage::before,
+  .product-gallery__thumb,
   .product-gallery__thumb::before,
+  .hero-thumb,
   .signature-card__image::before,
   .offer-spotlight__visual::before {
     transition: none;
   }
 
-  .product-card:hover {
+  .product-card:hover,
+  .signature-card:hover,
+  .product-gallery__thumb:hover,
+  .hero-thumb:hover {
     transform: none;
   }
 }
