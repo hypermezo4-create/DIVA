@@ -25,9 +25,9 @@ export default async function CheckoutPage({params}: PageProps) {
   return (
     <>
       <SiteHeader locale={locale} />
-      <main className={styles.shell}>
+      <main id="main-content" className={styles.shell}>
         <header className={styles.intro}>
-          <p className="eyebrow">DIVA · CHECKOUT</p>
+          <p className="eyebrow" translate="no">DIVA · CHECKOUT</p>
           <h1>{t('title')}</h1>
           <p>{t('intro')}</p>
         </header>
